@@ -64,6 +64,26 @@ export default function Home() {
               <Rich text={t('home.lead')} />
             </p>
 
+            {/* The offer, said plainly (user, 2026-09-18): what is bought, for how
+                long, and the price — read from the server, like every price here. */}
+            <div className="anim-up sweep relative mt-5 overflow-hidden rounded-2xl border border-brand/25 bg-white/80 p-4 shadow-card backdrop-blur-sm sm:p-5"
+              style={{ animationDelay: '.18s' }}>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="flex items-start gap-2 text-base font-semibold leading-snug text-ink sm:text-lg">
+                  <span aria-hidden="true" className="text-xl leading-none">🚗</span>
+                  <span>{t('home.offer.title', { days })}</span>
+                </p>
+                <p className="shrink-0 whitespace-nowrap">
+                  <span className="text-sm text-muted">{t('home.offer.only')} </span>
+                  <span className="text-3xl font-extrabold tabular text-brand-deep">{price}</span>
+                </p>
+              </div>
+              <div className="mt-2 grid gap-1 text-sm text-body">
+                <span className="flex items-center gap-1.5"><span className="text-good-700">✓</span>{t('home.offer.l1')}</span>
+                <span className="flex items-center gap-1.5"><span className="text-good-700">✓</span>{t('home.offer.l2', { days })}</span>
+              </div>
+            </div>
+
             <form onSubmit={go} className="anim-up mt-6 flex flex-col gap-3 sm:flex-row"
               style={{ animationDelay: '.22s' }}>
               <input className="input sm:flex-1" placeholder="KA02EX1480" value={reg}

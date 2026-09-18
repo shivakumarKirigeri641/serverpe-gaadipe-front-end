@@ -63,6 +63,10 @@ export const STRINGS = {
 
     'home.chip': 'All India · Every RTO · No app, no account',
     'home.h1a': 'Kharidne se pehle,',
+    'home.offer.title': 'Complete Vehicle Report + {days} Days Automatic Monitoring',
+    'home.offer.only': 'Only',
+    'home.offer.l1': 'Know your vehicle status today.',
+    'home.offer.l2': 'Stay informed for the next {days} days.',
     'home.h1b': 'poori kundli.',
     'home.lead': 'Before you buy a used car or bike, read its whole record: is there a **loan on it**, is it **blacklisted**, how many **challans are pending**, and are the insurance, PUC and tax still valid.',
     'home.cta': 'Check this vehicle',
@@ -336,6 +340,10 @@ export const STRINGS = {
 
     'home.chip': 'पूरा भारत · हर RTO · न ऐप, न अकाउंट',
     'home.h1a': 'खरीदने से पहले,',
+    'home.offer.title': 'पूरी वाहन रिपोर्ट + {days} दिन की ऑटोमैटिक निगरानी',
+    'home.offer.only': 'सिर्फ़',
+    'home.offer.l1': 'आज ही जानें अपने वाहन की स्थिति।',
+    'home.offer.l2': 'अगले {days} दिन तक हर बदलाव की जानकारी पाएँ।',
     'home.h1b': 'पूरी कुंडली।',
     'home.lead': 'पुरानी कार या बाइक खरीदने से पहले उसका पूरा रिकॉर्ड देखिए: क्या उस पर **लोन है**, क्या वह **ब्लैकलिस्टेड** है, कितने **चालान बाकी हैं**, और क्या बीमा, PUC और टैक्स अभी वैध हैं।',
     'home.cta': 'यह वाहन चेक करें',
