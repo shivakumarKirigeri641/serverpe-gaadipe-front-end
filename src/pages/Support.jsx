@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { waLink, WHATSAPP, WHATSAPP_ENABLED } from '../lib/api';
+import { api, waLink, WHATSAPP, WHATSAPP_ENABLED } from '../lib/api';
+import { useSession } from '../lib/session';
 import { mobile as fmtMobile } from '../lib/format';
 import { useLang } from '../lib/i18n.jsx';
 import Layout from '../components/Layout.jsx';
@@ -56,6 +57,87 @@ const PAGE = {
   },
 };
 
+/*
+ * CONTACT US (user, 2026-09-18). Anyone may write, signed in or not; the
+ * message is stored and emailed to the team. A hidden "website" field catches
+ * robots — people never see it, robots fill it in.
+ */
+const FORM = {
+  en: {
+    h: 'Write to us', sub: 'We usually reply the same day. Give an email or a mobile number so we can answer you.',
+    name: 'Your name', mobile: 'Mobile number', email: 'Email', reg: 'Vehicle number (if it is about one)',
+    subject: 'Subject', message: 'Your message', send: 'Send message', sending: 'Sending…',
+    subjects: ['A payment or refund', 'My report or invoice', 'The details look wrong', 'Remove my vehicle', 'Something else'],
+  },
+  hi: {
+    h: 'हमें लिखें', sub: 'हम आमतौर पर उसी दिन जवाब देते हैं। जवाब के लिए ईमेल या मोबाइल नंबर दें।',
+    name: 'आपका नाम', mobile: 'मोबाइल नंबर', email: 'ईमेल', reg: 'वाहन नंबर (अगर किसी वाहन के बारे में है)',
+    subject: 'विषय', message: 'आपका संदेश', send: 'संदेश भेजें', sending: 'भेजा जा रहा है…',
+    subjects: ['भुगतान या रिफ़ंड', 'मेरी रिपोर्ट या इनवॉइस', 'जानकारी ग़लत लगती है', 'मेरा वाहन हटाएँ', 'कुछ और'],
+  },
+};
+
+function ContactForm({ lang }) {
+  const f = FORM[lang] || FORM.en;
+  const { me } = useSession();
+  const [form, setForm] = useState({ name: '', mobile: '', email: '', reg_no: '', subject: f.subjects[0], message: '', website: '' });
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (me) setForm((x) => ({ ...x, name: x.name || me.name || '', mobile: x.mobile || me.mobile || '', email: x.email || me.email || '' }));
+  }, [me]);
+  const set = (k) => (e) => setForm((x) => ({ ...x, [k]: e.target.value }));
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setBusy(true); setError(null);
+    try {
+      const out = await api.contact({ ...form, language: lang });
+      setDone(out.message);
+    } catch (err) { setError(err.message); } finally { setBusy(false); }
+  };
+
+  if (done) {
+    return (
+      <div className="card anim-up mt-6 border-good-500/30 bg-good-50 p-5">
+        <div className="text-base font-semibold text-good-700">✓ {done}</div>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} className="card mt-6 space-y-3 p-5">
+      <div>
+        <h2 className="text-base font-semibold text-ink">{f.h}</h2>
+        <p className="mt-1 text-sm text-muted">{f.sub}</p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="block"><span className="label">{f.name}</span>
+          <input className="input" value={form.name} onChange={set('name')} maxLength={80} required /></label>
+        <label className="block"><span className="label">{f.mobile}</span>
+          <input className="input tabular" inputMode="numeric" value={form.mobile} onChange={set('mobile')} maxLength={14} placeholder="98765 43210" /></label>
+        <label className="block"><span className="label">{f.email}</span>
+          <input className="input" type="email" value={form.email} onChange={set('email')} maxLength={160} placeholder="you@example.com" /></label>
+        <label className="block"><span className="label">{f.reg}</span>
+          <input className="input uppercase" value={form.reg_no} onChange={set('reg_no')} maxLength={14} placeholder="KA01AB1234" /></label>
+      </div>
+      <label className="block"><span className="label">{f.subject}</span>
+        <select className="input" value={form.subject} onChange={set('subject')}>
+          {f.subjects.map((s) => <option key={s} value={s}>{s}</option>)}
+        </select></label>
+      <label className="block"><span className="label">{f.message}</span>
+        <textarea className="input min-h-[120px]" value={form.message} onChange={set('message')} maxLength={3000} required /></label>
+      {/* For robots only. */}
+      <input type="text" name="website" value={form.website} onChange={set('website')} tabIndex={-1} autoComplete="off"
+        aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }} />
+      {error && <p className="rounded-lg border border-wrong-500/25 bg-wrong-50 px-3 py-2 text-sm text-wrong-700">{error}</p>}
+      <button className="btn-primary w-full sm:w-auto" disabled={busy}>{busy ? f.sending : f.send}</button>
+    </form>
+  );
+}
+
 export default function Support() {
   const { lang } = useLang();
   const p = PAGE[lang] || PAGE.en;
@@ -83,6 +165,8 @@ export default function Support() {
             </div>
           ))}
         </div>
+
+        <ContactForm lang={lang} />
 
         <div className="card mt-6 p-5">
           <h2 className="text-base font-semibold text-ink">{p.stuckH}</h2>

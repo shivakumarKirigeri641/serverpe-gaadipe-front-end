@@ -102,6 +102,8 @@ export const api = {
     .catch((e) => { if (e.body && (e.status === 429 || e.status === 400)) return e.body; throw e; }),
   verifyCode: async (mobile, code) => call('/session/verify', { method: 'POST', auth: false, body: { mobile, code, client: await clientInfo() } })
     .catch((e) => { if (e.body && e.status === 401) return e.body; throw e; }),
+  // Public: anyone may write, signed in or not; a token, if present, ties it to the account.
+  contact: (message) => call('/contact', { method: 'POST', body: message }),
   session: () => call('/session'),
   signOut: async () => call('/session', { method: 'DELETE', body: { client: await clientInfo() } }),
 

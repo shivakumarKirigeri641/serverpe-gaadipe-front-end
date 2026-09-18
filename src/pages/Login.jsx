@@ -24,7 +24,7 @@ export default function Login() {
   const next = params.get('next') || '/app';
 
   const [step, setStep] = useState('mobile');
-  const [mobile, setMobile] = useState('9886122415');
+  const [mobile, setMobile] = useState('');
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
