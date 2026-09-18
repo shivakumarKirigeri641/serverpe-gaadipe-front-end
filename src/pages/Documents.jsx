@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import { rupees, date, plate } from '../lib/format';
+import { useLang } from '../lib/i18n.jsx';
 import Layout from '../components/Layout.jsx';
 import { Spinner, Empty, Banner, Chip, saveBlob, openBlob } from '../components/ui.jsx';
 
@@ -14,8 +15,13 @@ import { Spinner, Empty, Banner, Chip, saveBlob, openBlob } from '../components/
  *
  *   an INVOICE is the customer's own tax record and never expires. It stays
  *   available even after the account is deactivated.
+ *
+ * The documents themselves are in English — they are tax and legal records —
+ * and the page says so in the reader's language rather than leaving them to
+ * wonder why a Hindi page hands them an English PDF.
  */
 export default function Documents({ kind }) {
+  const { t, lang } = useLang();
   const isReports = kind === 'reports';
   const [rows, setRows] = useState(null);
   const [error, setError] = useState(null);
@@ -37,22 +43,17 @@ export default function Documents({ kind }) {
 
   return (
     <Layout>
-      <h1 className="text-2xl font-bold text-ink">{isReports ? 'My reports' : 'My invoices'}</h1>
-      <p className="mt-1 text-sm text-muted">
-        {isReports
-          ? 'Each report can be viewed or saved again while it is valid.'
-          : 'Your GST invoices. These are kept for you and never expire.'}
-      </p>
+      <h1 className="text-2xl font-bold text-ink">{isReports ? t('docs.reportsH') : t('docs.invoicesH')}</h1>
+      <p className="mt-1 text-sm text-muted">{isReports ? t('docs.reportsSub') : t('docs.invoicesSub')}</p>
+      {lang === 'hi' && <p className="mt-1 text-2xs text-muted">{t('docs.englishNote')}</p>}
 
       {error && <Banner tone="wrong" className="mt-5">{error.message}</Banner>}
-      {!rows && !error && <Spinner />}
+      {!rows && !error && <Spinner label={t('common.loading')} />}
 
       {rows && !rows.length && (
         <div className="mt-6">
-          <Empty action={<Link className="btn-primary" to="/app/check">Check a vehicle</Link>}>
-            {isReports
-              ? 'No reports yet. Check a vehicle, and the full report is issued when you buy it.'
-              : 'No invoices yet. An invoice is issued the moment a payment succeeds.'}
+          <Empty action={<Link className="btn-primary" to="/app/check">{t('common.checkVehicle')}</Link>}>
+            {isReports ? t('docs.reportsEmpty') : t('docs.invoicesEmpty')}
           </Empty>
         </div>
       )}
@@ -67,9 +68,7 @@ export default function Documents({ kind }) {
                 </div>
                 <div className="mt-1 text-2xs text-muted">
                   {isReports ? (
-                    <>
-                      <span className="plate">{plate(r.reg_no)}</span> · issued {date(r.created_at)}
-                    </>
+                    <><span className="plate">{plate(r.reg_no)}</span> · {t('docs.issued', { date: date(r.created_at) })}</>
                   ) : (
                     <>
                       {date(r.invoice_date)}
@@ -84,8 +83,8 @@ export default function Documents({ kind }) {
               <div className="flex items-center gap-2">
                 {isReports ? (
                   r.downloadable
-                    ? <Chip tone="good">Until {date(r.valid_until)}</Chip>
-                    : <Chip tone="info">Download period ended</Chip>
+                    ? <Chip tone="good">{t('docs.until', { date: date(r.valid_until) })}</Chip>
+                    : <Chip tone="info">{t('docs.ended')}</Chip>
                 ) : (
                   <span className="tabular text-base font-semibold text-ink">
                     {rupees(r.total_paise, { decimals: true })}
@@ -93,10 +92,10 @@ export default function Documents({ kind }) {
                 )}
                 <button className="btn-quiet !py-2" disabled={!r.downloadable || busy === r.id}
                   onClick={() => get(r.id, false)}>
-                  {busy === r.id ? '…' : 'View'}
+                  {busy === r.id ? '…' : t('common.view')}
                 </button>
                 <button className="btn-quiet !py-2" disabled={!r.downloadable || busy === r.id}
-                  onClick={() => get(r.id, true)}>Save</button>
+                  onClick={() => get(r.id, true)}>{t('common.save')}</button>
               </div>
             </div>
           ))}
@@ -104,10 +103,7 @@ export default function Documents({ kind }) {
       )}
 
       {isReports && rows?.some((r) => !r.downloadable) && (
-        <p className="mt-4 text-2xs text-muted">
-          A report shows the records as they were on the day it was issued. Once its download period ends,
-          check the vehicle again for today's position.
-        </p>
+        <p className="mt-4 text-2xs text-muted">{t('docs.stale')}</p>
       )}
     </Layout>
   );

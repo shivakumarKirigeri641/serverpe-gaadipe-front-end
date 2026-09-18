@@ -4,6 +4,7 @@ import { api } from '../lib/api';
 import { date } from '../lib/format';
 import Layout from '../components/Layout.jsx';
 import { Spinner, Banner } from '../components/ui.jsx';
+import { useLang } from '../lib/i18n.jsx';
 
 /**
  * The published legal text, read from the same endpoint the WhatsApp bot links
@@ -23,6 +24,18 @@ const TITLES = {
   partner: 'Partner policy',
 };
 
+const TITLES_HI = {
+  terms: 'सेवा की शर्तें',
+  privacy: 'गोपनीयता नीति',
+  refund: 'रिफ़ंड नीति',
+  liability: 'दायित्व',
+  consent: 'सहमति',
+  cancellation: 'रद्द करने की नीति',
+  delivery: 'डिलीवरी नीति',
+  'data-deletion': 'डेटा हटाना',
+  partner: 'पार्टनर नीति',
+};
+
 export default function Policy() {
   /* Each document has its own readable URL (/terms, /privacy), and one generic
      route (/policy/:slug) for anything added later — so the slug comes from
@@ -30,6 +43,7 @@ export default function Policy() {
   const { slug: param } = useParams();
   const { pathname } = useLocation();
   const slug = param || pathname.split('/').filter(Boolean)[0] || 'terms';
+  const { t, lang } = useLang();
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
@@ -44,18 +58,21 @@ export default function Policy() {
   return (
     <Layout>
       <article className="mx-auto max-w-3xl py-2">
-        <h1 className="text-2xl font-bold text-ink">{TITLES[slug] || 'Policy'}</h1>
+        <h1 className="text-2xl font-bold text-ink">{(lang === 'hi' ? TITLES_HI[slug] : TITLES[slug]) || TITLES[slug] || 'Policy'}</h1>
         {version && (
           <p className="mt-1 text-2xs text-muted">
-            Version {version.version} · in effect from {date(version.effective_from)}
+            {lang === 'hi'
+              ? `संस्करण ${version.version} · ${date(version.effective_from)} से लागू`
+              : `Version ${version.version} · in effect from ${date(version.effective_from)}`}
           </p>
         )}
 
+        {lang === 'hi' && <Banner tone="info" className="mt-4">{t('policy.english')}</Banner>}
         {error && <Banner tone="wrong" className="mt-5">{error.message}</Banner>}
         {!data && !error && <Spinner />}
 
         {data && !clauses.length && (
-          <Banner tone="info" className="mt-5">This document is not published yet.</Banner>
+          <Banner tone="info" className="mt-5">{lang === 'hi' ? 'यह दस्तावेज़ अभी प्रकाशित नहीं हुआ है।' : 'This document is not published yet.'}</Banner>
         )}
 
         <div className="mt-6 space-y-6">

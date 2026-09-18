@@ -43,6 +43,18 @@ export const human = (days) => {
   return `${unit} left`;
 };
 
+/** The same phrase in Hindi. */
+export const humanHi = (days) => {
+  if (days === null || days === undefined) return '';
+  const n = Math.abs(days);
+  const unit = n >= 365 ? `${Math.round(n / 365)} साल`
+    : n >= 45 ? `${Math.round(n / 30)} महीने`
+    : `${n} दिन`;
+  if (days < 0) return `${unit} पहले समाप्त`;
+  if (days === 0) return 'आज समाप्त';
+  return `${unit} बाकी`;
+};
+
 export const plate = (reg) => {
   const s = String(reg || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   const m = /^([A-Z]{2})(\d{1,2})([A-Z]{0,3})(\d{1,4})$/.exec(s);

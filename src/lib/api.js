@@ -111,8 +111,11 @@ export const api = {
   vehicle: (regNo) => call(`/vehicles/${encodeURIComponent(regNo)}`),
   check: (regNo) => call('/check', { method: 'POST', body: { reg_no: regNo } })
     .catch((e) => { if (e.body && (e.status === 404 || e.status === 429 || e.status === 403)) return e.body; throw e; }),
-  buy: (regNo, declared) => call('/buy', { method: 'POST', body: { reg_no: regNo, declared: declared === true } }),
-  declaration: () => call('/declaration', { auth: false }),
+  // The language travels with the purchase, so the declaration on file is the
+  // one the customer actually read.
+  buy: (regNo, declared, language = 'en') =>
+    call('/buy', { method: 'POST', body: { reg_no: regNo, declared: declared === true, language } }),
+  declaration: (lang = 'en') => call(`/declaration?lang=${lang}`, { auth: false }),
 
   /* Documents */
   reports: () => call('/reports'),

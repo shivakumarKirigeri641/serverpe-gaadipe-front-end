@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useSession } from '../lib/session';
+import { useLang } from '../lib/i18n.jsx';
 import Layout from '../components/Layout.jsx';
 import { Banner, Field } from '../components/ui.jsx';
 
@@ -10,14 +11,14 @@ import { Banner, Field } from '../components/ui.jsx';
  *
  * NO PASSWORD, and no "create an account" either: the mobile number already
  * identifies the customer everywhere else in GaadiPe, so signing in proves they
- * hold it and nothing more. Somebody who has only ever used WhatsApp finds
- * their own vehicles waiting here.
+ * hold it and nothing more.
  *
  * Where they were going is remembered (`next`), so signing in from a checked
  * vehicle returns to that vehicle rather than dumping them on a dashboard.
  */
 export default function Login() {
   const { signIn, me } = useSession();
+  const { t } = useLang();
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const next = params.get('next') || '/app';
@@ -36,14 +37,14 @@ export default function Login() {
      minute, with no explanation, gets pressed five more times. */
   useEffect(() => {
     if (!wait) return undefined;
-    const t = setTimeout(() => setWait(wait - 1), 1000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setWait(wait - 1), 1000);
+    return () => clearTimeout(timer);
   }, [wait]);
 
   const ask = async (e) => {
     e?.preventDefault();
     const m = mobile.replace(/\D/g, '').slice(-10);
-    if (m.length !== 10) { setError('Please enter your ten-digit mobile number.'); return; }
+    if (m.length !== 10) { setError(t('login.bad')); return; }
     setBusy(true); setError(null);
     try {
       const out = await api.requestCode(m);
@@ -52,7 +53,7 @@ export default function Login() {
         if (out.retryAfter) setWait(out.retryAfter);
         return;
       }
-      setNote(`We have sent a code to ${m}. It is valid for a few minutes.`);
+      setNote(t('login.sent', { mobile: m }));
       setWait(60);
       setStep('code');
     } catch (err) { setError(err.message); } finally { setBusy(false); }
@@ -69,56 +70,67 @@ export default function Login() {
     } catch (err) { setError(err.message); } finally { setBusy(false); }
   };
 
+  const link = (to, label) => `<${to}|${label}>`;
+  const accept = t('login.accept', {
+    terms: link('/terms', t('footer.terms')),
+    privacy: link('/privacy', t('footer.privacy')),
+    refund: link('/refund', t('footer.refund')),
+  });
+
   return (
     <Layout>
       <div className="mx-auto max-w-md py-6">
-        <h1 className="text-2xl font-bold text-ink">Sign in</h1>
-        <p className="mt-1.5 text-sm text-muted">
-          With the mobile number you use for GaadiPe. No password.
-        </p>
+        <h1 className="text-2xl font-bold text-ink">{t('login.h')}</h1>
+        <p className="mt-1.5 text-sm text-muted">{t('login.sub')}</p>
 
         <div className="card mt-6 p-5">
           {step === 'mobile' ? (
             <form onSubmit={ask} className="space-y-4">
-              <Field label="Mobile number" hint="We send a one-time code by SMS.">
+              <Field label={t('login.mobile')} hint={t('login.mobileHint')}>
                 <input className="input tabular" inputMode="numeric" autoFocus autoComplete="tel"
                   placeholder="98765 43210" value={mobile}
                   onChange={(e) => setMobile(e.target.value)} />
               </Field>
               {error && <Banner tone="wrong">{error}</Banner>}
-              <button className="btn-primary w-full">{busy ? 'Sending…' : 'Send me a code'}</button>
+              <button className="btn-primary w-full">{busy ? t('login.sending') : t('login.send')}</button>
             </form>
           ) : (
             <form onSubmit={verify} className="space-y-4">
-              <Field label="Enter the code" hint={note}>
+              <Field label={t('login.code')} hint={note}>
                 <input className="input tabular tracking-[0.4em]" inputMode="numeric" autoFocus
                   maxLength={6} placeholder="••••••" value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} />
               </Field>
               {error && <Banner tone="wrong">{error}</Banner>}
               <button className="btn-primary w-full" disabled={busy || code.length < 4}>
-                {busy ? 'Checking…' : 'Sign in'}
+                {busy ? t('login.checking') : t('login.verify')}
               </button>
               <div className="flex items-center justify-between text-2xs">
                 <button type="button" className="text-muted underline underline-offset-2"
                   onClick={() => { setStep('mobile'); setCode(''); setError(null); }}>
-                  Change number
+                  {t('login.change')}
                 </button>
                 <button type="button" className="text-brand disabled:text-muted" disabled={wait > 0 || busy}
                   onClick={ask}>
-                  {wait > 0 ? `Resend in ${wait}s` : 'Resend code'}
+                  {wait > 0 ? t('login.resendIn', { s: wait }) : t('login.resend')}
                 </button>
               </div>
             </form>
           )}
         </div>
 
-        <p className="mt-4 text-2xs text-muted">
-          By signing in you accept our <Link className="underline" to="/terms">Terms</Link>,{' '}
-          <Link className="underline" to="/privacy">Privacy policy</Link> and{' '}
-          <Link className="underline" to="/refund">Refund policy</Link>.
-        </p>
+        <p className="mt-4 text-2xs text-muted"><Linked text={accept} /></p>
       </div>
     </Layout>
   );
+}
+
+/* "<\/terms|Terms>" inside a translated sentence becomes a link, so the
+   sentence can be ordered naturally in each language. */
+export function Linked({ text }) {
+  const parts = String(text).split(/(<[^|>]+\|[^>]+>)/g);
+  return parts.map((p, i) => {
+    const m = /^<([^|>]+)\|([^>]+)>$/.exec(p);
+    return m ? <Link key={i} className="underline" to={m[1]}>{m[2]}</Link> : <span key={i}>{p}</span>;
+  });
 }
