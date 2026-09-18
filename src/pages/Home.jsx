@@ -4,6 +4,7 @@ import { api, waLink, WHATSAPP_ENABLED } from '../lib/api';
 import { rupees } from '../lib/format';
 import { useLang, Rich } from '../lib/i18n.jsx';
 import Layout from '../components/Layout.jsx';
+import DataSourceNote from '../components/DataSourceNote.jsx';
 import Reveal from '../components/Reveal.jsx';
 import useCountUp from '../lib/useCountUp';
 
@@ -99,6 +100,7 @@ export default function Home() {
             <p className="anim-up mt-3 text-sm text-muted" style={{ animationDelay: '.3s' }}>
               <Rich text={t('home.freeLine', { price })} />
             </p>
+            <DataSourceNote compact className="anim-up mt-4" />
           </div>
 
           <div className="card anim-up p-5" style={{ animationDelay: '.12s' }}>

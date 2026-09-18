@@ -157,6 +157,18 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
                     {v.fastag.active ? 'Active' : 'Inactive'}
                     {v.fastag.balance != null && <> · ₹{v.fastag.balance}</>}
                   </p>
+                  {(v.fastag.tags || []).length > 1 && (
+                    <div className="mt-2 divide-y divide-line/70 text-2xs">
+                      {v.fastag.tags.map((tg, i) => (
+                        <div key={tg.tag_id || i} className="flex items-center justify-between gap-3 py-1.5">
+                          <span className="font-mono text-muted">{tg.tag_id || '—'}</span>
+                          <span className={tg.active ? 'font-semibold text-good-700' : 'text-muted'}>
+                            {tg.active ? 'Active' : (tg.status || 'Inactive')}{tg.issued_on ? ` · ${date(tg.issued_on)}` : ''}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </Section>
               )}
             </>

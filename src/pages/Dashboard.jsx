@@ -4,6 +4,7 @@ import { api } from '../lib/api';
 import { date, ago, plate, titleCase, human, humanHi, isCommercial, rupees } from '../lib/format';
 import { useLang } from '../lib/i18n.jsx';
 import Layout from '../components/Layout.jsx';
+import DataSourceNote from '../components/DataSourceNote.jsx';
 import { Spinner, Empty, Chip, Banner } from '../components/ui.jsx';
 import BuyDialog from '../components/BuyDialog.jsx';
 
@@ -36,6 +37,7 @@ export default function Dashboard() {
         </div>
         <Link className="btn-primary" to="/app/check">{t('common.checkVehicle')}</Link>
       </div>
+      <DataSourceNote compact className="mt-4" />
 
       {error && <Banner tone="wrong" className="mt-5">{error.message}</Banner>}
       {!rows && !error && <Spinner label={t('common.loading')} />}

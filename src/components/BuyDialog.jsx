@@ -4,6 +4,9 @@ import { rupees, plate } from '../lib/format';
 import { useLang } from '../lib/i18n.jsx';
 import { Linked } from '../pages/Login.jsx';
 import { Modal, Banner } from './ui.jsx';
+import { useSession } from '../lib/session';
+import { STATES } from '../lib/states';
+import DataSourceNote from './DataSourceNote.jsx';
 
 /**
  * The last step before paying: the declaration, then the payment page.
@@ -20,10 +23,17 @@ import { Modal, Banner } from './ui.jsx';
  */
 export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought }) {
   const { t, lang } = useLang();
+  const { me } = useSession();
   const [text, setText] = useState('');
   const [agreed, setAgreed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  /* WHO IS BUYING, FOR THE INVOICE (user, 2026-09-18): the name under "Billed
+     to", and the state or union territory — the place of supply, which decides
+     CGST + SGST or IGST. Filled from the last purchase; asked before Pay. */
+  const [name, setName] = useState(me?.name || '');
+  const [stateCode, setStateCode] = useState(me?.state_code || '');
+  const ready = agreed && text && name.trim().length >= 2 && stateCode;
 
   useEffect(() => {
     api.declaration(lang).then((d) => setText(d?.text || '')).catch(() => {});
@@ -32,7 +42,7 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
   const pay = async () => {
     setBusy(true); setError(null);
     try {
-      const out = await api.buy(regNo, true, lang);
+      const out = await api.buy(regNo, true, lang, { name: name.trim(), state_code: stateCode });
       if (out.pay_path || out.pay_url) {
         // Same tab: a payment page opened in a new tab that the browser blocks
         // is a payment that never happens. Opened through the site's own API
@@ -56,11 +66,29 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
       footer={
         <>
           <button className="btn-quiet" onClick={onClose} disabled={busy}>{t('buy.notNow')}</button>
-          <button className="btn-primary" onClick={pay} disabled={!agreed || busy || !text}>
+          <button className="btn-primary" onClick={pay} disabled={!ready || busy}>
             {busy ? t('buy.opening') : t('buy.pay', { price })}
           </button>
         </>
       }>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="block">
+          <span className="label">{t('buy.name')}</span>
+          <input className="input" value={name} maxLength={80} autoComplete="name"
+            onChange={(e) => setName(e.target.value)} placeholder={t('buy.namePh')} />
+        </label>
+        <label className="block">
+          <span className="label">{t('buy.state')}</span>
+          <select className="input" value={stateCode} onChange={(e) => setStateCode(e.target.value)}>
+            <option value="">{t('buy.statePick')}</option>
+            {STATES.map(([code, label]) => <option key={code} value={code}>{label}</option>)}
+          </select>
+        </label>
+      </div>
+      <p className="-mt-1 text-2xs text-muted">{t('buy.invoiceNote')}</p>
+
+      <DataSourceNote compact />
+
       <label className={`flex cursor-pointer gap-3 rounded-lg border p-3 transition ${
         agreed ? 'border-brand/40 bg-brand/5' : 'border-line bg-white'}`}>
         <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-brand"

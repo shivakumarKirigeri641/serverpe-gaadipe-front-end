@@ -1,4 +1,5 @@
 import { clientInfo } from './device';
+import { available as secureAvailable, secureCall } from './secure';
 /**
  * api.js — every call gaadipe.in makes.
  *
@@ -50,20 +51,31 @@ async function call(path, { method = 'GET', body, auth = true, base = SITE, time
   const token = getToken();
   if (auth && token) headers.Authorization = `Bearer ${token}`;
 
-  let res;
+  /* The site's own API goes through the encrypted tunnel (lib/secure.js):
+     the Network tab shows ciphertext only. The public policy pages do not. */
+  let res; let data;
   try {
-    res = await fetch(`${base}${path}`, {
-      method, headers,
-      body: body ? JSON.stringify(body) : undefined,
-      signal: AbortSignal.timeout(timeoutMs),
-    });
+    if (base === SITE && secureAvailable()) {
+      const out = await secureCall(SITE, {
+        method, path, body, timeoutMs,
+        headers: headers.Authorization ? { Authorization: headers.Authorization } : {},
+      });
+      res = { status: out.status, ok: out.ok };
+      data = out.data || {};
+    } else {
+      res = await fetch(`${base}${path}`, {
+        method, headers,
+        body: body ? JSON.stringify(body) : undefined,
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+    }
   } catch (e) {
     throw new ApiError(e.name === 'TimeoutError'
       ? 'This is taking longer than usual. Please try again.'
       : 'We could not reach GaadiPe. Please check your connection.', { code: 'offline' });
   }
 
-  const data = await res.json().catch(() => ({}));
+  if (data === undefined) data = await res.json().catch(() => ({}));
 
   if (res.status === 401 && auth) {
     signedOut();
@@ -119,8 +131,8 @@ export const api = {
     .catch((e) => { if (e.body && (e.status === 404 || e.status === 429 || e.status === 403)) return e.body; throw e; }),
   // The language travels with the purchase, so the declaration on file is the
   // one the customer actually read.
-  buy: (regNo, declared, language = 'en') =>
-    call('/buy', { method: 'POST', body: { reg_no: regNo, declared: declared === true, language } }),
+  buy: (regNo, declared, language = 'en', buyer = {}) =>
+    call('/buy', { method: 'POST', body: { reg_no: regNo, declared: declared === true, language, ...buyer } }),
   declaration: (lang = 'en') => call(`/declaration?lang=${lang}`, { auth: false }),
 
   /* Documents */
