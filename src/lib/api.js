@@ -8,6 +8,8 @@ import { clientInfo } from './device';
  */
 
 const BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
+/** A gateway page (checkout, report download) on the same origin the API calls use. */
+export const gatewayUrl = (path) => `${BASE}${path}`;
 const SITE = `${BASE}/site/api`;
 const PUBLIC = `${BASE}/serverpe/platform/gaadipe/v1/public/users`;
 const KEY = 'gaadipe.site.token';

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api } from '../lib/api';
+import { api, gatewayUrl } from '../lib/api';
 import { rupees, plate } from '../lib/format';
 import { useLang } from '../lib/i18n.jsx';
 import { Linked } from '../pages/Login.jsx';
@@ -33,10 +33,11 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
     setBusy(true); setError(null);
     try {
       const out = await api.buy(regNo, true, lang);
-      if (out.pay_url) {
+      if (out.pay_path || out.pay_url) {
         // Same tab: a payment page opened in a new tab that the browser blocks
-        // is a payment that never happens.
-        window.location.href = out.pay_url;
+        // is a payment that never happens. Opened through the site's own API
+        // origin, so checkout never depends on a tunnel being up.
+        window.location.href = out.pay_path ? gatewayUrl(out.pay_path) : out.pay_url;
         return;
       }
       if (out.already) { onAlreadyBought?.(); onClose(); }
