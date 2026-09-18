@@ -57,8 +57,7 @@ export const humanHi = (days) => {
 
 export const plate = (reg) => {
   const s = String(reg || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-  const m = /^([A-Z]{2})(\d{1,2})([A-Z]{0,3})(\d{1,4})$/.exec(s);
-  return m ? m.slice(1).filter(Boolean).join(' ') : s;
+  return s;
 };
 
 export const mobile = (m) => {
