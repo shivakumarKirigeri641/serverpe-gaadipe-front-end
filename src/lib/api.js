@@ -1,3 +1,4 @@
+import { clientInfo } from './device';
 /**
  * api.js — every call gaadipe.in makes.
  *
@@ -94,12 +95,13 @@ export const api = {
   policies: () => call('/policies', { auth: false, base: PUBLIC }),
 
   /* Signing in */
-  requestCode: (mobile) => call('/session/otp', { method: 'POST', auth: false, body: { mobile } })
+  /* Each sign-in step carries what the browser says about itself (lib/device.js). */
+  requestCode: async (mobile) => call('/session/otp', { method: 'POST', auth: false, body: { mobile, client: await clientInfo() } })
     .catch((e) => { if (e.body && (e.status === 429 || e.status === 400)) return e.body; throw e; }),
-  verifyCode: (mobile, code) => call('/session/verify', { method: 'POST', auth: false, body: { mobile, code } })
+  verifyCode: async (mobile, code) => call('/session/verify', { method: 'POST', auth: false, body: { mobile, code, client: await clientInfo() } })
     .catch((e) => { if (e.body && e.status === 401) return e.body; throw e; }),
   session: () => call('/session'),
-  signOut: () => call('/session', { method: 'DELETE' }),
+  signOut: async () => call('/session', { method: 'DELETE', body: { client: await clientInfo() } }),
 
   /* The account */
   me: () => call('/me'),

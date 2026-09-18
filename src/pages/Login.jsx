@@ -126,11 +126,18 @@ export default function Login() {
 }
 
 /* "<\/terms|Terms>" inside a translated sentence becomes a link, so the
-   sentence can be ordered naturally in each language. */
+   sentence can be ordered naturally in each language.
+
+   THE POLICY OPENS IN A NEW TAB. These links sit inside the sign-in form and
+   the pay dialog; followed in place, the page changed underneath a dialog that
+   stayed open — it looked as if the link did nothing — and the purchase in
+   progress was lost. Reading the terms should never cost the reader their place. */
 export function Linked({ text }) {
   const parts = String(text).split(/(<[^|>]+\|[^>]+>)/g);
   return parts.map((p, i) => {
     const m = /^<([^|>]+)\|([^>]+)>$/.exec(p);
-    return m ? <Link key={i} className="underline" to={m[1]}>{m[2]}</Link> : <span key={i}>{p}</span>;
+    return m
+      ? <Link key={i} className="underline" to={m[1]} target="_blank" rel="noopener">{m[2]}</Link>
+      : <span key={i}>{p}</span>;
   });
 }
