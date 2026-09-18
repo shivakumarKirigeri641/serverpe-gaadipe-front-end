@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useSession } from './lib/session';
 import Home from './pages/Home.jsx';
@@ -23,8 +24,33 @@ function Private({ children }) {
   return children;
 }
 
+/*
+ * GOOGLE ANALYTICS ON EVERY PAGE (user, 2026-09-18). The Google tag in
+ * index.html counts the first page. This site changes pages without reloading,
+ * so every later page is sent here — otherwise a whole visit looks like one
+ * page. The first render is skipped: the tag has already counted it.
+ */
+function PageViews() {
+  const { pathname, search } = useLocation();
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) { first.current = false; return; }
+    if (typeof window.gtag !== 'function') return;
+    // After the new page has set its title.
+    const t = setTimeout(() => window.gtag('event', 'page_view', {
+      page_path: pathname + search,
+      page_location: window.location.href,
+      page_title: document.title,
+    }), 0);
+    return () => clearTimeout(t);
+  }, [pathname, search]);
+  return null;
+}
+
 export default function App() {
   return (
+    <>
+    <PageViews />
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
@@ -51,5 +77,6 @@ export default function App() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   );
 }
