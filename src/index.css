@@ -88,6 +88,43 @@
 .card { transition: box-shadow .25s ease, transform .25s ease, border-color .25s ease; }
 .lift:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(11,31,28,.12); }
 
+/* A slow drift behind the hero, so the page is alive before anything is read.
+   Deliberately almost imperceptible: a background that competes with the
+   headline is a background that lost. */
+@keyframes drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(2%, -3%, 0) scale(1.06); }
+}
+.drift { animation: drift 18s ease-in-out infinite; }
+
+/* A sweep across the locked rows: something is there, and it is not for you
+   yet. Slower than the skeleton shimmer, which means "still loading". */
+@keyframes sweep { 0% { transform: translateX(-120%); } 55%, 100% { transform: translateX(220%); } }
+.sweep { position: relative; overflow: hidden; }
+.sweep::after {
+  content: ''; position: absolute; inset: 0; width: 45%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+  animation: sweep 4.5s ease-in-out infinite;
+}
+
+/* The arrow on a call to action moves when the pointer arrives — the smallest
+   possible promise that something will happen. */
+.btn-arrow > .arrow { display: inline-block; transition: transform .25s cubic-bezier(.2,.7,.3,1); }
+.btn-arrow:hover > .arrow { transform: translateX(4px); }
+
+/* Focus should feel like the field woke up, not like a border changed. */
+.input:focus { transform: translateY(-1px); }
+.input { transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
+
+/* Every route change fades its content in, so a navigation reads as a change
+   of place rather than a flicker. */
+.page-in { animation: fade-up .38s cubic-bezier(.2,.7,.3,1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .drift, .sweep::after, .page-in { animation: none !important; }
+  .btn-arrow > .arrow, .input:focus { transform: none !important; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .anim-up, .anim-in, .anim-pop, .anim-open, .anim-float, .anim-ring,
   .stagger > *, .skeleton::after {

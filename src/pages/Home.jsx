@@ -4,6 +4,7 @@ import { api, waLink, WHATSAPP_ENABLED } from '../lib/api';
 import { rupees } from '../lib/format';
 import Layout from '../components/Layout.jsx';
 import Reveal from '../components/Reveal.jsx';
+import useCountUp from '../lib/useCountUp';
 
 /**
  * The landing page.
@@ -28,6 +29,7 @@ export default function Home() {
   const navigate = useNavigate();
 
   useEffect(() => { api.pricing().then(setPricing).catch(() => {}); }, []);
+  const priceValue = useCountUp(pricing ? Math.round(pricing.price_paise / 100) : 0);
   const price = pricing ? rupees(pricing.price_paise) : '₹19';
   const days = pricing?.duration_days ?? 28;
   const validDays = pricing?.report_valid_days ?? 7;
@@ -44,18 +46,27 @@ export default function Home() {
   return (
     <Layout wide>
       {/* ---------------------------------------------------------- hero */}
-      <section className="border-b border-line bg-gradient-to-b from-brand/[0.07] via-white to-white">
-        <div className="wrap grid items-center gap-10 py-12 lg:grid-cols-[1.05fr_1fr] lg:py-20">
-          <div className="anim-up">
-            <span className="chip border-brand/20 bg-white text-brand-deep">
+      <section className="relative overflow-hidden border-b border-line bg-gradient-to-b from-brand/[0.07] via-white to-white">
+        {/* Two soft washes of brand colour, drifting. Decorative only, and
+            hidden from anything that reads the page aloud. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="drift absolute -left-24 -top-24 h-72 w-72 rounded-full bg-brand/10 blur-3xl" />
+          <div className="drift absolute -right-16 top-20 h-80 w-80 rounded-full bg-brand-accent/10 blur-3xl"
+            style={{ animationDelay: '-7s' }} />
+        </div>
+
+        <div className="wrap relative grid items-center gap-10 py-12 lg:grid-cols-[1.05fr_1fr] lg:py-20">
+          <div>
+            <span className="chip anim-up border-brand/20 bg-white text-brand-deep">
               All India · Every RTO · No app, no account
             </span>
 
-            <h1 className="mt-4 text-3xl font-bold leading-[1.15] text-ink sm:text-[2.6rem]">
+            <h1 className="anim-up mt-4 text-3xl font-bold leading-[1.15] text-ink sm:text-[2.6rem]"
+              style={{ animationDelay: '.06s' }}>
               Kharidne se pehle,<br className="hidden sm:block" /> poori kundli.
             </h1>
 
-            <p className="mt-4 text-lg leading-relaxed text-body">
+            <p className="anim-up mt-4 text-lg leading-relaxed text-body" style={{ animationDelay: '.14s' }}>
               Before you buy a used car or bike, read its whole record: is there a
               <b className="text-ink"> loan on it</b>, is it
               <b className="text-ink"> blacklisted</b>, how many
@@ -63,13 +74,16 @@ export default function Home() {
               PUC and tax still valid.
             </p>
 
-            <form onSubmit={go} className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <form onSubmit={go} className="anim-up mt-6 flex flex-col gap-3 sm:flex-row"
+              style={{ animationDelay: '.22s' }}>
               <input className="input sm:flex-1" placeholder="KA02EX1480" value={reg}
                 onChange={(e) => setReg(e.target.value)} aria-label="Vehicle number" />
-              <button className="btn-primary btn-big">Check this vehicle</button>
+              <button className="btn-primary btn-big btn-arrow">
+                Check this vehicle <span className="arrow">→</span>
+              </button>
             </form>
 
-            <p className="mt-3 text-sm text-muted">
+            <p className="anim-up mt-3 text-sm text-muted" style={{ animationDelay: '.3s' }}>
               <b className="text-body">First check is free</b> — the vehicle and its document dates.
               The full report is <b className="text-body">{price}</b>, one time, any vehicle.
             </p>
@@ -82,16 +96,18 @@ export default function Home() {
               <span className="text-2xs font-semibold uppercase tracking-wider text-muted">
                 A real check, in seconds
               </span>
-              <span className="chip border-good-500/25 bg-good-50 text-good-700">Free</span>
+              <span className="chip border-good-500/25 bg-good-50 text-good-700">
+                <span className="anim-ring h-1.5 w-1.5 rounded-full bg-good-500" />Free
+              </span>
             </div>
-            <div className="mt-3 space-y-2.5">
+            <div className="mt-3 space-y-2.5 stagger">
               <Line label="Insurance" value="06 Nov 2026" note="2 months left" />
               <Line label="PUC" value="13 Mar 2026" note="expired 6 months ago" tone="wrong" />
               <Line label="Road tax" value="30 Jun 2027" note="10 months left" />
               <Line label="Pending challans" value="3" note="₹4,500 to pay" tone="watch" />
             </div>
 
-            <div className="mt-3 rounded-lg border border-brand/25 bg-brand/5 p-3">
+            <div className="sweep mt-3 rounded-lg border border-brand/25 bg-brand/5 p-3">
               <div className="text-2xs font-semibold uppercase tracking-wider text-brand-deep">
                 In the {price} report
               </div>
@@ -186,13 +202,15 @@ export default function Home() {
           <Reveal delay={80} className="card self-start p-6">
             <div className="text-2xs font-semibold uppercase tracking-wider text-muted">Full vehicle report</div>
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-5xl font-bold text-ink">{price}</span>
+              <span className="tabular text-5xl font-bold text-ink">₹{priceValue}</span>
               <span className="text-sm text-muted">one time, per vehicle</span>
             </div>
             <p className="mt-2 text-2xs text-muted">
               Inclusive of GST and payment charges — the amount shown is the amount you pay.
             </p>
-            <a className="btn-primary btn-big mt-5 w-full" href="/app/check">Check a vehicle free</a>
+            <a className="btn-primary btn-big btn-arrow mt-5 w-full" href="/app/check">
+              Check a vehicle free <span className="arrow">→</span>
+            </a>
             <a className="btn-quiet mt-2 w-full" href="/sample-report.pdf" target="_blank" rel="noopener">
               See a sample report
             </a>
@@ -306,7 +324,9 @@ export default function Home() {
           <Reveal className="mt-8 text-center">
             <h3 className="text-xl font-bold text-ink">Check a vehicle before you commit to it.</h3>
             <p className="mt-1.5 text-body">The first check costs nothing.</p>
-            <a className="btn-primary btn-big mt-4 inline-flex" href="/app/check">Check a vehicle</a>
+            <a className="btn-primary btn-big btn-arrow mt-4 inline-flex" href="/app/check">
+              Check a vehicle <span className="arrow">→</span>
+            </a>
           </Reveal>
         </div>
       </section>

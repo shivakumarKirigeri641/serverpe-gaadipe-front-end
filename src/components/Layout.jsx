@@ -76,7 +76,8 @@ export default function Layout({ children, wide = false }) {
         )}
       </header>
 
-      <main className={`flex-1 ${wide ? '' : 'wrap py-8'}`}>{children}</main>
+      {/* Keyed on the path so React replays the animation on every navigation. */}
+      <main key={pathname} className={`page-in flex-1 ${wide ? '' : 'wrap py-8'}`}>{children}</main>
 
       <footer className="border-t border-line bg-shell/60">
         <div className="wrap grid gap-8 py-10 sm:grid-cols-2 lg:grid-cols-4">
