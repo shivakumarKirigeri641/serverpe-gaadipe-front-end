@@ -44,12 +44,15 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1.5">
           <Chip tone={bad.length ? 'wrong' : due.length || pending ? 'watch' : 'good'}>{summary}</Chip>
-          <span className="text-2xs text-muted">{isOpen ? 'Hide details ▴' : 'See details ▾'}</span>
+          <span className="flex items-center gap-1 text-2xs text-muted">
+            {isOpen ? 'Hide details' : 'See details'}
+            <span className={'transition-transform duration-300 ' + (isOpen ? 'rotate-180' : '')}>▾</span>
+          </span>
         </div>
       </button>
 
       {isOpen && (
-        <div className="border-t border-line px-4 py-4">
+        <div className="anim-open border-t border-line px-4 py-4">
           <Section title="Documents">
             <div className="divide-y divide-line/70">
               {(v.documents || []).length === 0 && (

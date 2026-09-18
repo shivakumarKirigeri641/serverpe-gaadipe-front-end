@@ -29,3 +29,77 @@
    text would still put it in the page for anyone who opens the inspector, so
    what is blurred here is always a placeholder — the value is never sent. */
 .locked-blur { filter: blur(5px); user-select: none; pointer-events: none; }
+
+/*
+ * MOVEMENT, AND WHEN NOT TO MOVE.
+ *
+ * Animation here has one job: to show where a thing came from. A card that
+ * fades up from where it was loading, an accordion that opens rather than
+ * jumping, a number that changes with a beat — each tells the reader that the
+ * page did something, so they do not have to work it out.
+ *
+ * Every one of them is switched off under prefers-reduced-motion, in one place
+ * at the bottom of this file. Motion sickness is not a preference to be
+ * overridden by a marketing page.
+ */
+@keyframes fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scale-in { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes slide-down { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 3000px; } }
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+@keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(13,148,136,.35); } 70% { box-shadow: 0 0 0 12px rgba(13,148,136,0); } 100% { box-shadow: 0 0 0 0 rgba(13,148,136,0); } }
+@keyframes float-soft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+.anim-up { animation: fade-up .5s cubic-bezier(.2,.7,.3,1) both; }
+.anim-in { animation: fade-in .45s ease both; }
+.anim-pop { animation: scale-in .35s cubic-bezier(.2,.7,.3,1) both; }
+.anim-open { animation: slide-down .32s cubic-bezier(.2,.7,.3,1) both; overflow: hidden; }
+.anim-float { animation: float-soft 5s ease-in-out infinite; }
+.anim-ring { animation: pulse-ring 2s ease-out infinite; }
+
+/* A list that arrives in order rather than all at once. Capped at eight, past
+   which the last item would be waiting noticeably long for no reason. */
+.stagger > * { animation: fade-up .5s cubic-bezier(.2,.7,.3,1) both; }
+.stagger > *:nth-child(1) { animation-delay: .04s; }
+.stagger > *:nth-child(2) { animation-delay: .08s; }
+.stagger > *:nth-child(3) { animation-delay: .12s; }
+.stagger > *:nth-child(4) { animation-delay: .16s; }
+.stagger > *:nth-child(5) { animation-delay: .2s; }
+.stagger > *:nth-child(6) { animation-delay: .24s; }
+.stagger > *:nth-child(7) { animation-delay: .28s; }
+.stagger > *:nth-child(n+8) { animation-delay: .32s; }
+
+/* Revealed as it scrolls into view — see components/Reveal.jsx. */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.7,.3,1); }
+.reveal.shown { opacity: 1; transform: none; }
+
+/* The shape of content that has not arrived, rather than a spinner in an empty
+   box: the page does not jump when the real thing lands. */
+.skeleton { position: relative; overflow: hidden; background: #eef4f3; border-radius: .5rem; }
+.skeleton::after {
+  content: ''; position: absolute; inset: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.65), transparent);
+  animation: shimmer 1.4s infinite;
+}
+
+/* Buttons and cards answer the finger before the network does. */
+.btn { will-change: transform; }
+.btn:active { transform: translateY(1px) scale(.99); }
+.card { transition: box-shadow .25s ease, transform .25s ease, border-color .25s ease; }
+.lift:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(11,31,28,.12); }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-up, .anim-in, .anim-pop, .anim-open, .anim-float, .anim-ring,
+  .stagger > *, .skeleton::after {
+    animation: none !important;
+  }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .btn:active, .lift:hover { transform: none; }
+  * { scroll-behavior: auto !important; }
+}
+
+/* Tap targets on a phone: 44px is the smallest a thumb reliably hits. */
+@media (max-width: 640px) {
+  .btn { min-height: 44px; }
+  .input { font-size: 16px; } /* iOS zooms into anything smaller */
+}

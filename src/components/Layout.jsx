@@ -1,7 +1,7 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { useSession } from '../lib/session';
-import { waLink } from '../lib/api';
+import { waLink, WHATSAPP_ENABLED } from '../lib/api';
 
 /**
  * The frame the site sits in.
@@ -61,7 +61,7 @@ export default function Layout({ children, wide = false }) {
         </div>
 
         {open && (
-          <div className="border-t border-line bg-white md:hidden">
+          <div className="anim-open border-t border-line bg-white md:hidden">
             <div className="wrap flex flex-col py-2">
               {(inApp
                 ? [['/app', 'My vehicles'], ['/app/check', 'Check a vehicle'], ['/app/reports', 'Reports'],
@@ -83,15 +83,17 @@ export default function Layout({ children, wide = false }) {
           <div>
             <div className="text-sm font-semibold text-ink">GaadiPe</div>
             <p className="mt-2 text-2xs text-muted">
-              Government vehicle records on WhatsApp and on the web. A product of
-              ServerPe App Solutions, Karnataka. GSTIN 29BSMPK7696H1ZT.
+              Government vehicle records{WHATSAPP_ENABLED ? ' on WhatsApp and on the web' : ' for any Indian vehicle'}.
+              A product of ServerPe App Solutions, Karnataka. GSTIN 29BSMPK7696H1ZT.
             </p>
           </div>
           <div>
             <div className="text-2xs font-semibold uppercase tracking-wider text-muted">Product</div>
             <ul className="mt-2 space-y-1.5 text-sm">
               <li><Link className="text-body hover:text-ink" to="/app/check">Check a vehicle</Link></li>
-              <li><a className="text-body hover:text-ink" href={waLink('Hi')}>GaadiPe on WhatsApp</a></li>
+              {WHATSAPP_ENABLED && (
+                <li><a className="text-body hover:text-ink" href={waLink('Hi')}>GaadiPe on WhatsApp</a></li>
+              )}
               <li><Link className="text-body hover:text-ink" to="/login">Sign in</Link></li>
             </ul>
           </div>
@@ -109,7 +111,9 @@ export default function Layout({ children, wide = false }) {
             <ul className="mt-2 space-y-1.5 text-sm">
               <li><Link className="text-body hover:text-ink" to="/help">Help &amp; common questions</Link></li>
               <li><a className="text-body hover:text-ink" href="mailto:support@gaadipe.in">support@gaadipe.in</a></li>
-              <li><a className="text-body hover:text-ink" href={waLink('I need help with')}>Message us on WhatsApp</a></li>
+              {WHATSAPP_ENABLED && (
+                <li><a className="text-body hover:text-ink" href={waLink('I need help with')}>Message us on WhatsApp</a></li>
+              )}
             </ul>
           </div>
         </div>

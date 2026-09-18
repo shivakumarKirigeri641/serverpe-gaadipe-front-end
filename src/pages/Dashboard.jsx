@@ -44,7 +44,7 @@ export default function Dashboard() {
       )}
 
       {rows && rows.length > 0 && (
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <div className="mt-6 grid gap-3 stagger sm:grid-cols-2">
           {rows.map((v) => <Row key={v.reg_no} v={v} />)}
         </div>
       )}
@@ -65,7 +65,7 @@ function Row({ v }) {
   const hasReport = Boolean(v.report_id);
 
   return (
-    <Link to={`/app/vehicle/${v.reg_no}`} className="card block p-4 transition hover:shadow-pop">
+    <Link to={`/app/vehicle/${v.reg_no}`} className="card lift block p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <span className={`board ${isCommercial(v.vehicle_class) ? 'board-commercial' : ''}`}>

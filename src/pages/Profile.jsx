@@ -77,7 +77,7 @@ export default function Profile() {
       {!data && !error && <Spinner />}
 
       {data && (
-        <div className="mt-6 grid gap-5 lg:grid-cols-3">
+        <div className="mt-6 grid gap-5 lg:grid-cols-3 stagger">
           <div className="card p-5 lg:col-span-2">
             <form onSubmit={save} className="space-y-4">
               <Field label="Mobile number" hint="This cannot be changed — it is how GaadiPe knows you.">

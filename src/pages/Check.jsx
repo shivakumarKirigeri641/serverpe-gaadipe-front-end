@@ -95,6 +95,7 @@ export default function Check() {
               <p className="mx-auto mt-1.5 max-w-md text-sm text-body">
                 Loan and blacklist status, every challan with its offence and place, policy numbers,
                 a PDF you keep, and 28 days of alerts. One payment, nothing renews.
+                All sales are final — which is why this check is free.
               </p>
               <button className="btn-primary btn-big mt-4" onClick={buy} disabled={buying}>
                 {buying ? 'Opening payment…' : `Pay ${rupees(result.price_paise)} securely`}

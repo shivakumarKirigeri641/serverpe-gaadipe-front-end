@@ -44,9 +44,9 @@ export function Modal({ title, onClose, children, footer }) {
   }, [onClose]);
 
   return createPortal((
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/40 px-4 py-8"
+    <div className="anim-in fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/40 px-4 py-8"
       onClick={onClose}>
-      <div className="card w-full max-w-md shadow-pop" onClick={(e) => e.stopPropagation()}>
+      <div className="card anim-pop w-full max-w-md shadow-pop" onClick={(e) => e.stopPropagation()}>
         <div className="border-b border-line px-5 py-4">
           <h2 className="text-base font-semibold text-ink">{title}</h2>
         </div>

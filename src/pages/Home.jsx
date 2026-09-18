@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api, waLink } from '../lib/api';
+import { api, waLink, WHATSAPP_ENABLED } from '../lib/api';
 import { rupees } from '../lib/format';
 import Layout from '../components/Layout.jsx';
+import Reveal from '../components/Reveal.jsx';
 
 /**
  * The landing page.
@@ -39,7 +40,7 @@ export default function Home() {
       {/* ---------------------------------------------------------- hero */}
       <section className="border-b border-line bg-gradient-to-b from-brand/5 to-white">
         <div className="wrap grid items-center gap-10 py-14 lg:grid-cols-2 lg:py-20">
-          <div>
+          <div className="anim-up">
             <span className="chip border-brand/20 bg-white text-brand-deep">Government records · VAHAN · e-Challan · FASTag</span>
             <h1 className="mt-4 text-3xl font-bold leading-tight text-ink sm:text-4xl">
               Before you buy that vehicle, see what the RTO knows about it.
@@ -60,7 +61,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="card p-5">
+          <div className="card anim-up p-5" style={{ animationDelay: '.12s' }}>
             <div className="text-2xs font-semibold uppercase tracking-wider text-muted">What a check looks like</div>
             <div className="mt-3 space-y-2.5">
               <SampleRow label="Insurance" value="06 Nov 2026" tone="good" note="2 months left" />
@@ -87,36 +88,36 @@ export default function Home() {
 
       {/* ------------------------------------------------------ how it works */}
       <section id="how" className="wrap py-14">
-        <h2 className="text-2xl font-bold text-ink">How it works</h2>
-        <div className="mt-6 grid gap-5 sm:grid-cols-3">
+        <Reveal><h2 className="text-2xl font-bold text-ink">How it works</h2></Reveal>
+        <div className="mt-6 grid gap-5 stagger sm:grid-cols-3">
           <Step n="1" title="Send the number"
-            body="Type a registration number here, or send it to GaadiPe on WhatsApp. Both work the same way and show the same thing." />
+            body="Type any Indian registration number. Sign in with your mobile number the first time — no password, just a code." />
           <Step n="2" title="See the basics free"
             body="The vehicle, its RTO, and when insurance, PUC, road tax, fitness and permit run out — plus how many challans are pending." />
           <Step n={`3`} title={`Get the full report for ${price}`}
-            body={`Loan, blacklist, NOC, every challan with its offence and place, and the policy numbers. A PDF you keep, and ${days} days of alerts.`} />
+            body={`Loan, blacklist, NOC, every challan with its offence and place, and the policy numbers. A PDF you keep, and ${days} days of alerts if anything changes.`} />
         </div>
       </section>
 
       {/* ------------------------------------------------------------ price */}
       <section id="price" className="border-y border-line bg-shell/60">
         <div className="wrap grid gap-8 py-14 lg:grid-cols-2">
-          <div>
+          <Reveal>
             <h2 className="text-2xl font-bold text-ink">One price. Nothing renews.</h2>
             <p className="mt-3 text-body">
               GaadiPe does not sell a subscription, does not store your card and
               never charges you automatically. You pay once, for one vehicle.
             </p>
             <ul className="mt-5 space-y-2.5">
-              <Tick>Full report as a PDF on WhatsApp, and here</Tick>
+              <Tick>Full report as a PDF, yours to download and keep</Tick>
               <Tick>Loan / hypothecation, blacklist and NOC status</Tick>
               <Tick>Every pending challan with offence, place and amount</Tick>
               <Tick>Insurer, policy and PUC references</Tick>
               <Tick>{days} days of alerts: new challans, and documents about to expire</Tick>
-              <Tick>GST invoice, sent to you</Tick>
+              <Tick>GST invoice, on your account the moment you pay</Tick>
             </ul>
-          </div>
-          <div className="card self-start p-6">
+          </Reveal>
+          <Reveal delay={80} className="card self-start p-6">
             <div className="text-2xs font-semibold uppercase tracking-wider text-muted">Full vehicle report</div>
             <div className="mt-1 flex items-baseline gap-2">
               <span className="text-4xl font-bold text-ink">{price}</span>
@@ -129,19 +130,21 @@ export default function Home() {
             <a className="btn-quiet mt-2 w-full" href="/sample-report.pdf" target="_blank" rel="noopener">
               See a sample report
             </a>
-            <a className="btn-quiet mt-2 w-full" href={waLink('Hi')}>Or use WhatsApp</a>
+            {WHATSAPP_ENABLED && (
+              <a className="btn-quiet mt-2 w-full" href={waLink('Hi')}>Or use WhatsApp</a>
+            )}
             <p className="mt-3 text-2xs text-muted">
               All sales are final — the report is delivered the moment you pay, which is why the check
               before it is free.
             </p>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* ------------------------------------------------------------ trust */}
       <section className="wrap py-14">
-        <h2 className="text-2xl font-bold text-ink">What GaadiPe will never show</h2>
-        <div className="mt-5 grid gap-5 sm:grid-cols-3">
+        <Reveal><h2 className="text-2xl font-bold text-ink">What GaadiPe will never show</h2></Reveal>
+        <div className="mt-5 grid gap-5 stagger sm:grid-cols-3">
           <Card title="No owner name">
             The registered owner's name is never displayed, to anyone, on any screen or report.
           </Card>
@@ -159,11 +162,23 @@ export default function Home() {
         </p>
       </section>
 
+      {/* A phone should never have to scroll back up to act. Desk screens
+          already have the button in view, so this is small-screen only. */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 px-4 py-3 backdrop-blur sm:hidden">
+        <form onSubmit={go} className="flex gap-2">
+          <input className="input !py-2.5 flex-1" placeholder="Vehicle number" value={reg}
+            onChange={(e) => setReg(e.target.value)} aria-label="Vehicle number" />
+          <button className="btn-primary !px-5">Check</button>
+        </form>
+      </div>
+      {/* Clear of the bar above. */}
+      <div className="h-20 sm:hidden" />
+
       {/* -------------------------------------------------------------- faq */}
       <section id="faq" className="border-t border-line bg-shell/60">
         <div className="wrap py-14">
-          <h2 className="text-2xl font-bold text-ink">Questions people ask</h2>
-          <div className="mt-6 space-y-3">
+          <Reveal><h2 className="text-2xl font-bold text-ink">Questions people ask</h2></Reveal>
+          <div className="mt-6 space-y-3 stagger">
             <Faq q="Is this legal?">
               Yes. The data is published by Government sources through ULIP for exactly this kind of use, and
               personal details — owner name, chassis, engine — are masked at source and never shown here.
@@ -230,9 +245,10 @@ const Tick = ({ children }) => (
 
 const Faq = ({ q, children }) => (
   <details className="card group px-5 py-4">
-    <summary className="cursor-pointer list-none text-sm font-semibold text-ink marker:hidden">
+    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-ink marker:hidden">
       {q}
+      <span className="text-muted transition-transform duration-300 group-open:rotate-180">▾</span>
     </summary>
-    <p className="mt-2 text-sm text-body">{children}</p>
+    <p className="anim-open mt-2 text-sm text-body">{children}</p>
   </details>
 );

@@ -12,6 +12,16 @@ const PUBLIC = `${BASE}/serverpe/platform/gaadipe/v1/public/users`;
 const KEY = 'gaadipe.site.token';
 
 export const WHATSAPP = import.meta.env.VITE_WHATSAPP || '916363271302';
+
+/**
+ * Is WhatsApp offered as a way in?
+ *
+ * Off while the browser journey is being watched on its own: every WhatsApp
+ * link is a fork in the funnel, and a customer who leaves for WhatsApp is a
+ * customer whose behaviour on the site cannot be read. The bot keeps running —
+ * this hides the doors to it, it does not close them.
+ */
+export const WHATSAPP_ENABLED = import.meta.env.VITE_WHATSAPP_ENABLED === '1';
 export const waLink = (text) =>
   `https://wa.me/${WHATSAPP}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
 

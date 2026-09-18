@@ -40,7 +40,7 @@ export default function Documents({ kind }) {
       <h1 className="text-2xl font-bold text-ink">{isReports ? 'My reports' : 'My invoices'}</h1>
       <p className="mt-1 text-sm text-muted">
         {isReports
-          ? 'Each report can be downloaded again while it is valid.'
+          ? 'Each report can be viewed or saved again while it is valid.'
           : 'Your GST invoices. These are kept for you and never expire.'}
       </p>
 
@@ -51,16 +51,16 @@ export default function Documents({ kind }) {
         <div className="mt-6">
           <Empty action={<Link className="btn-primary" to="/app/check">Check a vehicle</Link>}>
             {isReports
-              ? 'No reports yet. A report is issued when you buy one for a vehicle.'
+              ? 'No reports yet. Check a vehicle, and the full report is issued when you buy it.'
               : 'No invoices yet. An invoice is issued the moment a payment succeeds.'}
           </Empty>
         </div>
       )}
 
       {rows && rows.length > 0 && (
-        <div className="mt-6 space-y-3">
+        <div className="mt-6 space-y-3 stagger">
           {rows.map((r) => (
-            <div key={r.id} className="card flex flex-wrap items-center justify-between gap-3 p-4">
+            <div key={r.id} className="card lift flex flex-wrap items-center justify-between gap-3 p-4">
               <div className="min-w-0">
                 <div className="font-mono text-sm font-semibold text-ink">
                   {isReports ? r.report_number : r.invoice_number}

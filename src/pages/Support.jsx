@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { waLink, WHATSAPP } from '../lib/api';
+import { waLink, WHATSAPP, WHATSAPP_ENABLED } from '../lib/api';
 import { mobile as fmtMobile } from '../lib/format';
 import Layout from '../components/Layout.jsx';
 
@@ -18,14 +18,14 @@ import Layout from '../components/Layout.jsx';
 const ANSWERS = [
   {
     q: 'I paid but nothing arrived',
-    a: 'Reply *report* on WhatsApp and it will be sent again. If the Government records service was busy '
-      + 'when you paid, the report is issued the moment you ask. Your payment is never lost — every payment '
-      + 'is checked against Razorpay automatically within a minute.',
+    a: 'Open *My reports* and it will be there. If the Government records service was busy when you paid, '
+      + 'the report is issued the moment you open that page. Your payment is never lost — every payment is '
+      + 'checked against Razorpay automatically within a minute.',
   },
   {
     q: 'I need my invoice',
-    a: 'Every invoice is on your Invoices page, and reply *invoice* on WhatsApp sends the PDF again. '
-      + 'Invoices never expire, even if you close your account.',
+    a: 'Every invoice is on your *Invoices* page, to view or save as a PDF. Invoices never expire, even if '
+      + 'you close your account.',
   },
   {
     q: 'My report will not download',
@@ -40,8 +40,8 @@ const ANSWERS = [
   },
   {
     q: 'Stop messaging me',
-    a: 'Reply STOP on WhatsApp, or deactivate your account from your profile. Alerts stop immediately. '
-      + 'GaadiPe never messages anyone who has not messaged first or bought a report.',
+    a: 'Deactivate your account from your *Profile* page. Alerts stop immediately. GaadiPe only messages '
+      + 'people who bought a report, and only about the vehicle they bought it for.',
   },
   {
     q: 'Can I have a refund?',
@@ -52,8 +52,8 @@ const ANSWERS = [
   },
   {
     q: 'Remove my vehicle from GaadiPe',
-    a: 'If you own a vehicle and do not want it checked here, write to us from the number registered against '
-      + 'it and we will block that registration for everybody.',
+    a: 'If you own a vehicle and do not want it checked here, write to support@gaadipe.in from the number '
+      + 'registered against it and we will block that registration for everybody.',
   },
 ];
 
@@ -68,16 +68,16 @@ export default function Support() {
           Most questions are answered here. If yours is not, we usually reply the same day.
         </p>
 
-        <div className="mt-6 space-y-2">
+        <div className="mt-6 space-y-2 stagger">
           {ANSWERS.map((item, i) => (
             <div key={item.q} className="card overflow-hidden">
               <button className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition hover:bg-shell/60"
                 onClick={() => setOpen(open === i ? -1 : i)}>
                 <span className="text-sm font-semibold text-ink">{item.q}</span>
-                <span className="text-muted">{open === i ? '▴' : '▾'}</span>
+                <span className={'text-muted transition-transform duration-300 ' + (open === i ? 'rotate-180' : '')}>▾</span>
               </button>
               {open === i && (
-                <p className="border-t border-line px-5 py-4 text-sm leading-relaxed text-body">
+                <p className="anim-open border-t border-line px-5 py-4 text-sm leading-relaxed text-body">
                   {item.a.split('*').map((part, j) => (j % 2 ? <b key={j}>{part}</b> : part))}
                 </p>
               )}
@@ -92,11 +92,15 @@ export default function Support() {
             or report number helps us find it in seconds.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <a className="btn-primary" href={waLink('Hi, I need help with ')}>Message us on WhatsApp</a>
-            <a className="btn-quiet" href="mailto:support@gaadipe.in">support@gaadipe.in</a>
+            <a className="btn-primary" href="mailto:support@gaadipe.in">Email support@gaadipe.in</a>
+            {WHATSAPP_ENABLED && (
+              <a className="btn-quiet" href={waLink('Hi, I need help with ')}>Message us on WhatsApp</a>
+            )}
           </div>
           <p className="mt-3 text-2xs text-muted">
-            WhatsApp: +{WHATSAPP.slice(0, 2)} {fmtMobile(WHATSAPP)} · we reply between 10am and 7pm IST.
+            {WHATSAPP_ENABLED
+              ? 'WhatsApp: +' + WHATSAPP.slice(0, 2) + ' ' + fmtMobile(WHATSAPP) + ' · we reply between 10am and 7pm IST.'
+              : 'We reply between 10am and 7pm IST, usually the same day.'}
           </p>
         </div>
 
