@@ -5,6 +5,7 @@ import { rupees } from '../lib/format';
 import Layout from '../components/Layout.jsx';
 import Vehicle from '../components/Vehicle.jsx';
 import { Banner, Spinner } from '../components/ui.jsx';
+import BuyDialog from '../components/BuyDialog.jsx';
 
 /**
  * Check a vehicle, and buy its report.
@@ -23,7 +24,7 @@ export default function Check() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [buying, setBuying] = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
   const run = useCallback(async (plate, { existing = false } = {}) => {
     const value = String(plate || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -43,20 +44,8 @@ export default function Check() {
     if (initial) run(initial, { existing: Boolean(regNo) });
   }, [regNo, params, run]);
 
-  const buy = async () => {
-    setBuying(true);
-    try {
-      const out = await api.buy(result.vehicle.reg_no);
-      if (out.pay_url) {
-        // Razorpay's own page, opened here rather than in a new tab: a payment
-        // that opens in a tab a browser then blocks is a payment that never
-        // happens.
-        window.location.href = out.pay_url;
-        return;
-      }
-      if (out.already) await run(result.vehicle.reg_no, { existing: true });
-    } catch (e) { setError(e.message); } finally { setBuying(false); }
-  };
+  // Paying always goes through the declaration first — see BuyDialog.
+  const buy = () => setConfirming(true);
 
   return (
     <Layout>
@@ -85,7 +74,7 @@ export default function Check() {
           )}
 
           <Vehicle v={result.vehicle} defaultOpen
-            onBuy={result.can_buy ? buy : null} buying={buying} />
+            onBuy={result.can_buy ? buy : null} buying={false} />
 
           {result.can_buy && (
             <div className="card p-5 text-center">
@@ -97,13 +86,19 @@ export default function Check() {
                 a PDF you keep, and 28 days of alerts. One payment, nothing renews.
                 All sales are final — which is why this check is free.
               </p>
-              <button className="btn-primary btn-big mt-4" onClick={buy} disabled={buying}>
-                {buying ? 'Opening payment…' : `Pay ${rupees(result.price_paise)} securely`}
+              <button className="btn-primary btn-big mt-4" onClick={buy}>
+                Pay now {rupees(result.price_paise)}
               </button>
               <p className="mt-2 text-2xs text-muted">UPI, card or netbanking · GST invoice included</p>
             </div>
           )}
         </div>
+      )}
+
+      {confirming && result?.vehicle && (
+        <BuyDialog regNo={result.vehicle.reg_no} pricePaise={result.price_paise}
+          onClose={() => setConfirming(false)}
+          onAlreadyBought={() => run(result.vehicle.reg_no, { existing: true })} />
       )}
     </Layout>
   );

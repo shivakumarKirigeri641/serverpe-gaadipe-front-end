@@ -111,7 +111,8 @@ export const api = {
   vehicle: (regNo) => call(`/vehicles/${encodeURIComponent(regNo)}`),
   check: (regNo) => call('/check', { method: 'POST', body: { reg_no: regNo } })
     .catch((e) => { if (e.body && (e.status === 404 || e.status === 429 || e.status === 403)) return e.body; throw e; }),
-  buy: (regNo) => call('/buy', { method: 'POST', body: { reg_no: regNo } }),
+  buy: (regNo, declared) => call('/buy', { method: 'POST', body: { reg_no: regNo, declared: declared === true } }),
+  declaration: () => call('/declaration', { auth: false }),
 
   /* Documents */
   reports: () => call('/reports'),

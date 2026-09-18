@@ -104,7 +104,7 @@ export default function Home() {
               <Line label="Manufacturer" value="Hero MotoCorp" />
               <Line label="Model & variant" value="Splendor Plus" />
               <Line label="Fuel · class" value="Petrol · Motorcycle" />
-              <Line label="What we found" value="2 expired" note="1 challan pending" tone="wrong" />
+              <Line label="Status" value="PUC, road tax" note="expired" tone="wrong" />
             </div>
 
             <div className="sweep mt-3 rounded-lg border border-brand/25 bg-brand/5 p-3">

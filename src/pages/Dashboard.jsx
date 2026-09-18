@@ -1,9 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
-import { date, ago, plate, titleCase, human, isCommercial } from '../lib/format';
+import { date, ago, plate, titleCase, human, isCommercial, rupees } from '../lib/format';
 import Layout from '../components/Layout.jsx';
 import { Spinner, Empty, Chip, Banner } from '../components/ui.jsx';
+import BuyDialog from '../components/BuyDialog.jsx';
 
 /**
  * My vehicles.
@@ -16,6 +17,9 @@ import { Spinner, Empty, Chip, Banner } from '../components/ui.jsx';
 export default function Dashboard() {
   const [rows, setRows] = useState(null);
   const [error, setError] = useState(null);
+  const [price, setPrice] = useState(null);
+
+  useEffect(() => { api.pricing().then((p) => setPrice(p.price_paise)).catch(() => {}); }, []);
 
   const load = useCallback(() => {
     api.vehicles().then((d) => setRows(d.rows)).catch(setError);
@@ -45,14 +49,27 @@ export default function Dashboard() {
 
       {rows && rows.length > 0 && (
         <div className="mt-6 grid gap-3 stagger sm:grid-cols-2">
-          {rows.map((v) => <Row key={v.reg_no} v={v} />)}
+          {rows.map((v) => <Row key={v.reg_no} v={v} price={price} onError={setError} />)}
         </div>
       )}
     </Layout>
   );
 }
 
-function Row({ v }) {
+/**
+ * A vehicle, with the way to buy its report on the card itself.
+ *
+ * The card opens the vehicle; the button buys it. They are separate targets on
+ * purpose — somebody who has already decided should not have to open a page to
+ * find the button, and somebody browsing should not buy by tapping the card.
+ */
+function Row({ v, price, onError }) {
+  const navigate = useNavigate();
+  const [confirming, setConfirming] = useState(false);
+
+  // The card links to the vehicle; the button must not follow that link.
+  const buy = (e) => { e.preventDefault(); e.stopPropagation(); setConfirming(true); };
+
   const docs = [
     ['Insurance', v.insurance_upto], ['PUC', v.pucc_upto], ['Fitness', v.fitness_upto],
     ['Road tax', v.tax_upto], ['Permit', v.permit_upto],
@@ -81,7 +98,14 @@ function Row({ v }) {
         </div>
       </div>
 
-      {worst && (
+      {/* Unpaid: the server sends which documents lapsed, never when. */}
+      {!hasReport && v.expired?.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1.5 border-t border-line pt-2.5">
+          {v.expired.map((label) => <Chip key={label} tone="wrong">{label} — expired</Chip>)}
+        </div>
+      )}
+
+      {hasReport && worst && (
         <div className="mt-3 flex items-center justify-between border-t border-line pt-2.5">
           <span className="text-sm text-body">{worst.label}</span>
           <span className={`text-sm ${worst.days < 0 ? 'text-wrong-700' : worst.days <= 30 ? 'text-watch-700' : 'text-muted'}`}>
@@ -90,9 +114,24 @@ function Row({ v }) {
         </div>
       )}
 
-      <div className="mt-2 text-2xs text-muted">
-        Checked {v.check_count} time{v.check_count === 1 ? '' : 's'} · last {ago(v.last_checked_at)}
+      <div className="mt-2 flex items-center justify-between gap-3">
+        <span className="text-2xs text-muted">
+          Checked {v.check_count} time{v.check_count === 1 ? '' : 's'} · last {ago(v.last_checked_at)}
+        </span>
+        {!hasReport && price && (
+          <button className="btn-primary !px-3 !py-1.5 text-2xs" onClick={buy}>
+            Pay now {rupees(price)}
+          </button>
+        )}
       </div>
+
+      {confirming && (
+        <span onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+          <BuyDialog regNo={v.reg_no} pricePaise={price}
+            onClose={() => setConfirming(false)}
+            onAlreadyBought={() => navigate(`/app/vehicle/${v.reg_no}`)} />
+        </span>
+      )}
     </Link>
   );
 }

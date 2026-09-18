@@ -20,14 +20,20 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
 
   /* Paid checks know the detail; free ones know only how much there is. */
   const found = v.found || {};
-  const bad = v.paid ? (v.documents || []).filter(d => d.state === 'expired').length
-    : (found.documents_expired || 0);
-  const due = v.paid ? (v.documents || []).filter(d => d.state === 'due').length
-    : (found.documents_due || 0);
+  const expiredList = v.paid
+    ? (v.documents || []).filter(d => d.state === 'expired').map(d => d.label)
+    : (found.expired || []);
+  const dueList = v.paid
+    ? (v.documents || []).filter(d => d.state === 'due').map(d => d.label)
+    : (found.due_soon || []);
+  const bad = expiredList.length;
+  const due = dueList.length;
   const pending = (v.paid ? v.challans?.pending_count : found.challans_pending) || 0;
 
-  const summary = bad ? `${bad} document${bad === 1 ? '' : 's'} expired`
-    : due ? `${due} expiring soon`
+  /* Name what is wrong. "Insurance expired" is worth reading; "1 document
+     expired" makes the reader open the card to find out which. */
+  const summary = bad ? `${expiredList.slice(0, 2).join(', ')} expired${bad > 2 ? ` +${bad - 2}` : ''}`
+    : due ? `${dueList.slice(0, 2).join(', ')} expiring soon`
     : pending ? `${pending} pending challan${pending === 1 ? '' : 's'}`
     : 'Nothing flagged';
 
@@ -71,14 +77,14 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
                 </p>
               </Section>
 
-              <Section title="What we found">
+              <Section title="Status">
                 <div className="flex flex-wrap gap-2">
-                  {bad > 0 && (
-                    <Chip tone="wrong">{bad} document{bad === 1 ? '' : 's'} expired</Chip>
-                  )}
-                  {due > 0 && (
-                    <Chip tone="watch">{due} expiring within 60 days</Chip>
-                  )}
+                  {expiredList.map((label) => (
+                    <Chip key={label} tone="wrong">{label} — expired</Chip>
+                  ))}
+                  {dueList.map((label) => (
+                    <Chip key={label} tone="watch">{label} — expiring soon</Chip>
+                  ))}
                   {pending > 0 && (
                     <Chip tone="watch">{pending} pending challan{pending === 1 ? '' : 's'}</Chip>
                   )}
@@ -87,7 +93,7 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
                   )}
                 </div>
                 <p className="mt-2 text-2xs text-muted">
-                  Which documents, which dates and which challans are in the full report.
+                  The dates, the amounts and the rest of the record are in the full report.
                 </p>
               </Section>
             </>
