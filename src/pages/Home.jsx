@@ -21,7 +21,7 @@ import useCountUp from '../lib/useCountUp';
  * charged is the first thing produced in a dispute.
  */
 export default function Home() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [pricing, setPricing] = useState(null);
   const [reg, setReg] = useState('');
   const navigate = useNavigate();
@@ -162,7 +162,7 @@ export default function Home() {
             <a className="btn-primary btn-big btn-arrow mt-5 w-full" href="/app/check">
               {t('home.price.cta')} <span className="arrow">→</span>
             </a>
-            <a className="btn-quiet mt-2 w-full" href="/sample-report.pdf" target="_blank" rel="noopener">
+            <a className="btn-quiet mt-2 w-full" href={lang === 'hi' ? '/sample-report-hi.pdf' : '/sample-report.pdf'} target="_blank" rel="noopener">
               {t('home.price.sample')}
             </a>
             {WHATSAPP_ENABLED && (
