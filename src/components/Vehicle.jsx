@@ -123,24 +123,15 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
                   </p>
                 ) : <p className="text-sm text-good-700">{t('veh.noChallans')}</p>}
 
-                {v.challans?.pending?.length > 0 && (
-                  <div className="mt-3 overflow-x-auto">
-                    <table className="w-full min-w-[520px] text-sm">
-                      <tbody className="divide-y divide-line/70">
-                        {v.challans.pending.slice(0, 30).map((c, i) => (
-                          <tr key={c.challan_no || i}>
-                            <td className="py-2 align-top text-2xs text-muted">{date(c.date)}</td>
-                            <td className="py-2 align-top">
-                              <div>{c.offence || '—'}</div>
-                              <div className="text-2xs text-muted">{c.place}</div>
-                              <div className="font-mono text-2xs text-muted">{c.challan_no}</div>
-                            </td>
-                            <td className="py-2 text-right align-top tabular">{rupees(c.amount_paise)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                {v.challans?.pending?.length > 0 && <ChallanList list={v.challans.pending} />}
+
+                {v.challans?.disposed?.length > 0 && (
+                  <details className="mt-3">
+                    <summary className="cursor-pointer text-2xs font-semibold text-muted">
+                      {t('veh.disposedN', { n: v.challans.disposed_count || v.challans.disposed.length })}
+                    </summary>
+                    <ChallanList list={v.challans.disposed} />
+                  </details>
                 )}
               </Section>
 
@@ -200,6 +191,57 @@ function Locked({ onBuy, buying }) {
       </div>
       {onBuy && (
         <button className="btn-primary mt-4 w-full" onClick={onBuy} disabled={buying}>{t('veh.getReport')}</button>
+      )}
+    </div>
+  );
+}
+
+/*
+ * Challans, ten at a time (user, 2026-09-18). A bus can carry hundreds; one
+ * long table buries the page under it, and a phone scrolls for a minute.
+ * Newest first, by the record's own YYYY-MM-DD date.
+ */
+const PER_PAGE = 10;
+
+function ChallanList({ list }) {
+  const { t } = useLang();
+  const [page, setPage] = useState(1);
+  const sorted = [...list].sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+  const last = Math.max(1, Math.ceil(sorted.length / PER_PAGE));
+  const rows = sorted.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+  return (
+    <div className="mt-3">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[520px] text-sm">
+          <tbody className="divide-y divide-line/70">
+            {rows.map((c, i) => (
+              <tr key={c.challan_no || i} className="anim-up">
+                <td className="py-2 pr-2 align-top text-2xs text-muted">{date(c.date)}</td>
+                <td className="py-2 align-top">
+                  <div>{c.offence || '—'}</div>
+                  <div className="text-2xs text-muted">{c.place}</div>
+                  <div className="font-mono text-2xs text-muted">{c.challan_no}</div>
+                </td>
+                <td className="py-2 text-right align-top tabular">{rupees(c.amount_paise)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {last > 1 && (
+        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-2">
+          <span className="text-2xs tabular text-muted">
+            {t('veh.page.of', { from: (page - 1) * PER_PAGE + 1, to: Math.min(page * PER_PAGE, sorted.length), total: sorted.length })} · {t('veh.newestFirst')}
+          </span>
+          <div className="flex items-center gap-1">
+            <button type="button" className="btn-quiet !px-3 !py-1 text-2xs" disabled={page <= 1}
+              onClick={(e) => { e.stopPropagation(); setPage(page - 1); }}>‹ {t('veh.page.prev')}</button>
+            <span className="px-1 text-2xs tabular text-muted">{page} / {last}</span>
+            <button type="button" className="btn-quiet !px-3 !py-1 text-2xs" disabled={page >= last}
+              onClick={(e) => { e.stopPropagation(); setPage(page + 1); }}>{t('veh.page.next')} ›</button>
+          </div>
+        </div>
       )}
     </div>
   );
