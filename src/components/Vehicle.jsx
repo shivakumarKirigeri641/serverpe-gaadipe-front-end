@@ -18,14 +18,18 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
   const isOpen = openProp === undefined ? open : openProp;
   const id = v.identity || {};
 
-  const bad = (v.documents || []).filter(d => d.state === 'expired');
-  const due = (v.documents || []).filter(d => d.state === 'due');
-  const pending = v.challans?.pending_count || 0;
+  /* Paid checks know the detail; free ones know only how much there is. */
+  const found = v.found || {};
+  const bad = v.paid ? (v.documents || []).filter(d => d.state === 'expired').length
+    : (found.documents_expired || 0);
+  const due = v.paid ? (v.documents || []).filter(d => d.state === 'due').length
+    : (found.documents_due || 0);
+  const pending = (v.paid ? v.challans?.pending_count : found.challans_pending) || 0;
 
-  const summary = bad.length ? `${bad.length} document${bad.length === 1 ? '' : 's'} expired`
-    : due.length ? `${due.length} expiring soon`
+  const summary = bad ? `${bad} document${bad === 1 ? '' : 's'} expired`
+    : due ? `${due} expiring soon`
     : pending ? `${pending} pending challan${pending === 1 ? '' : 's'}`
-    : 'Everything looks in order';
+    : 'Nothing flagged';
 
   return (
     <div className="card overflow-hidden">
@@ -43,7 +47,7 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
           </div>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1.5">
-          <Chip tone={bad.length ? 'wrong' : due.length || pending ? 'watch' : 'good'}>{summary}</Chip>
+          <Chip tone={bad ? 'wrong' : due || pending ? 'watch' : 'good'}>{summary}</Chip>
           <span className="flex items-center gap-1 text-2xs text-muted">
             {isOpen ? 'Hide details' : 'See details'}
             <span className={'transition-transform duration-300 ' + (isOpen ? 'rotate-180' : '')}>▾</span>
@@ -53,7 +57,43 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
 
       {isOpen && (
         <div className="anim-open border-t border-line px-4 py-4">
-          <Section title="Documents">
+          {!v.paid && (
+            <>
+              <Section title="The vehicle">
+                <Grid rows={[
+                  ['Manufacturer', titleCase(id.maker)],
+                  ['Model & variant', titleCase(id.model)],
+                  ['Fuel', titleCase(id.fuel)],
+                  ['Class', titleCase(id.vehicle_class)],
+                ]} />
+                <p className="mt-2 text-2xs text-muted">
+                  Enough to be sure this is the vehicle you are looking at.
+                </p>
+              </Section>
+
+              <Section title="What we found">
+                <div className="flex flex-wrap gap-2">
+                  {bad > 0 && (
+                    <Chip tone="wrong">{bad} document{bad === 1 ? '' : 's'} expired</Chip>
+                  )}
+                  {due > 0 && (
+                    <Chip tone="watch">{due} expiring within 60 days</Chip>
+                  )}
+                  {pending > 0 && (
+                    <Chip tone="watch">{pending} pending challan{pending === 1 ? '' : 's'}</Chip>
+                  )}
+                  {!bad && !due && !pending && (
+                    <Chip tone="good">Nothing flagged on this vehicle</Chip>
+                  )}
+                </div>
+                <p className="mt-2 text-2xs text-muted">
+                  Which documents, which dates and which challans are in the full report.
+                </p>
+              </Section>
+            </>
+          )}
+
+          {v.paid && <Section title="Documents">
             <div className="divide-y divide-line/70">
               {(v.documents || []).length === 0 && (
                 <p className="py-2 text-sm text-muted">No dates in the Government record.</p>
@@ -72,9 +112,9 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
                 </div>
               ))}
             </div>
-          </Section>
+          </Section>}
 
-          <Section title="The vehicle">
+          {v.paid && <Section title="The vehicle">
             <Grid rows={[
               ['Registered', date(id.reg_date)],
               ['RTO', titleCase(String(id.registered_at || '').replace(/\s+/g, ' ').trim())],
@@ -85,9 +125,9 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
               ['Seats', id.seats ? `${id.seats}` : null],
               ['Norms', id.norms],
             ]} />
-          </Section>
+          </Section>}
 
-          <Section title="Challans">
+          {v.paid && <Section title="Challans">
             {pending > 0 ? (
               <p className="text-sm">
                 <b className="text-wrong-700">{pending} pending</b>
@@ -133,9 +173,9 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
                 )}
               </div>
             )}
-          </Section>
+          </Section>}
 
-          {v.fastag && (
+          {v.paid && v.fastag && (
             <Section title="FASTag">
               <p className="text-sm">
                 {v.fastag.active ? <span className="text-good-700">Active</span> : <span className="text-watch-700">Not active</span>}
@@ -181,33 +221,24 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
 }
 
 /**
- * What paying adds, named honestly.
+ * What paying adds — named, and answered nowhere.
  *
- * The blurred lines are placeholders, never the real values — nothing paid for
- * is sent to a browser that has not paid. What IS said is whether a record
- * exists, because "a loan is recorded on this vehicle" is the fact worth ₹19
- * and hiding its existence would be hiding the reason to buy.
+ * NO VALUES, AND NO HINTS AT VALUES. An earlier version said "a financer is
+ * recorded", which is the single fact the report is bought for: read it free
+ * and there is nothing left to pay for. The list names what is inside and
+ * stops there, and the server sends nothing more than these labels.
  */
 function Locked({ v, onBuy, buying }) {
-  const l = v.locked || {};
-  const lines = [
-    { on: l.financer, label: 'Loan / hypothecation', found: 'A financer is recorded' },
-    { on: l.blacklist, label: 'Blacklist', found: 'A blacklist entry exists' },
-    { on: l.noc, label: 'NOC', found: 'An NOC is recorded' },
-    { on: l.challan_details, label: 'Challan numbers, offences and places', found: 'Available' },
-    { on: l.document_numbers, label: 'Insurer, policy and PUC numbers', found: 'Available' },
-  ];
+  const lines = Array.isArray(v.locked) ? v.locked : [];
 
   return (
     <div className="mt-4 rounded-lg border border-brand/25 bg-brand/5 p-4">
       <div className="text-sm font-semibold text-brand-deep">In the full report</div>
       <div className="mt-2 divide-y divide-brand/10">
-        {lines.map((line) => (
-          <div key={line.label} className="flex items-center justify-between gap-3 py-1.5">
-            <span className="text-sm text-body">{line.label}</span>
-            {line.on
-              ? <span className="text-2xs font-semibold text-brand-deep">🔒 {line.found}</span>
-              : <span className="locked-blur select-none text-sm">Not recorded</span>}
+        {lines.map((label) => (
+          <div key={label} className="flex items-center justify-between gap-3 py-1.5">
+            <span className="text-sm text-body">{label}</span>
+            <span className="text-2xs text-brand-deep">🔒</span>
           </div>
         ))}
       </div>

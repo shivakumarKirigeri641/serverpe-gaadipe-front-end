@@ -101,10 +101,10 @@ export default function Home() {
               </span>
             </div>
             <div className="mt-3 space-y-2.5 stagger">
-              <Line label="Insurance" value="06 Nov 2026" note="2 months left" />
-              <Line label="PUC" value="13 Mar 2026" note="expired 6 months ago" tone="wrong" />
-              <Line label="Road tax" value="30 Jun 2027" note="10 months left" />
-              <Line label="Pending challans" value="3" note="₹4,500 to pay" tone="watch" />
+              <Line label="Manufacturer" value="Hero MotoCorp" />
+              <Line label="Model & variant" value="Splendor Plus" />
+              <Line label="Fuel · class" value="Petrol · Motorcycle" />
+              <Line label="What we found" value="2 expired" note="1 challan pending" tone="wrong" />
             </div>
 
             <div className="sweep mt-3 rounded-lg border border-brand/25 bg-brand/5 p-3">
@@ -112,9 +112,10 @@ export default function Home() {
                 In the {price} report
               </div>
               <div className="mt-2 space-y-1.5">
-                <Locked label="Loan / hypothecation" found="A financer is recorded" />
-                <Locked label="Blacklist & NOC" found="Checked" />
-                <Locked label="Every challan, with place" found="3 pending" />
+                <Locked label="Loan / hypothecation" />
+                <Locked label="Blacklist & NOC status" />
+                <Locked label="Every challan, with offence & place" />
+                <Locked label="Insurance, PUC, tax & permit dates" />
               </div>
             </div>
             <p className="mt-3 text-2xs text-muted">An example, not a real vehicle.</p>
@@ -349,10 +350,10 @@ const Line = ({ label, value, note, tone }) => (
   </div>
 );
 
-const Locked = ({ label, found }) => (
+const Locked = ({ label }) => (
   <div className="flex items-center justify-between gap-3">
     <span className="text-sm text-body">{label}</span>
-    <span className="text-2xs font-semibold text-brand-deep">🔒 {found}</span>
+    <span className="text-2xs text-brand-deep">🔒</span>
   </div>
 );
 
