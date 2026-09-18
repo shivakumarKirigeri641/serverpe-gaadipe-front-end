@@ -40,9 +40,9 @@ export default function Layout({ children, wide = false }) {
               </>
             ) : (
               <>
-                <a href="#how" className="text-sm text-body hover:text-ink">How it works</a>
-                <a href="#price" className="text-sm text-body hover:text-ink">What it costs</a>
-                <a href="#faq" className="text-sm text-body hover:text-ink">Questions</a>
+                <a href="/#report" className="text-sm text-body hover:text-ink">What you get</a>
+                <a href="/#price" className="text-sm text-body hover:text-ink">What it costs</a>
+                <a href="/#faq" className="text-sm text-body hover:text-ink">Questions</a>
               </>
             )}
           </nav>

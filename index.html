@@ -1,25 +1,107 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0f766e" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="canonical" href="https://gaadipe.in/" />
 
-    <title>GaadiPe — check any vehicle before you buy it</title>
-    <meta name="description" content="Check any Indian vehicle's RC, insurance, PUC, road tax, challans and FASTag from Government records. Loan, blacklist and challan details in a full report for ₹19." />
+    <title>GaadiPe — Har gaadi ki kundli | Check any vehicle's RC, challans & FASTag</title>
+    <meta name="description" content="Kharidne se pehle, poori kundli. Check any Indian vehicle free: insurance, PUC, road tax and challan count. Full report ₹19 — loan / hypothecation, blacklist, every challan with place, and 28 days of alerts. All India, no app." />
+    <meta name="keywords" content="check vehicle details by number, RC details online, e-challan check, FASTag status check, vehicle insurance status, PUCC check, RTO vehicle information, used car verification, second hand bike check, hypothecation status, vehicle blacklist check, VAHAN details, verify vehicle before buying" />
+    <meta name="author" content="ServerPe App Solutions" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
 
-    <!-- What a shared link looks like. A used-vehicle check is passed between
-         a buyer and a seller on WhatsApp, so the card matters. -->
+    <!-- A used-vehicle check is forwarded between a buyer and a seller, so the
+         shared card is part of the product. -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="GaadiPe — har gaadi ki kundli" />
-    <meta property="og:description" content="Loan, blacklist and challan status on any Indian vehicle, from Government records. Full report ₹19." />
-    <meta property="og:url" content="https://gaadipe.in" />
+    <meta property="og:site_name" content="GaadiPe" />
+    <meta property="og:title" content="GaadiPe — kharidne se pehle, poori kundli" />
+    <meta property="og:description" content="Loan, blacklist and challan status on any Indian vehicle, from Government records. Free basic check; full report ₹19, all inclusive." />
+    <meta property="og:url" content="https://gaadipe.in/" />
+    <meta property="og:image" content="https://gaadipe.in/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="GaadiPe — kharidne se pehle, poori kundli. Free basic check, full report ₹19." />
+    <meta property="og:locale" content="en_IN" />
+
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="canonical" href="https://gaadipe.in" />
+    <meta name="twitter:title" content="GaadiPe — check any vehicle before you buy it" />
+    <meta name="twitter:description" content="Is there a loan on it? Is it blacklisted? How many challans are pending? Free basic check, full report ₹19." />
+    <meta name="twitter:image" content="https://gaadipe.in/og-image.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Structured data: what GaadiPe is, what it sells, and the answers to the
+         questions people search for. The prices here are the ones charged. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://gaadipe.in/#org",
+          "name": "GaadiPe",
+          "legalName": "ServerPe App Solutions",
+          "url": "https://gaadipe.in/",
+          "email": "support@gaadipe.in",
+          "areaServed": "IN",
+          "taxID": "29BSMPK7696H1ZT"
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://gaadipe.in/#website",
+          "url": "https://gaadipe.in/",
+          "name": "GaadiPe",
+          "inLanguage": "en-IN",
+          "publisher": { "@id": "https://gaadipe.in/#org" }
+        },
+        {
+          "@type": "Service",
+          "name": "GaadiPe — vehicle record check and report",
+          "serviceType": "Vehicle RC, e-Challan and FASTag verification",
+          "provider": { "@id": "https://gaadipe.in/#org" },
+          "areaServed": { "@type": "Country", "name": "India" },
+          "description": "Check any Indian vehicle from Government sources: RC and document validity free, and a full report covering loan or hypothecation, blacklist and NOC status, every challan with its offence and place, FASTag, and 28 days of alerts.",
+          "offers": [
+            { "@type": "Offer", "name": "Basic vehicle check", "price": "0", "priceCurrency": "INR", "availability": "https://schema.org/InStock" },
+            { "@type": "Offer", "name": "Full vehicle report", "price": "19", "priceCurrency": "INR", "availability": "https://schema.org/InStock" }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            { "@type": "Question", "name": "How do I check a vehicle's details?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Go to gaadipe.in, sign in with your mobile number and a one-time code, and enter the vehicle number. The basic check is free and shows the vehicle and when its insurance, PUC, road tax, fitness and permit run out. The full report is a flat ₹19, inclusive of GST." } },
+            { "@type": "Question", "name": "Can I find out who owns a vehicle?",
+              "acceptedAnswer": { "@type": "Answer", "text": "No. GaadiPe never shows an owner's name, address or phone number, and never will. Chassis and engine numbers are never shown either." } },
+            { "@type": "Question", "name": "Where does the data come from?",
+              "acceptedAnswer": { "@type": "Answer", "text": "From Government of India sources through the Unified Logistics Interface Platform: VAHAN for the registration certificate, e-Challan for challans and NETC for FASTag. GaadiPe reproduces those records and is not a Government body." } },
+            { "@type": "Question", "name": "What does the full report include?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Loan or hypothecation status, blacklist and NOC, every pending and disposed challan with its offence, place and amount, insurer and policy references, PUC, tax, fitness and permit validity, FASTag status, and 28 days of alerts if a new challan appears or a document is about to expire. A GST invoice is issued with every payment." } },
+            { "@type": "Question", "name": "Is there a refund?",
+              "acceptedAnswer": { "@type": "Answer", "text": "No. The report is produced and delivered the moment payment succeeds, so a completed purchase is final. The basic check is free precisely so you can see which vehicle you are buying a report for before paying." } }
+          ]
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <noscript>
+      <div style="padding:40px;font-family:system-ui;max-width:640px;margin:0 auto">
+        <h1>GaadiPe — har gaadi ki kundli</h1>
+        <p>Check any Indian vehicle's RC, insurance, PUC, road tax, challans and FASTag from
+           Government records. The basic check is free; the full report is ₹19.</p>
+        <p>Visit <strong>gaadipe.in</strong> in a browser with JavaScript enabled to begin.</p>
+        <p>GaadiPe is a product of ServerPe App Solutions. support@gaadipe.in</p>
+      </div>
+    </noscript>
   </body>
 </html>
