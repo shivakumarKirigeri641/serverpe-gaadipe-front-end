@@ -20,6 +20,7 @@ export default function Profile() {
   const [data, setData] = useState(null);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [language, setLanguage] = useState('en');
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
@@ -32,6 +33,7 @@ export default function Profile() {
       setData(d);
       setName(d.user.name || '');
       setEmail(d.user.email || '');
+      setLanguage(d.user.language || 'en');
     }).catch(setError);
   }, []);
 
@@ -39,7 +41,7 @@ export default function Profile() {
     e.preventDefault();
     setBusy(true); setError(null); setSaved(false);
     try {
-      const out = await api.saveMe({ name, email });
+      const out = await api.saveMe({ name, email, language });
       setMe(out.user);
       setSaved(true);
     } catch (err) { setError(err); } finally { setBusy(false); }
@@ -90,6 +92,12 @@ export default function Profile() {
               <Field label="Email" hint="Optional. Used only to send documents you ask for.">
                 <input className="input" type="email" value={email} placeholder="you@example.com"
                   onChange={(e) => setEmail(e.target.value)} maxLength={160} />
+              </Field>
+              <Field label="Alert language" hint="The language of the WhatsApp alerts about your vehicles.">
+                <select className="input" value={language} onChange={(e) => setLanguage(e.target.value)}>
+                  <option value="en">English</option>
+                  <option value="hi">हिंदी (Hindi)</option>
+                </select>
               </Field>
               {saved && <Banner tone="good">Saved.</Banner>}
               <button className="btn-primary" disabled={busy}>{busy ? 'Saving…' : 'Save changes'}</button>
