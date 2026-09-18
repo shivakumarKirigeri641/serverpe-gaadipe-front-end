@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The pages worth indexing: what the product is, what it costs, and the
+     published legal documents. The account area is deliberately absent. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://gaadipe.in/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://gaadipe.in/help</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://gaadipe.in/terms</loc><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://gaadipe.in/privacy</loc><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://gaadipe.in/refund</loc><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://gaadipe.in/cancellation</loc><priority>0.2</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://gaadipe.in/delivery</loc><priority>0.2</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://gaadipe.in/data-deletion</loc><priority>0.2</priority><changefreq>yearly</changefreq></url>
+</urlset>

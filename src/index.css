@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body { @apply bg-white text-body font-sans antialiased; }
+  h1, h2, h3 { @apply text-ink; }
+  .tabular { font-variant-numeric: tabular-nums; }
+}
+
+@layer components {
+  .wrap { @apply mx-auto w-full max-w-content px-4 sm:px-6; }
+  .card { @apply rounded-xl border border-line bg-white shadow-card; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition disabled:opacity-50; }
+  .btn-primary { @apply btn bg-brand text-white hover:bg-brand-light; }
+  .btn-quiet { @apply btn border border-line bg-white text-ink hover:bg-shell; }
+  .btn-big { @apply btn px-5 py-3 text-base; }
+  .input { @apply w-full rounded-lg border border-line bg-white px-3.5 py-3 text-base text-ink outline-none transition placeholder:text-muted/60 focus:border-brand-accent focus:ring-4 focus:ring-brand-accent/10; }
+  .label { @apply mb-1.5 block text-2xs font-semibold uppercase tracking-wider text-muted; }
+  .chip { @apply inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-2xs font-semibold; }
+  .plate { @apply font-mono text-sm font-semibold tracking-wider text-ink; }
+  /* A plate as it is painted: white on black is a private vehicle, black on
+     yellow a commercial one. People recognise the board before the letters. */
+  .board { @apply inline-flex items-center rounded-md border-2 border-ink bg-white px-2.5 py-1 font-mono text-base font-bold tracking-wider text-ink; }
+  .board-commercial { @apply border-ink bg-[#f5c518] text-ink; }
+}
+
+/* Locked detail: visible enough to want, unreadable by design. Blurring real
+   text would still put it in the page for anyone who opens the inspector, so
+   what is blurred here is always a placeholder — the value is never sent. */
+.locked-blur { filter: blur(5px); user-select: none; pointer-events: none; }

@@ -1,0 +1,17 @@
+# The public pages are meant to be found. The account area is not: it holds one
+# customer's vehicles and documents and has nothing to offer a crawler.
+User-agent: *
+Allow: /$
+Allow: /terms
+Allow: /privacy
+Allow: /refund
+Allow: /cancellation
+Allow: /delivery
+Allow: /liability
+Allow: /consent
+Allow: /data-deletion
+Allow: /help
+Disallow: /app
+Disallow: /login
+
+Sitemap: https://gaadipe.in/sitemap.xml
