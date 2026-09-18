@@ -63,6 +63,11 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
 
       {isOpen && (
         <div className="anim-open border-t border-line px-4 py-4">
+          {v.limited && (
+            <p className="mb-3 rounded-lg border border-watch-500/25 bg-watch-50 px-3 py-2 text-2xs text-watch-700">
+              {t('veh.limited', { n: v.limit_per_day })}
+            </p>
+          )}
           {!v.paid && (
             <>
               <Section title={t('veh.section.vehicle')}>
