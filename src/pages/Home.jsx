@@ -86,7 +86,7 @@ export default function Home() {
 
             <form onSubmit={go} className="anim-up mt-6 flex flex-col gap-3 sm:flex-row"
               style={{ animationDelay: '.22s' }}>
-              <input className="input sm:flex-1" placeholder="KA02EX1480" value={reg}
+              <input className="input sm:flex-1" placeholder="KA01AB1234" value={reg}
                 onChange={(e) => setReg(e.target.value)} aria-label={t('home.sticky.placeholder')} />
               <button className="btn-primary btn-big btn-arrow">
                 {t('home.cta')} <span className="arrow">→</span>

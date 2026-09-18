@@ -59,7 +59,7 @@ export default function Check() {
 
       <form className="mt-5 flex flex-col gap-3 sm:flex-row"
         onSubmit={(e) => { e.preventDefault(); run(reg); }}>
-        <input className="input sm:max-w-xs" placeholder="KA02EX1480" value={reg}
+        <input className="input sm:max-w-xs" placeholder="KA01AB1234" value={reg}
           onChange={(e) => setReg(e.target.value)} aria-label={t('home.sticky.placeholder')} />
         <button className="btn-primary" disabled={busy}>{busy ? t('check.checking') : t('check.cta')}</button>
       </form>
