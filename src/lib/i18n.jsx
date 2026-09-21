@@ -54,7 +54,10 @@ export const STRINGS = {
     'common.example': 'An example, not a real vehicle.',
 
     'nav.whatYouGet': 'What you get',
-    'nav.price': 'What it costs',
+    'nav.price': 'Pricing',
+    'home.price.free.h': 'Or get it free.',
+    'home.price.free.b': 'Refer QuizPe to parents you know — when one buys QuizPe premium through your link, your full report is free.',
+    'home.price.free.cta': 'How referral works →',
     'nav.faq': 'Questions',
     'nav.reports': 'Reports',
     'nav.invoices': 'Invoices',
@@ -451,6 +454,9 @@ export const STRINGS = {
 
     'nav.whatYouGet': 'क्या मिलेगा',
     'nav.price': 'कीमत',
+    'home.price.free.h': 'या मुफ़्त पाएँ।',
+    'home.price.free.b': 'जान-पहचान के अभिभावकों को QuizPe रेफ़र करें — जब कोई आपके लिंक से QuizPe प्रीमियम लेगा, आपकी पूरी रिपोर्ट मुफ़्त।',
+    'home.price.free.cta': 'रेफ़रल कैसे काम करता है →',
     'nav.faq': 'सवाल-जवाब',
     'nav.reports': 'रिपोर्ट',
     'nav.invoices': 'इनवॉइस',

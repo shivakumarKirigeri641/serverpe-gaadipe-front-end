@@ -51,6 +51,8 @@ export default function Layout({ children, wide = false }) {
               <>
                 <a href="/#report" className="text-sm text-body hover:text-ink">{t('nav.whatYouGet')}</a>
                 <a href="/#price" className="text-sm text-body hover:text-ink">{t('nav.price')}</a>
+                {me ? <Link to="/app/refer" className="text-sm font-semibold text-brand-deep hover:text-ink">🎁 {t('nav.refer')}</Link>
+                  : <a href="/#quizpe" className="text-sm font-semibold text-brand-deep hover:text-ink">🎁 {t('nav.refer')}</a>}
                 <a href="/#faq" className="text-sm text-body hover:text-ink">{t('nav.faq')}</a>
               </>
             )}
@@ -79,9 +81,12 @@ export default function Layout({ children, wide = false }) {
           <div className="anim-open border-t border-line bg-white md:hidden">
             <div className="wrap flex flex-col py-2">
               {(inApp ? appLinks
-                : [['/login', t('common.signIn')], ['/terms', t('nav.terms')], ['/privacy', t('nav.privacy')], ['/refund', t('nav.refunds')]]
+                : [['/#price', t('nav.price')], [me ? '/app/refer' : '/#quizpe', `🎁 ${t('nav.refer')}`],
+                   ['/login', t('common.signIn')], ['/terms', t('nav.terms')], ['/privacy', t('nav.privacy')], ['/refund', t('nav.refunds')]]
               ).map(([to, label]) => (
-                <Link key={to} to={to} className="py-2.5 text-sm text-body" onClick={() => setOpen(false)}>{label}</Link>
+                to.startsWith('/#')
+                  ? <a key={to} href={to} className="py-2.5 text-sm text-body" onClick={() => setOpen(false)}>{label}</a>
+                  : <Link key={to} to={to} className="py-2.5 text-sm text-body" onClick={() => setOpen(false)}>{label}</Link>
               ))}
               {me && <button className="py-2.5 text-left text-sm text-body" onClick={signOut}>{t('common.signOut')}</button>}
             </div>
