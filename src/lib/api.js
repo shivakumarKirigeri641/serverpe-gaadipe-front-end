@@ -123,6 +123,7 @@ export const api = {
   me: () => call('/me'),
   saveMe: (body) => call('/me', { method: 'PUT', body }),
   deactivate: (reason) => call('/me/deactivate', { method: 'POST', body: { reason } }),
+  resendEmail: () => call('/me/email/resend', { method: 'POST', body: {} }),
 
   /* Vehicles */
   vehicles: () => call('/vehicles'),

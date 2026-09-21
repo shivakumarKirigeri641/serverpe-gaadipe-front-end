@@ -33,7 +33,10 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
      CGST + SGST or IGST. Filled from the last purchase; asked before Pay. */
   const [name, setName] = useState(me?.name || '');
   const [stateCode, setStateCode] = useState(me?.state_code || '');
-  const ready = agreed && text && name.trim().length >= 2 && stateCode;
+  /* THE EMAIL, REQUIRED (user, 2026-09-21): the report's daily updates go there. */
+  const [email, setEmail] = useState(me?.email || '');
+  const emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email.trim());
+  const ready = agreed && text && name.trim().length >= 2 && stateCode && emailOk;
 
   /* Opening the dialog, and leaving it, are part of the trail the Live screen shows. */
   useEffect(() => {
@@ -48,7 +51,7 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
   const pay = async () => {
     setBusy(true); setError(null);
     try {
-      const out = await api.buy(regNo, true, lang, { name: name.trim(), state_code: stateCode });
+      const out = await api.buy(regNo, true, lang, { name: name.trim(), state_code: stateCode, email: email.trim() });
       if (out.pay_path || out.pay_url) {
         // Same tab: a payment page opened in a new tab that the browser blocks
         // is a payment that never happens. Opened through the site's own API
@@ -92,6 +95,13 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
         </label>
       </div>
       <p className="-mt-1 text-2xs text-muted">{t('buy.invoiceNote')}</p>
+
+      <label className="block">
+        <span className="label">{t('buy.email')}</span>
+        <input className="input" type="email" inputMode="email" autoComplete="email" value={email} maxLength={160}
+          onChange={(e) => setEmail(e.target.value)} placeholder={t('buy.emailPh')} />
+        <span className="mt-1 block text-2xs text-muted">{t('buy.emailNote')}</span>
+      </label>
 
       <DataSourceNote compact />
 

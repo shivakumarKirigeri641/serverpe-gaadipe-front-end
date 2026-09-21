@@ -46,6 +46,7 @@ export default function Profile() {
     try {
       const out = await api.saveMe({ name, email, language: lang });
       setMe(out.user);
+      setData((d) => (d ? { ...d, user: out.user } : d));
       setSaved(true);
     } catch (err) { setError(err); } finally { setBusy(false); }
   };
@@ -92,6 +93,7 @@ export default function Profile() {
               <Field label={t('prof.email')} hint={t('prof.emailHint')}>
                 <input className="input" type="email" value={email} placeholder="you@example.com"
                   onChange={(e) => setEmail(e.target.value)} maxLength={160} />
+                <EmailStatus user={data?.user} typed={email} />
               </Field>
               <Field label={t('prof.language')} hint={t('prof.languageHint')}>
                 <select className="input" value={lang} onChange={(e) => setLang(e.target.value)}>
@@ -159,3 +161,23 @@ const Line = ({ k, v }) => (
     <dd className="font-medium text-ink">{v}</dd>
   </div>
 );
+
+/* Whether the address on file is confirmed, with a way to send the link again. */
+function EmailStatus({ user, typed }) {
+  const { t } = useLang();
+  const [state, setState] = useState('');
+  if (!user?.email || typed.trim().toLowerCase() !== String(user.email).toLowerCase()) return null;
+  if (user.email_unsubscribed) return <span className="mt-1 block text-2xs text-muted">{t('email.unsubscribed')}</span>;
+  if (user.email_verified) return <span className="mt-1 block text-2xs text-good-700">✓ {t('email.confirmed')}</span>;
+  const resend = async () => {
+    try { await api.resendEmail(); setState('sent'); } catch (e) { setState(e.message); }
+  };
+  return (
+    <span className="mt-1 block text-2xs text-watch-700">
+      {t('email.pending')}{' '}
+      {state === 'sent' ? <b>{t('email.resent')}</b>
+        : <button type="button" className="font-semibold underline" onClick={resend}>{t('email.resend')}</button>}
+      {state && state !== 'sent' && <span className="block text-wrong-700">{state}</span>}
+    </span>
+  );
+}
