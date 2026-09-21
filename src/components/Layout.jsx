@@ -104,6 +104,7 @@ export default function Layout({ children, wide = false }) {
               <li><Link className="text-body hover:text-ink" to="/app/check">{t('common.checkVehicle')}</Link></li>
               {WHATSAPP_ENABLED && <li><a className="text-body hover:text-ink" href={waLink('Hi')}>GaadiPe on WhatsApp</a></li>}
               <li><Link className="text-body hover:text-ink" to="/login">{t('common.signIn')}</Link></li>
+              <li><a className="text-body hover:text-ink" href="https://quizpe.in/?utm_source=gaadipe&utm_medium=footer" target="_blank" rel="noopener noreferrer">{t('footer.quizpe')}</a></li>
             </ul>
           </div>
           <div>

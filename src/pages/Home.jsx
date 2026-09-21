@@ -5,6 +5,7 @@ import { rupees } from '../lib/format';
 import { useLang, Rich } from '../lib/i18n.jsx';
 import Layout from '../components/Layout.jsx';
 import DataSourceNote from '../components/DataSourceNote.jsx';
+import SisterQuizpe from '../components/SisterQuizpe.jsx';
 import Reveal from '../components/Reveal.jsx';
 import useCountUp from '../lib/useCountUp';
 
@@ -232,6 +233,9 @@ export default function Home() {
         </form>
       </div>
       <div className="h-20 sm:hidden" />
+
+      {/* ------------------------------------------ QuizPe, same makers */}
+      <SisterQuizpe />
 
       {/* -------------------------------------------------------------- faq */}
       <section id="faq" className="border-t border-line bg-shell/60">

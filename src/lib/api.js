@@ -128,7 +128,9 @@ export const api = {
 
   /* QuizPe referrals and free reports */
   referrals: () => call('/referrals'),
-  createReferral: (body) => call('/referrals', { method: 'POST', body }),
+  joinReferral: ({ name, email }) => call('/referrals/join', { method: 'POST', body: { consent: true, name, email } }),
+  // Public: the page a referral link lands on (a signed-in owner is told it is their own).
+  resolveReferral: (code) => call(`/q/${encodeURIComponent(code)}`),
   useCredit: (regNo, language = 'en') => call('/credits/use', { method: 'POST', body: { reg_no: regNo, declared: true, language } }),
 
   /* Vehicles */
