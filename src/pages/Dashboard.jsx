@@ -7,7 +7,6 @@ import Layout from '../components/Layout.jsx';
 import DataSourceNote from '../components/DataSourceNote.jsx';
 import { Spinner, Empty, Chip, Banner } from '../components/ui.jsx';
 import BuyDialog from '../components/BuyDialog.jsx';
-import EmailCard from '../components/EmailCard.jsx';
 
 /**
  * My vehicles.
@@ -39,7 +38,6 @@ export default function Dashboard() {
         <Link className="btn-primary" to="/app/check">{t('common.checkVehicle')}</Link>
       </div>
       <DataSourceNote compact className="mt-4" />
-      <EmailCard className="mt-4" />
 
       {error && <Banner tone="wrong" className="mt-5">{error.message}</Banner>}
       {!rows && !error && <Spinner label={t('common.loading')} />}

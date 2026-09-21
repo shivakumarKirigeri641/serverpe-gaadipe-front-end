@@ -26,6 +26,8 @@ export function SessionProvider({ children }) {
 
   const signIn = useCallback(async (token, user) => {
     setToken(token);
+    // A fresh sign-in asks for the email again if it is still missing (EmailCard.jsx).
+    try { sessionStorage.removeItem('gaadipe.emailPrompt.dismissed'); } catch { /* private mode */ }
     setMe(user);
   }, []);
 

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useSession } from './lib/session';
 import { api } from './lib/api';
+import EmailPrompt from './components/EmailCard.jsx';
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Policy from './pages/Policy.jsx';
@@ -60,6 +61,7 @@ export default function App() {
   return (
     <>
     <PageViews />
+    <EmailPrompt />
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
