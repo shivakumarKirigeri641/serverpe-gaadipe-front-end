@@ -31,7 +31,7 @@ export default function Layout({ children, wide = false }) {
   const appLinks = [
     ['/app', t('common.myVehicles')], ['/app/check', t('common.checkVehicle')],
     ['/app/reports', t('nav.reports')], ['/app/invoices', t('nav.invoices')],
-    ['/app/profile', t('nav.profile')],
+    ['/app/refer', t('nav.refer')], ['/app/profile', t('nav.profile')],
   ];
 
   return (
@@ -113,6 +113,7 @@ export default function Layout({ children, wide = false }) {
               <li><Link className="text-body hover:text-ink" to="/privacy">{t('footer.privacy')}</Link></li>
               <li><Link className="text-body hover:text-ink" to="/refund">{t('footer.refund')}</Link></li>
               <li><Link className="text-body hover:text-ink" to="/data-deletion">{t('footer.deletion')}</Link></li>
+              <li><Link className="text-body hover:text-ink" to="/policy/email">{t('footer.email')}</Link></li>
             </ul>
           </div>
           <div>

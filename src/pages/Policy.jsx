@@ -22,6 +22,7 @@ const TITLES = {
   delivery: 'Delivery policy',
   'data-deletion': 'Data deletion',
   partner: 'Partner policy',
+  email: 'Email policy',
 };
 
 const TITLES_HI = {
@@ -34,6 +35,7 @@ const TITLES_HI = {
   delivery: 'डिलीवरी नीति',
   'data-deletion': 'डेटा हटाना',
   partner: 'पार्टनर नीति',
+  email: 'ईमेल नीति',
 };
 
 export default function Policy() {

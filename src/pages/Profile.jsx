@@ -118,6 +118,8 @@ export default function Profile() {
               </dl>
             </div>
 
+            <QuizpeConsent user={data.user} onChange={(u) => setData((d) => ({ ...d, user: u }))} />
+
             <div className="card p-5">
               <div className="text-2xs font-semibold uppercase tracking-wider text-muted">{t('prof.session')}</div>
               <button className="btn-quiet mt-3 w-full" onClick={() => { signOut(); navigate('/'); }}>{t('common.signOut')}</button>
@@ -179,5 +181,35 @@ function EmailStatus({ user, typed }) {
         : <button type="button" className="font-semibold underline" onClick={resend}>{t('email.resend')}</button>}
       {state && state !== 'sent' && <span className="block text-wrong-700">{state}</span>}
     </span>
+  );
+}
+
+/*
+ * MESSAGES FROM QUIZPE — a separate, optional consent (user, 2026-09-21; DPDP).
+ * Never ticked for the customer, not needed for anything on GaadiPe, and
+ * withdrawn by unticking. The server records the exact words and the time.
+ */
+function QuizpeConsent({ user, onChange }) {
+  const { t } = useLang();
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState(null);
+  // Ticks at once; put back if the server did not save it.
+  const [checked, setChecked] = useState(Boolean(user?.quizpe_consent));
+  const toggle = async (e) => {
+    const agree = e.target.checked;
+    setChecked(agree); setBusy(true); setMsg(null);
+    try { const out = await api.setQuizpeConsent(agree); onChange(out.user); setMsg(t('prof.quizpe.saved')); }
+    catch (err) { setChecked(!agree); setMsg(err.message); } finally { setBusy(false); }
+  };
+  return (
+    <div className="card p-5">
+      <div className="text-2xs font-semibold uppercase tracking-wider text-muted">{t('prof.quizpe.h')}</div>
+      <label className="mt-3 flex cursor-pointer gap-3">
+        <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-brand"
+          checked={checked} onChange={toggle} disabled={busy} />
+        <span className="text-sm leading-relaxed text-body">{t('prof.quizpe.label')}</span>
+      </label>
+      {msg && <p className="mt-2 text-2xs text-muted">{msg}</p>}
+    </div>
   );
 }

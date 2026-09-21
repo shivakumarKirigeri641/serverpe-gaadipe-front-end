@@ -7,6 +7,7 @@ import Layout from '../components/Layout.jsx';
 import Vehicle from '../components/Vehicle.jsx';
 import { Banner, Spinner } from '../components/ui.jsx';
 import BuyDialog from '../components/BuyDialog.jsx';
+import UnlockCard from '../components/Unlock.jsx';
 
 /**
  * Check a vehicle, and buy its report.
@@ -75,16 +76,15 @@ export default function Check() {
             </Banner>
           )}
 
-          <Vehicle v={result.vehicle} defaultOpen onBuy={result.can_buy ? buy : null} buying={false} />
+          <Vehicle v={result.vehicle} defaultOpen buying={false}
+            onBuy={result.can_buy || result.can_refer || result.free_credits
+              ? () => document.getElementById('unlock')?.scrollIntoView({ behavior: 'smooth', block: 'center' }) : null} />
 
-          {result.can_buy && (
-            <div className="card p-5 text-center">
-              <div className="text-base font-semibold text-ink">{t('check.buy.h', { price })}</div>
-              <p className="mx-auto mt-1.5 max-w-md text-sm text-body">{t('check.buy.b')}</p>
-              <button className="btn-primary btn-big mt-4" onClick={buy}>{t('check.buy.cta', { price })}</button>
-              <p className="mt-2 text-2xs text-muted">{t('check.buy.methods')}</p>
-            </div>
-          )}
+          {/* Pay, use a free report, or refer QuizPe — whichever apply (Unlock.jsx). */}
+          <div id="unlock">
+            <UnlockCard result={result} onBuy={buy}
+              onUnlocked={() => run(result.vehicle.reg_no, { existing: true })} />
+          </div>
         </div>
       )}
 

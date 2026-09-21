@@ -124,6 +124,12 @@ export const api = {
   saveMe: (body) => call('/me', { method: 'PUT', body }),
   deactivate: (reason) => call('/me/deactivate', { method: 'POST', body: { reason } }),
   resendEmail: () => call('/me/email/resend', { method: 'POST', body: {} }),
+  setQuizpeConsent: (agree) => call('/me/consents', { method: 'PUT', body: { quizpe: agree === true } }),
+
+  /* QuizPe referrals and free reports */
+  referrals: () => call('/referrals'),
+  createReferral: (body) => call('/referrals', { method: 'POST', body }),
+  useCredit: (regNo, language = 'en') => call('/credits/use', { method: 'POST', body: { reg_no: regNo, declared: true, language } }),
 
   /* Vehicles */
   vehicles: () => call('/vehicles'),

@@ -21,7 +21,11 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
   const [price, setPrice] = useState(null);
 
-  useEffect(() => { api.pricing().then((p) => setPrice(p.price_paise)).catch(() => {}); }, []);
+  const [freeReports, setFreeReports] = useState(0);
+  // In referral-only mode there is no price to pay: the card offers "Unlock free".
+  const [referOnly, setReferOnly] = useState(false);
+  useEffect(() => { api.pricing().then((p) => { setPrice(p.price_paise); setReferOnly(p.unlock === 'refer'); }).catch(() => {}); }, []);
+  useEffect(() => { api.referrals().then((d) => setFreeReports(d.available || 0)).catch(() => {}); }, []);
 
   const load = useCallback(() => {
     api.vehicles().then((d) => setRows(d.rows)).catch(setError);
@@ -38,6 +42,7 @@ export default function Dashboard() {
         <Link className="btn-primary" to="/app/check">{t('common.checkVehicle')}</Link>
       </div>
       <DataSourceNote compact className="mt-4" />
+      {freeReports > 0 && <Banner tone="good" className="mt-4">🎁 {t('dash.freeBanner', { n: freeReports })}</Banner>}
 
       {error && <Banner tone="wrong" className="mt-5">{error.message}</Banner>}
       {!rows && !error && <Spinner label={t('common.loading')} />}
@@ -52,7 +57,7 @@ export default function Dashboard() {
 
       {rows && rows.length > 0 && (
         <div className="mt-6 grid gap-3 stagger sm:grid-cols-2">
-          {rows.map((v) => <Row key={v.reg_no} v={v} price={price} />)}
+          {rows.map((v) => <Row key={v.reg_no} v={v} price={price} referOnly={referOnly} />)}
         </div>
       )}
     </Layout>
@@ -66,7 +71,7 @@ export default function Dashboard() {
  * purpose — somebody who has already decided should not have to open a page to
  * find the button, and somebody browsing should not buy by tapping the card.
  */
-function Row({ v, price }) {
+function Row({ v, price, referOnly }) {
   const { t, lang, doc } = useLang();
   const navigate = useNavigate();
   const [confirming, setConfirming] = useState(false);
@@ -116,7 +121,10 @@ function Row({ v, price }) {
 
       <div className="mt-2 flex items-center justify-between gap-3">
         <span className="text-2xs text-muted">{t('dash.checked', { n: v.check_count, ago: ago(v.last_checked_at) })}</span>
-        {!hasReport && price && (
+        {!hasReport && referOnly && (
+          <span className="btn-primary !px-3 !py-1.5 text-2xs">{t('dash.unlockFree')}</span>
+        )}
+        {!hasReport && price && !referOnly && (
           <button className="btn-primary !px-3 !py-1.5 text-2xs" onClick={buy}>
             {t('dash.payNow', { price: rupees(price) })}
           </button>

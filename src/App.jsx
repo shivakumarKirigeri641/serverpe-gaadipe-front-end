@@ -11,6 +11,7 @@ import Check from './pages/Check.jsx';
 import Documents from './pages/Documents.jsx';
 import Profile from './pages/Profile.jsx';
 import Support from './pages/Support.jsx';
+import Refer from './pages/Refer.jsx';
 
 /**
  * The public pages render for anybody. The account area waits until the panel
@@ -85,6 +86,7 @@ export default function App() {
       <Route path="/app/reports" element={<Private><Documents kind="reports" /></Private>} />
       <Route path="/app/invoices" element={<Private><Documents kind="invoices" /></Private>} />
       <Route path="/app/profile" element={<Private><Profile /></Private>} />
+      <Route path="/app/refer" element={<Private><Refer /></Private>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
