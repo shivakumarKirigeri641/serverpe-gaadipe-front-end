@@ -151,6 +151,10 @@ export const api = {
   invoicePdf: (id, download) => pdf(`/invoices/${id}/file`, download),
 
   /* Where the customer is, for the Live screen. Signed in only; never fails a page. */
+  /* Clicks, in a batch (components/ClickTracker.jsx). Signed in only; never fails a page. */
+  trackBatch: (events) => (getToken() && events.length
+    ? call('/activity', { method: 'POST', body: { events } }).catch(() => null)
+    : Promise.resolve(null)),
   track: (event) => (getToken()
     ? call('/activity', { method: 'POST', body: event }).catch(() => null)
     : Promise.resolve(null)),
