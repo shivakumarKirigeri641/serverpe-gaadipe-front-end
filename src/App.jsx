@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useSession } from './lib/session';
+import { api } from './lib/api';
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Policy from './pages/Policy.jsx';
@@ -33,6 +34,14 @@ function Private({ children }) {
 function PageViews() {
   const { pathname, search } = useLocation();
   const first = useRef(true);
+  const { me } = useSession();
+  /* Also recorded for the Live screen (user, 2026-09-21): which page a
+     signed-in customer is on. Re-sent when they sign in on the same page. */
+  useEffect(() => {
+    if (!me) return undefined;
+    const t = setTimeout(() => api.track({ kind: 'page', page: pathname + search, title: document.title }), 0);
+    return () => clearTimeout(t);
+  }, [pathname, search, me ? me.mobile || true : null]);
   useEffect(() => {
     if (first.current) { first.current = false; return; }
     if (typeof window.gtag !== 'function') return;

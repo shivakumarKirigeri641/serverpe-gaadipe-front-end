@@ -140,4 +140,9 @@ export const api = {
   invoices: () => call('/invoices'),
   reportPdf: (id, download) => pdf(`/reports/${id}/file`, download),
   invoicePdf: (id, download) => pdf(`/invoices/${id}/file`, download),
+
+  /* Where the customer is, for the Live screen. Signed in only; never fails a page. */
+  track: (event) => (getToken()
+    ? call('/activity', { method: 'POST', body: event }).catch(() => null)
+    : Promise.resolve(null)),
 };

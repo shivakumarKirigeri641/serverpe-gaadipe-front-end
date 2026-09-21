@@ -35,6 +35,12 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
   const [stateCode, setStateCode] = useState(me?.state_code || '');
   const ready = agreed && text && name.trim().length >= 2 && stateCode;
 
+  /* Opening the dialog, and leaving it, are part of the trail the Live screen shows. */
+  useEffect(() => {
+    api.track({ action: 'buy_open', reg_no: regNo, page: window.location.pathname });
+    return () => { api.track({ action: 'buy_close', reg_no: regNo, page: window.location.pathname }); };
+  }, [regNo]);
+
   useEffect(() => {
     api.declaration(lang).then((d) => setText(d?.text || '')).catch(() => {});
   }, [lang]);
