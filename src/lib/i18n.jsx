@@ -55,6 +55,8 @@ export const STRINGS = {
 
     'nav.whatYouGet': 'What you get',
     'nav.price': 'Pricing',
+    'login.quizpe.h': 'Optional — QuizPe for your child:',
+    'login.quizpe.b': 'I agree that QuizPe, a product of ServerPe App Solutions (the makers of GaadiPe), may send me messages about QuizPe — a daily learning quiz for school students — on my mobile number. I can withdraw this any time in my profile.',
     'home.price.free.h': 'Or get it free.',
     'home.price.free.b': 'Refer QuizPe to parents you know — when one buys QuizPe premium through your link, your full report is free.',
     'home.price.free.cta': 'How referral works →',
@@ -454,6 +456,8 @@ export const STRINGS = {
 
     'nav.whatYouGet': 'क्या मिलेगा',
     'nav.price': 'कीमत',
+    'login.quizpe.h': 'वैकल्पिक — आपके बच्चे के लिए QuizPe:',
+    'login.quizpe.b': 'मैं सहमत हूँ कि QuizPe (ServerPe App Solutions का उत्पाद, GaadiPe के निर्माता) मेरे मोबाइल नंबर पर QuizPe — स्कूली छात्रों के लिए रोज़ का क्विज़ — के बारे में संदेश भेज सकता है। मैं इसे प्रोफ़ाइल में कभी भी वापस ले सकता/सकती हूँ।',
     'home.price.free.h': 'या मुफ़्त पाएँ।',
     'home.price.free.b': 'जान-पहचान के अभिभावकों को QuizPe रेफ़र करें — जब कोई आपके लिंक से QuizPe प्रीमियम लेगा, आपकी पूरी रिपोर्ट मुफ़्त।',
     'home.price.free.cta': 'रेफ़रल कैसे काम करता है →',

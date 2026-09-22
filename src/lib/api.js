@@ -112,7 +112,7 @@ export const api = {
   /* Each sign-in step carries what the browser says about itself (lib/device.js). */
   requestCode: async (mobile) => call('/session/otp', { method: 'POST', auth: false, body: { mobile, client: await clientInfo() } })
     .catch((e) => { if (e.body && (e.status === 429 || e.status === 400)) return e.body; throw e; }),
-  verifyCode: async (mobile, code) => call('/session/verify', { method: 'POST', auth: false, body: { mobile, code, client: await clientInfo() } })
+  verifyCode: async (mobile, code, quizpeConsent = false) => call('/session/verify', { method: 'POST', auth: false, body: { mobile, code, quizpe_consent: quizpeConsent === true, client: await clientInfo() } })
     .catch((e) => { if (e.body && e.status === 401) return e.body; throw e; }),
   // Public: anyone may write, signed in or not; a token, if present, ties it to the account.
   contact: (message) => call('/contact', { method: 'POST', body: message }),
