@@ -25,6 +25,10 @@ const KEY = 'gaadipe.lang';
 
 export const STRINGS = {
   en: {
+    'veh.locked.summary': "Details in the full report",
+    'veh.attentionNote': "What they are — the dates, challan amounts, loan, blacklist and NOC — are in the full report.",
+    'veh.attentionN': "{n} things need attention",
+    'veh.attention': "Needs attention",
     'refer.credits.reduced': "Report at {price} ·",
     'refer.reducedHave': "Your next full report is {price} (₹9 + GST) — applied automatically when you buy.",
     'unlock.reduced.b': "{price} (₹9 + GST) instead of {list} — a parent bought QuizPe’s Instant Quiz through your link. Applied automatically when you pay.",
@@ -430,6 +434,10 @@ export const STRINGS = {
   },
 
   hi: {
+    'veh.locked.summary': "पूरी रिपोर्ट में विवरण",
+    'veh.attentionNote': "क्या-क्या हैं — तारीख़ें, चालान की रक़म, लोन, ब्लैकलिस्ट और NOC — पूरी रिपोर्ट में हैं।",
+    'veh.attentionN': "{n} बातों पर ध्यान चाहिए",
+    'veh.attention': "ध्यान देने की ज़रूरत",
     'refer.credits.reduced': "{price} में रिपोर्ट ·",
     'refer.reducedHave': "आपकी अगली पूरी रिपोर्ट {price} में है (₹9 + GST) — भुगतान पर अपने-आप लागू होगा।",
     'unlock.reduced.b': "₹19 की जगह {price} (₹9 + GST) — किसी अभिभावक ने आपके लिंक से QuizPe इंस्टेंट क्विज़ लिया। भुगतान पर अपने-आप लागू।",

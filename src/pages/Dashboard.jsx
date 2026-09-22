@@ -111,6 +111,11 @@ function Row({ v, price, referOnly }) {
         </div>
       </div>
 
+      {!hasReport && !v.expired && v.needs_attention > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1.5 border-t border-line pt-2.5">
+          <Chip tone="watch">{t('veh.attention')}</Chip>
+        </div>
+      )}
       {!hasReport && v.expired?.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5 border-t border-line pt-2.5">
           {v.expired.map((label) => <Chip key={label} tone="wrong">{t('veh.expired', { label: doc(label) })}</Chip>)}

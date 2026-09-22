@@ -32,9 +32,18 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
   const bad = expiredList.length;
   const due = dueList.length;
   const pending = (v.paid ? v.challans?.pending_count : found.challans_pending) || 0;
+  /*
+   * HOW MUCH A FREE CHECK SAYS (user, 2026-09-22): 'labels' names what lapsed,
+   * 'count' says only how many things need attention, 'none' says nothing about
+   * it. Naming them answered the buyer's question for free.
+   */
+  const level = v.paid ? 'labels' : (v.detail || 'labels');
+  const attention = found.needs_attention || 0;
 
   const names = (list) => `${list.slice(0, 2).map(doc).join(', ')}${list.length > 2 ? ` +${list.length - 2}` : ''}`;
-  const summary = bad ? t('veh.expiredN', { list: names(expiredList) })
+  const summary = level === 'none' ? t('veh.locked.summary')
+    : level === 'count' ? (attention ? t('veh.attentionN', { n: attention }) : t('veh.nothing'))
+    : bad ? t('veh.expiredN', { list: names(expiredList) })
     : due ? t('veh.dueN', { list: names(dueList) })
     : pending ? t('veh.pendingN', { n: pending })
     : t('veh.nothing');
@@ -53,7 +62,8 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
           </div>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1.5">
-          <Chip tone={bad ? 'wrong' : due || pending ? 'watch' : 'good'}>{summary}</Chip>
+          <Chip tone={level === 'none' ? 'brand' : level === 'count' ? (attention ? 'watch' : 'good')
+            : bad ? 'wrong' : due || pending ? 'watch' : 'good'}>{summary}</Chip>
           <span className="flex items-center gap-1 text-2xs text-muted">
             {isOpen ? t('veh.hideDetails') : t('veh.seeDetails')}
             <span className={'transition-transform duration-300 ' + (isOpen ? 'rotate-180' : '')}>▾</span>
@@ -80,15 +90,29 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
                 <p className="mt-2 text-2xs text-muted">{t('veh.identityNote')}</p>
               </Section>
 
-              <Section title={t('veh.section.status')}>
-                <div className="flex flex-wrap gap-2">
-                  {expiredList.map((label) => <Chip key={label} tone="wrong">{t('veh.expired', { label: doc(label) })}</Chip>)}
-                  {dueList.map((label) => <Chip key={label} tone="watch">{t('veh.due', { label: doc(label) })}</Chip>)}
-                  {pending > 0 && <Chip tone="watch">{t('veh.pending', { n: pending })}</Chip>}
-                  {!bad && !due && !pending && <Chip tone="good">{t('veh.nothingFlagged')}</Chip>}
-                </div>
-                <p className="mt-2 text-2xs text-muted">{t('veh.statusNote')}</p>
-              </Section>
+              {level !== 'none' && (
+                <Section title={t('veh.section.status')}>
+                  {level === 'count' ? (
+                    <>
+                      <div className="flex flex-wrap gap-2">
+                        {attention ? <Chip tone="watch">{t('veh.attentionN', { n: attention })}</Chip>
+                          : <Chip tone="good">{t('veh.nothingFlagged')}</Chip>}
+                      </div>
+                      <p className="mt-2 text-2xs text-muted">{t('veh.attentionNote')}</p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex flex-wrap gap-2">
+                        {expiredList.map((label) => <Chip key={label} tone="wrong">{t('veh.expired', { label: doc(label) })}</Chip>)}
+                        {dueList.map((label) => <Chip key={label} tone="watch">{t('veh.due', { label: doc(label) })}</Chip>)}
+                        {pending > 0 && <Chip tone="watch">{t('veh.pending', { n: pending })}</Chip>}
+                        {!bad && !due && !pending && <Chip tone="good">{t('veh.nothingFlagged')}</Chip>}
+                      </div>
+                      <p className="mt-2 text-2xs text-muted">{t('veh.statusNote')}</p>
+                    </>
+                  )}
+                </Section>
+              )}
             </>
           )}
 
