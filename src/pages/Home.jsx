@@ -29,6 +29,8 @@ export default function Home() {
   const navigate = useNavigate();
 
   useEffect(() => { api.pricing().then(setPricing).catch(() => {}); }, []);
+  // What a free check gives away, so the example card matches it (free_view_detail).
+  const detail = pricing?.free_view_detail || 'count';
   const priceValue = useCountUp(pricing ? Math.round(pricing.price_paise / 100) : 0);
   const price = pricing ? rupees(pricing.price_paise) : '₹19';
   const days = pricing?.duration_days ?? 28;
@@ -115,7 +117,12 @@ export default function Home() {
               <Line label={t('home.row.maker')} value="Hero MotoCorp" />
               <Line label={t('home.row.model')} value="Splendor Plus" />
               <Line label={t('home.row.fuel')} value="Petrol · Motorcycle" />
-              <Line label={t('home.row.status')} value={t('home.row.statusValue')} note={t('home.row.statusNote')} tone="wrong" />
+              {/* The example says exactly what a real free check says (free_view_detail). */}
+              {detail === 'labels'
+                ? <Line label={t('home.row.status')} value={t('home.row.statusValue')} note={t('home.row.statusNote')} tone="wrong" />
+                : detail === 'count'
+                ? <Line label={t('home.row.status')} value={t('home.row.statusCount')} tone="watch" />
+                : <Line label={t('home.row.status')} value={t('home.row.statusLocked')} tone="watch" />}
             </div>
 
             <div className="sweep mt-3 rounded-lg border border-brand/25 bg-brand/5 p-3">
@@ -128,6 +135,9 @@ export default function Home() {
                 <Locked label={t('home.lock.challans')} />
                 <Locked label={t('home.lock.dates')} />
               </div>
+              <a className="btn-primary btn-arrow mt-3 w-full text-center" href="/app/check">
+                {t('home.lock.cta', { price })} <span className="arrow">→</span>
+              </a>
             </div>
             <p className="mt-3 text-2xs text-muted">{t('common.example')}</p>
           </div>
