@@ -8,6 +8,7 @@ import Vehicle from '../components/Vehicle.jsx';
 import { Banner, Spinner } from '../components/ui.jsx';
 import BuyDialog from '../components/BuyDialog.jsx';
 import UnlockCard from '../components/Unlock.jsx';
+import { useSession } from '../lib/session';
 
 /**
  * Check a vehicle, and buy its report.
@@ -21,6 +22,7 @@ import UnlockCard from '../components/Unlock.jsx';
  */
 export default function Check() {
   const { t } = useLang();
+  const { me } = useSession();
   const { regNo } = useParams();
   const [params] = useSearchParams();
   const [reg, setReg] = useState(regNo || params.get('reg') || '');
@@ -67,6 +69,14 @@ export default function Check() {
 
       {error && <Banner tone="wrong" className="mt-5">{error}</Banner>}
       {busy && <Spinner label={t('check.reading')} />}
+
+      {/* Straight back from checkout (?paid=1): say where the report went.
+          GaadiPe has no WhatsApp number, so the inbox is where it lands. */}
+      {params.get('paid') && (
+        <Banner tone="good" className="mt-5">
+          <Rich text={me?.email ? t('check.paidMail', { email: me.email }) : t('check.paid')} />
+        </Banner>
+      )}
 
       {result?.vehicle && (
         <div className="mt-6 space-y-4">
