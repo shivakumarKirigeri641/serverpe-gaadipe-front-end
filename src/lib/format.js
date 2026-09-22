@@ -7,9 +7,11 @@
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-export const rupees = (paise, { decimals = false } = {}) =>
-  `₹${(Number(paise || 0) / 100).toLocaleString('en-IN', {
-    minimumFractionDigits: decimals ? 2 : 0, maximumFractionDigits: decimals ? 2 : 0 })}`;
+export const rupees = (paise, { decimals = false } = {}) => {
+  const p = Number(paise || 0);
+  const two = decimals || p % 100 !== 0;
+  return `₹${(p / 100).toLocaleString('en-IN', { minimumFractionDigits: two ? 2 : 0, maximumFractionDigits: two ? 2 : 0 })}`;
+};
 
 export const date = (v) => {
   if (!v) return '—';

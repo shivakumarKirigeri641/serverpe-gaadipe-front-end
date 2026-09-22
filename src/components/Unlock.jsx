@@ -35,8 +35,11 @@ export default function UnlockCard({ result, onBuy, onUnlocked }) {
       ) : (
         <>
           <div className="text-base font-semibold text-ink">
-            {canBuy ? t('check.buy.h', { price }) : t('unlock.refer.h')}
+            {result.reduced ? <>🎁 {t('unlock.reduced.h', { price })}</> : canBuy ? t('check.buy.h', { price }) : t('unlock.refer.h')}
           </div>
+          {result.reduced && result.list_price_paise && (
+            <p className="mt-1 text-sm text-body">{t('unlock.reduced.b', { price, list: rupees(result.list_price_paise) })}</p>
+          )}
           <p className="mx-auto mt-1.5 max-w-md text-sm text-body">{t('check.buy.b')}</p>
         </>
       )}

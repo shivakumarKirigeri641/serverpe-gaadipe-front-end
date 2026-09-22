@@ -24,8 +24,15 @@ export default function Dashboard() {
   const [freeReports, setFreeReports] = useState(0);
   // In referral-only mode there is no price to pay: the card offers "Unlock free".
   const [referOnly, setReferOnly] = useState(false);
-  useEffect(() => { api.pricing().then((p) => { setPrice(p.price_paise); setReferOnly(p.unlock === 'refer'); }).catch(() => {}); }, []);
-  useEffect(() => { api.referrals().then((d) => setFreeReports(d.available || 0)).catch(() => {}); }, []);
+  useEffect(() => {
+    Promise.all([api.pricing(), api.referrals().catch(() => null)]).then(([p, r]) => {
+      const reduced = r?.reduced_price_paise || null;
+      setPrice(reduced ? Math.min(reduced, p.price_paise) : p.price_paise);
+      // A reduced price is a referral reward: payable even in referral-only mode.
+      setReferOnly(p.unlock === 'refer' && !reduced);
+      setFreeReports(r?.available || 0);
+    }).catch(() => {});
+  }, []);
 
   const load = useCallback(() => {
     api.vehicles().then((d) => setRows(d.rows)).catch(setError);

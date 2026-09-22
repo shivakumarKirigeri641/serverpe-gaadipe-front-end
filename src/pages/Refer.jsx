@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
-import { date, plate } from '../lib/format';
+import { date, plate, rupees } from '../lib/format';
 import { useLang } from '../lib/i18n.jsx';
 import { useSession } from '../lib/session';
 import Layout from '../components/Layout.jsx';
@@ -55,6 +55,9 @@ export default function Refer() {
       <h1 className="text-2xl font-bold text-ink">{t('refer.h')}</h1>
       <p className="mt-1 max-w-2xl text-sm text-body">{t('refer.sub', { cap: data?.monthly_cap ?? 10, days: data?.window_days ?? 30 })}</p>
 
+      {data?.reduced > 0 && (
+        <Banner tone="good" className="mt-4">🎁 {t('refer.reducedHave', { price: rupees(data.reduced_price_paise) })}</Banner>
+      )}
       {available > 0 && (
         <Banner tone="good" className="mt-4">
           🎁 {t('refer.youHave', { n: available })}{' '}
@@ -146,7 +149,9 @@ export default function Refer() {
           <div className="mt-3 divide-y divide-line rounded-xl border border-line bg-white">
             {data.credits.map((c) => (
               <div key={c.id} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
-                <span className="text-body">{c.state === 'used' ? t('refer.credits.used', { reg: plate(c.used_reg_no || '') })
+                <span className="text-body">
+                  {c.reward === 'report_at_price' && <b className="mr-1">{t('refer.credits.reduced', { price: rupees(c.price_paise) })}</b>}
+                  {c.state === 'used' ? t('refer.credits.used', { reg: plate(c.used_reg_no || '') })
                   : c.state === 'expired' ? t('refer.credits.expired') : t('refer.credits.available', { date: date(c.expires_at) })}</span>
                 <Chip tone={c.state === 'available' ? 'good' : 'info'}>{t(`refer.credits.${c.state}Chip`)}</Chip>
               </div>
