@@ -14,6 +14,7 @@ import Profile from './pages/Profile.jsx';
 import Support from './pages/Support.jsx';
 import Refer from './pages/Refer.jsx';
 import ReferLanding from './pages/ReferLanding.jsx';
+import SupportTicket from './pages/SupportTicket.jsx';
 import ReferralLanding from './pages/ReferralLanding.jsx';
 
 /**
@@ -93,6 +94,8 @@ export default function App() {
       <Route path="/app/refer" element={<Private><Refer /></Private>} />
       {/* A referral link: public, because whoever taps it is not a customer yet. */}
       <Route path="/r/:code" element={<ReferLanding />} />
+      {/* Support, opened from WhatsApp. Public: the token is the identity. */}
+      <Route path="/support/:token" element={<SupportTicket />} />
       <Route path="/q/:code" element={<ReferralLanding />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />

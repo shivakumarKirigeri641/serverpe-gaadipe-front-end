@@ -137,6 +137,13 @@ export const api = {
   resendEmail: () => call('/me/email/resend', { method: 'POST', body: {} }),
   setQuizpeConsent: (agree) => call('/me/consents', { method: 'PUT', body: { quizpe: agree === true } }),
 
+  /* Support, opened from a WhatsApp link. Public: the token is the identity. */
+  supportWho: (token) => fetch(`${PUBLIC}/support/${encodeURIComponent(token)}`)
+    .then((r) => (r.ok ? r.json() : Promise.reject(new Error('link_expired')))),
+  supportSend: (token, body) => fetch(`${PUBLIC}/support/${encodeURIComponent(token)}`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+  }).then((r) => r.json()),
+
   /* GaadiPe referrals: refer someone who buys, your next report is free. */
   referral: () => call('/referral'),
   attachReferral: (code) => call('/referral/attach', { method: 'POST', body: { code } }),
