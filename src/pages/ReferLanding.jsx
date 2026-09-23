@@ -41,6 +41,13 @@ export default function ReferLanding() {
     api.resolveReferralLink(code)
       .then((out) => {
         if (out.ok) rememberReferral(out.code);
+        /*
+         * STRAIGHT INTO THE CHAT once GaadiPe has a number of its own: the code
+         * travels in the message, so they press Send and are in the product —
+         * no sign-in, no form, no app. The page below is what they see while
+         * there is no number, and if the browser refuses the redirect.
+         */
+        if (out.ok && out.wa_url) { window.location.replace(out.wa_url); return; }
         setState(out);
       })
       .catch(() => setState({ ok: false, reason: 'unknown' }));

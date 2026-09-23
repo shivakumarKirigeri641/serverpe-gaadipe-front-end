@@ -32,14 +32,14 @@ export default function Refer() {
   useEffect(load, [load]);
 
   const share = async () => {
-    const text = t('ref.shareText', { url: data.url });
+    const text = t('ref.shareText', { url: data.share_url || data.url });
     // The phone's own share sheet where there is one: it reaches WhatsApp,
     // Telegram and SMS without GaadiPe having to know about any of them.
     if (navigator.share) {
       try { await navigator.share({ text }); return; } catch { /* dismissed */ }
     }
     try {
-      await navigator.clipboard.writeText(data.url);
+      await navigator.clipboard.writeText(data.share_url || data.url);
       setCopied(true); setTimeout(() => setCopied(false), 2000);
     } catch { /* clipboard refused */ }
   };
@@ -69,6 +69,8 @@ export default function Refer() {
         <div className="mt-1 break-all rounded-lg border border-line bg-shell px-3 py-2.5 text-sm font-semibold text-ink">
           {data.url}
         </div>
+        {/* Once there is a number, the link opens the chat with the code in it. */}
+        {data.wa_url && <p className="mt-1.5 text-2xs text-muted">{t('ref.opensChat')}</p>}
         <button className="btn-primary btn-arrow mt-3 w-full" onClick={share}>
           {copied ? t('ref.copied') : t('ref.share')} <span className="arrow">→</span>
         </button>
