@@ -1,7 +1,7 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useSession } from '../lib/session';
-import { api, waLink, WHATSAPP_ENABLED } from '../lib/api';
+import { api, waLink, WHATSAPP_ENABLED, QUIZPE_ENABLED } from '../lib/api';
 import { useLang } from '../lib/i18n.jsx';
 
 /**
@@ -52,7 +52,7 @@ export default function Layout({ children, wide = false }) {
                 <a href="/#report" className="text-sm text-body hover:text-ink">{t('nav.whatYouGet')}</a>
                 <a href="/#price" className="text-sm text-body hover:text-ink">{t('nav.price')}</a>
                 {me ? <Link to="/app/refer" className="text-sm font-semibold text-brand-deep hover:text-ink">🎁 {t('nav.refer')}</Link>
-                  : <a href="/#quizpe" className="text-sm font-semibold text-brand-deep hover:text-ink">🎁 {t('nav.refer')}</a>}
+                  : <a href="/#price" className="text-sm font-semibold text-brand-deep hover:text-ink">🎁 {t('nav.refer')}</a>}
                 <a href="/#faq" className="text-sm text-body hover:text-ink">{t('nav.faq')}</a>
               </>
             )}
@@ -81,7 +81,7 @@ export default function Layout({ children, wide = false }) {
           <div className="anim-open border-t border-line bg-white md:hidden">
             <div className="wrap flex flex-col py-2">
               {(inApp ? appLinks
-                : [['/#price', t('nav.price')], [me ? '/app/refer' : '/#quizpe', `🎁 ${t('nav.refer')}`],
+                : [['/#price', t('nav.price')], [me ? '/app/refer' : '/#price', `🎁 ${t('nav.refer')}`],
                    ['/login', t('common.signIn')], ['/terms', t('nav.terms')], ['/privacy', t('nav.privacy')], ['/refund', t('nav.refunds')]]
               ).map(([to, label]) => (
                 to.startsWith('/#')
@@ -109,7 +109,7 @@ export default function Layout({ children, wide = false }) {
               <li><Link className="text-body hover:text-ink" to="/app/check">{t('common.checkVehicle')}</Link></li>
               {WHATSAPP_ENABLED && <li><a className="text-body hover:text-ink" href={waLink('Hi')}>GaadiPe on WhatsApp</a></li>}
               <li><Link className="text-body hover:text-ink" to="/login">{t('common.signIn')}</Link></li>
-              <li><a className="text-body hover:text-ink" href="https://quizpe.in/?utm_source=gaadipe&utm_medium=footer" target="_blank" rel="noopener noreferrer">{t('footer.quizpe')}</a></li>
+              {QUIZPE_ENABLED && <li><a className="text-body hover:text-ink" href="https://quizpe.in/?utm_source=gaadipe&utm_medium=footer" target="_blank" rel="noopener noreferrer">{t('footer.quizpe')}</a></li>}
             </ul>
           </div>
           <div>

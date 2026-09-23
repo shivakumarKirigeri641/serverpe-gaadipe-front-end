@@ -26,6 +26,17 @@ export const WHATSAPP = import.meta.env.VITE_WHATSAPP || '916363271302';
  * this hides the doors to it, it does not close them.
  */
 export const WHATSAPP_ENABLED = import.meta.env.VITE_WHATSAPP_ENABLED === '1';
+
+/**
+ * Is the QuizPe cross-sell shown?
+ *
+ * Off since 2026-09-23. Asking a scooter owner to recruit a school parent into
+ * a quiz app, in order to earn a vehicle report, is two funnels multiplied by
+ * each other — it was tapped zero times, and it competed for attention with
+ * GaadiPe's own referral, which is one step and an obvious match. The backend,
+ * the tables and the credits already earned all stay; this hides the doors.
+ */
+export const QUIZPE_ENABLED = import.meta.env.VITE_QUIZPE_ENABLED === '1';
 export const waLink = (text) =>
   `https://wa.me/${WHATSAPP}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
 
@@ -126,7 +137,13 @@ export const api = {
   resendEmail: () => call('/me/email/resend', { method: 'POST', body: {} }),
   setQuizpeConsent: (agree) => call('/me/consents', { method: 'PUT', body: { quizpe: agree === true } }),
 
-  /* QuizPe referrals and free reports */
+  /* GaadiPe referrals: refer someone who buys, your next report is free. */
+  referral: () => call('/referral'),
+  attachReferral: (code) => call('/referral/attach', { method: 'POST', body: { code } }),
+  // Public: the page a referral link lands on (a signed-in owner is told it is their own).
+  resolveReferralLink: (code) => call(`/r/${encodeURIComponent(code)}`),
+
+  /* QuizPe referrals — switched off, kept for anyone holding an old credit. */
   referrals: () => call('/referrals'),
   joinReferral: ({ name, email }) => call('/referrals/join', { method: 'POST', body: { consent: true, name, email } }),
   // Public: the page a referral link lands on (a signed-in owner is told it is their own).

@@ -6,6 +6,7 @@ import { useLang, Rich } from '../lib/i18n.jsx';
 import Layout from '../components/Layout.jsx';
 import DataSourceNote from '../components/DataSourceNote.jsx';
 import SisterQuizpe from '../components/SisterQuizpe.jsx';
+import { QUIZPE_ENABLED } from '../lib/api';
 import Reveal from '../components/Reveal.jsx';
 import useCountUp from '../lib/useCountUp';
 
@@ -206,8 +207,7 @@ export default function Home() {
             )}
             <p className="mt-3 text-2xs text-muted">{t('home.price.final')}</p>
             <div className="mt-4 rounded-lg border border-brand/20 bg-brand/5 p-3 text-sm text-body">
-              🎁 <b>{t('home.price.free.h')}</b> {t('home.price.free.b')}{' '}
-              <a className="font-semibold text-brand-deep underline" href="#quizpe">{t('home.price.free.cta')}</a>
+              🎁 <b>{t('home.refer.h')}</b> {t('home.refer.b')}
             </div>
           </Reveal>
         </div>
@@ -249,7 +249,7 @@ export default function Home() {
       <div className="h-20 sm:hidden" />
 
       {/* ------------------------------------------ QuizPe, same makers */}
-      <SisterQuizpe />
+      {QUIZPE_ENABLED && <SisterQuizpe />}
 
       {/* -------------------------------------------------------------- faq */}
       <section id="faq" className="border-t border-line bg-shell/60">

@@ -13,6 +13,7 @@ import Documents from './pages/Documents.jsx';
 import Profile from './pages/Profile.jsx';
 import Support from './pages/Support.jsx';
 import Refer from './pages/Refer.jsx';
+import ReferLanding from './pages/ReferLanding.jsx';
 import ReferralLanding from './pages/ReferralLanding.jsx';
 
 /**
@@ -90,6 +91,8 @@ export default function App() {
       <Route path="/app/invoices" element={<Private><Documents kind="invoices" /></Private>} />
       <Route path="/app/profile" element={<Private><Profile /></Private>} />
       <Route path="/app/refer" element={<Private><Refer /></Private>} />
+      {/* A referral link: public, because whoever taps it is not a customer yet. */}
+      <Route path="/r/:code" element={<ReferLanding />} />
       <Route path="/q/:code" element={<ReferralLanding />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />

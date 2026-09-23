@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useSession } from '../lib/session';
+import { takeReferral } from './ReferLanding.jsx';
+import { QUIZPE_ENABLED } from '../lib/api';
 import { useLang } from '../lib/i18n.jsx';
 import Layout from '../components/Layout.jsx';
 import { Banner, Field } from '../components/ui.jsx';
@@ -68,6 +70,17 @@ export default function Login() {
       const out = await api.verifyCode(mobile.replace(/\D/g, '').slice(-10), code, quizpe);
       if (!out.ok) { setError(out.message); return; }
       await signIn(out.token, out.user);
+      /*
+       * IF THEY ARRIVED THROUGH SOMEBODY'S LINK, claim it now — this is the
+       * first moment there is an account to attach it to. Sent once and then
+       * forgotten, and every refusal (their own link, already referred, already
+       * a customer) is the server's to make, so nothing is decided here.
+       *
+       * Never allowed to block the sign-in: a referral that cannot be attached
+       * is a lost reward, a sign-in that hangs is a lost customer.
+       */
+      const referral = takeReferral();
+      if (referral) await api.attachReferral(referral).catch(() => {});
       navigate(next, { replace: true });
     } catch (err) { setError(err.message); } finally { setBusy(false); }
   };
@@ -103,13 +116,15 @@ export default function Login() {
                   maxLength={6} placeholder="••••••" value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} />
               </Field>
-              <label className="flex cursor-pointer gap-3 rounded-lg border border-line bg-shell/60 p-3">
-                <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-brand" checked={quizpe}
-                  onChange={(e) => setQuizpe(e.target.checked)} />
-                <span className="text-2xs leading-relaxed text-body">
-                  <b className="text-ink">{t('login.quizpe.h')}</b> {t('login.quizpe.b')}
-                </span>
-              </label>
+              {QUIZPE_ENABLED && (
+                <label className="flex cursor-pointer gap-3 rounded-lg border border-line bg-shell/60 p-3">
+                  <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-brand" checked={quizpe}
+                    onChange={(e) => setQuizpe(e.target.checked)} />
+                  <span className="text-2xs leading-relaxed text-body">
+                    <b className="text-ink">{t('login.quizpe.h')}</b> {t('login.quizpe.b')}
+                  </span>
+                </label>
+              )}
               {error && <Banner tone="wrong">{error}</Banner>}
               <button className="btn-primary w-full" disabled={busy || code.length < 4}>
                 {busy ? t('login.checking') : t('login.verify')}
