@@ -1,5 +1,6 @@
 import { clientInfo } from './device';
 import { available as secureAvailable, secureCall } from './secure';
+import { withCode } from './track';
 /**
  * api.js — every call gaadipe.in makes.
  *
@@ -49,8 +50,12 @@ export const WEB_LOGIN = !WHATSAPP_ENABLED || import.meta.env.VITE_WEB_LOGIN !==
  * the tables and the credits already earned all stay; this hides the doors.
  */
 export const QUIZPE_ENABLED = import.meta.env.VITE_QUIZPE_ENABLED === '1';
-export const waLink = (text) =>
-  `https://wa.me/${WHATSAPP}${text ? `?text=${encodeURIComponent(text)}` : ''}`;
+// Every link into the chat carries the visitor's code ("Hi #K7Q2M"), which the
+// bot reads to join this visit to the conversation (lib/track.js).
+export const waLink = (text) => {
+  const t = withCode(text || 'Hi');
+  return `https://wa.me/${WHATSAPP}${t ? `?text=${encodeURIComponent(t)}` : ''}`;
+};
 
 export const getToken = () => { try { return localStorage.getItem(KEY) || null; } catch { return null; } };
 export const setToken = (t) => {

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useSession } from './lib/session';
 import { api, WEB_LOGIN } from './lib/api';
+import { startSession, pageView, watchWhatsAppLinks } from './lib/track';
 import EmailPrompt from './components/EmailCard.jsx';
 import ClickTracker from './components/ClickTracker.jsx';
 import Home from './pages/Home.jsx';
@@ -42,6 +43,11 @@ function PageViews() {
   const { pathname, search } = useLocation();
   const first = useRef(true);
   const { me } = useSession();
+  /* Anonymous visits, for the admin command center (user, 2026-09-25): where
+     each visit came from, every page, and every tap into WhatsApp — for every
+     visitor, not only the signed-in ones. */
+  useEffect(() => { startSession(); watchWhatsAppLinks(); }, []);
+  useEffect(() => { pageView(); }, [pathname, search]);
   /* Also recorded for the Live screen (user, 2026-09-21): which page a
      signed-in customer is on. Re-sent when they sign in on the same page. */
   useEffect(() => {
