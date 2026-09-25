@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api, waLink, WHATSAPP_ENABLED } from '../lib/api';
+import { api, waLink, WHATSAPP_ENABLED, WEB_LOGIN } from '../lib/api';
+import WhatsAppCta from '../components/WhatsAppCta.jsx';
 import { rupees } from '../lib/format';
 import { useLang, Rich } from '../lib/i18n.jsx';
 import Layout from '../components/Layout.jsx';
@@ -36,6 +37,8 @@ export default function Home() {
   const price = pricing ? rupees(pricing.price_paise) : '₹19';
   const days = pricing?.duration_days ?? 28;
   const validDays = pricing?.report_valid_days ?? 7;
+  // No web account: every door on this page opens the WhatsApp chat instead.
+  const wa = !WEB_LOGIN;
 
   const go = (e) => {
     e.preventDefault();
@@ -58,7 +61,7 @@ export default function Home() {
 
         <div className="wrap relative grid items-center gap-10 py-12 lg:grid-cols-[1.05fr_1fr] lg:py-20">
           <div>
-            <span className="chip anim-up border-brand/20 bg-white text-brand-deep">{t('home.chip')}</span>
+            <span className="chip anim-up border-brand/20 bg-white text-brand-deep">{t(wa ? 'home.chip.wa' : 'home.chip')}</span>
 
             <h1 className="anim-up mt-4 text-3xl font-bold leading-[1.2] text-ink sm:text-[2.6rem]"
               style={{ animationDelay: '.06s' }}>
@@ -92,14 +95,23 @@ export default function Home() {
               </p>
             </div>
 
-            <form onSubmit={go} className="anim-up mt-6 flex flex-col gap-3 sm:flex-row"
-              style={{ animationDelay: '.22s' }}>
-              <input className="input sm:flex-1" placeholder="KA01AB1234" value={reg}
-                onChange={(e) => setReg(e.target.value)} aria-label={t('home.sticky.placeholder')} />
-              <button className="btn-primary btn-big btn-arrow">
-                {t('home.cta')} <span className="arrow">→</span>
-              </button>
-            </form>
+            {wa ? (
+              /* WhatsApp-first (user, 2026-09-25): the chat is the product now.
+                 One button, "Hi" already typed; the number underneath for
+                 anyone who would rather save it. */
+              <div className="anim-up mt-6" style={{ animationDelay: '.22s' }}>
+                <WhatsAppCta className="w-full sm:w-auto" showNumber />
+              </div>
+            ) : (
+              <form onSubmit={go} className="anim-up mt-6 flex flex-col gap-3 sm:flex-row"
+                style={{ animationDelay: '.22s' }}>
+                <input className="input sm:flex-1" placeholder="KA01AB1234" value={reg}
+                  onChange={(e) => setReg(e.target.value)} aria-label={t('home.sticky.placeholder')} />
+                <button className="btn-primary btn-big btn-arrow">
+                  {t('home.cta')} <span className="arrow">→</span>
+                </button>
+              </form>
+            )}
 
             <p className="anim-up mt-3 text-sm text-muted" style={{ animationDelay: '.3s' }}>
               <Rich text={t('home.freeLine', { price })} />
@@ -136,7 +148,7 @@ export default function Home() {
                 <Locked label={t('home.lock.challans')} />
                 <Locked label={t('home.lock.dates')} />
               </div>
-              <a className="btn-primary btn-arrow mt-3 w-full text-center" href="/app/check">
+              <a className="btn-primary btn-arrow mt-3 w-full text-center" href={wa ? waLink('Hi') : '/app/check'}>
                 {t('home.lock.cta', { price })} <span className="arrow">→</span>
               </a>
             </div>
@@ -144,6 +156,25 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ------------------------------------------------ how it works, in chat */}
+      {wa && (
+        <section className="wrap py-14">
+          <Reveal>
+            <h2 className="text-2xl font-bold text-ink">{t('home.how.h')}</h2>
+            <p className="mt-1.5 text-body">{t('home.how.sub')}</p>
+          </Reveal>
+          <ol className="mt-6 grid gap-4 stagger sm:grid-cols-3">
+            {['1', '2', '3'].map((k) => (
+              <li key={k} className="card lift p-5">
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-brand text-sm font-bold text-white">{k}</span>
+                <h3 className="mt-3 text-base font-semibold text-ink">{t(`home.how.${k}.t`, { price })}</h3>
+                <p className="mt-1 text-sm text-body">{t(`home.how.${k}.b`, { price, days })}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
 
       {/* ------------------------------------------------------- who it is for */}
       <section className="wrap py-14">
@@ -184,7 +215,7 @@ export default function Home() {
             <p className="mt-3 text-body">{t('home.price.sub')}</p>
             <ul className="mt-5 space-y-2.5">
               {['t1', 't2', 't3', 't4', 't5'].map((k) => (
-                <Tick key={k}>{t(`home.price.${k}`, { days, validDays })}</Tick>
+                <Tick key={k}>{t(`home.price.${k}${wa && (k === 't2' || k === 't4') ? '.wa' : ''}`, { days, validDays })}</Tick>
               ))}
             </ul>
           </Reveal>
@@ -196,13 +227,17 @@ export default function Home() {
               <span className="text-sm text-muted">{t('home.price.per')}</span>
             </div>
             <p className="mt-2 text-2xs text-muted">{t('home.price.incl')}</p>
-            <a className="btn-primary btn-big btn-arrow mt-5 w-full" href="/app/check">
-              {t('home.price.cta')} <span className="arrow">→</span>
-            </a>
+            {wa ? (
+              <WhatsAppCta className="mt-5 w-full" />
+            ) : (
+              <a className="btn-primary btn-big btn-arrow mt-5 w-full" href="/app/check">
+                {t('home.price.cta')} <span className="arrow">→</span>
+              </a>
+            )}
             <a className="btn-quiet mt-2 w-full" href={lang === 'hi' ? '/sample-report-hi.pdf' : '/sample-report.pdf'} target="_blank" rel="noopener">
               {t('home.price.sample')}
             </a>
-            {WHATSAPP_ENABLED && (
+            {WHATSAPP_ENABLED && !wa && (
               <a className="btn-quiet mt-2 w-full" href={waLink('Hi')}>WhatsApp</a>
             )}
             <p className="mt-3 text-2xs text-muted">{t('home.price.final')}</p>
@@ -240,11 +275,15 @@ export default function Home() {
 
       {/* A phone should never have to scroll back up to act. */}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 px-4 py-3 backdrop-blur sm:hidden">
-        <form onSubmit={go} className="flex gap-2">
-          <input className="input !py-2.5 flex-1" placeholder={t('home.sticky.placeholder')} value={reg}
-            onChange={(e) => setReg(e.target.value)} aria-label={t('home.sticky.placeholder')} />
-          <button className="btn-primary !px-5">{t('home.sticky.cta')}</button>
-        </form>
+        {wa ? (
+          <WhatsAppCta big={false} className="w-full" />
+        ) : (
+          <form onSubmit={go} className="flex gap-2">
+            <input className="input !py-2.5 flex-1" placeholder={t('home.sticky.placeholder')} value={reg}
+              onChange={(e) => setReg(e.target.value)} aria-label={t('home.sticky.placeholder')} />
+            <button className="btn-primary !px-5">{t('home.sticky.cta')}</button>
+          </form>
+        )}
       </div>
       <div className="h-20 sm:hidden" />
 
@@ -257,16 +296,20 @@ export default function Home() {
           <Reveal><h2 className="text-2xl font-bold text-ink">{t('home.faq.h')}</h2></Reveal>
           <div className="mt-6 space-y-3 stagger">
             {['vahan', 'owner', 'source', 'cover', 'app', 'current', 'notfound', 'again'].map((k) => (
-              <Faq key={k} q={t(`home.faq.${k}.q`)}>{t(`home.faq.${k}.a`)}</Faq>
+              <Faq key={k} q={t(`home.faq.${k}.q`)}>{t(`home.faq.${k}.a${wa && k === 'app' ? '.wa' : ''}`)}</Faq>
             ))}
           </div>
 
           <Reveal className="mt-8 text-center">
             <h3 className="text-xl font-bold text-ink">{t('home.final.h')}</h3>
             <p className="mt-1.5 text-body">{t('home.final.sub')}</p>
-            <a className="btn-primary btn-big btn-arrow mt-4 inline-flex" href="/app/check">
-              {t('common.checkVehicle')} <span className="arrow">→</span>
-            </a>
+            {wa ? (
+              <WhatsAppCta className="mt-4" />
+            ) : (
+              <a className="btn-primary btn-big btn-arrow mt-4 inline-flex" href="/app/check">
+                {t('common.checkVehicle')} <span className="arrow">→</span>
+              </a>
+            )}
           </Reveal>
         </div>
       </section>
