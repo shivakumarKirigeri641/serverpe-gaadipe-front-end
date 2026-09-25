@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useSession } from './lib/session';
-import { api } from './lib/api';
+import { api, WEB_LOGIN } from './lib/api';
 import EmailPrompt from './components/EmailCard.jsx';
 import ClickTracker from './components/ClickTracker.jsx';
 import Home from './pages/Home.jsx';
@@ -16,6 +16,7 @@ import Refer from './pages/Refer.jsx';
 import ReferLanding from './pages/ReferLanding.jsx';
 import SupportTicket from './pages/SupportTicket.jsx';
 import ReferralLanding from './pages/ReferralLanding.jsx';
+import OnWhatsApp from './pages/OnWhatsApp.jsx';
 
 /**
  * The public pages render for anybody. The account area waits until the panel
@@ -70,7 +71,7 @@ export default function App() {
     <ClickTracker />
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={WEB_LOGIN ? <Login /> : <OnWhatsApp />} />
       <Route path="/help" element={<Support />} />
 
       {/* The legal documents, all served from the one published source. */}
@@ -85,13 +86,21 @@ export default function App() {
       <Route path="/partner" element={<Policy />} />
       <Route path="/policy/:slug" element={<Policy />} />
 
-      <Route path="/app" element={<Private><Dashboard /></Private>} />
-      <Route path="/app/check" element={<Private><Check /></Private>} />
-      <Route path="/app/vehicle/:regNo" element={<Private><Check /></Private>} />
-      <Route path="/app/reports" element={<Private><Documents kind="reports" /></Private>} />
-      <Route path="/app/invoices" element={<Private><Documents kind="invoices" /></Private>} />
-      <Route path="/app/profile" element={<Private><Profile /></Private>} />
-      <Route path="/app/refer" element={<Private><Refer /></Private>} />
+      {/* The account area — hidden, not removed, while GaadiPe is WhatsApp-only.
+          Every /app address then says where things went and opens the chat. */}
+      {WEB_LOGIN ? (
+        <>
+          <Route path="/app" element={<Private><Dashboard /></Private>} />
+          <Route path="/app/check" element={<Private><Check /></Private>} />
+          <Route path="/app/vehicle/:regNo" element={<Private><Check /></Private>} />
+          <Route path="/app/reports" element={<Private><Documents kind="reports" /></Private>} />
+          <Route path="/app/invoices" element={<Private><Documents kind="invoices" /></Private>} />
+          <Route path="/app/profile" element={<Private><Profile /></Private>} />
+          <Route path="/app/refer" element={<Private><Refer /></Private>} />
+        </>
+      ) : (
+        <Route path="/app/*" element={<OnWhatsApp />} />
+      )}
       {/* A referral link: public, because whoever taps it is not a customer yet. */}
       <Route path="/r/:code" element={<ReferLanding />} />
       {/* Support, opened from WhatsApp. Public: the token is the identity. */}

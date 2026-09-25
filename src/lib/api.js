@@ -28,6 +28,18 @@ export const WHATSAPP = import.meta.env.VITE_WHATSAPP || '916363271302';
 export const WHATSAPP_ENABLED = import.meta.env.VITE_WHATSAPP_ENABLED === '1';
 
 /**
+ * Is there a web account at all? (user, 2026-09-25)
+ *
+ * GaadiPe moved onto WhatsApp: checking, paying and the report all happen in
+ * the chat. With this off the site is the front door to that chat — no sign-in,
+ * no /app — and every button opens WhatsApp. The pages are hidden, not deleted:
+ * VITE_WEB_LOGIN=1 brings the whole browser journey back unchanged.
+ *
+ * Only honoured while WhatsApp is on; with neither there would be no way in.
+ */
+export const WEB_LOGIN = !WHATSAPP_ENABLED || import.meta.env.VITE_WEB_LOGIN !== '0';
+
+/**
  * Is the QuizPe cross-sell shown?
  *
  * Off since 2026-09-23. Asking a scooter owner to recruit a school parent into

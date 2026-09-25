@@ -1,7 +1,7 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useSession } from '../lib/session';
-import { api, waLink, WHATSAPP_ENABLED, QUIZPE_ENABLED } from '../lib/api';
+import { api, waLink, WHATSAPP_ENABLED, QUIZPE_ENABLED, WEB_LOGIN } from '../lib/api';
 import { useLang } from '../lib/i18n.jsx';
 
 /**
@@ -65,7 +65,9 @@ export default function Layout({ children, wide = false }) {
               aria-label="Change language / भाषा बदलें">
               {lang === 'hi' ? 'English' : 'हिंदी'}
             </button>
-            {me ? (
+            {!WEB_LOGIN ? (
+              <a className="btn-primary !py-2" href={waLink('Hi')} rel="noopener">{t('wa.short')}</a>
+            ) : me ? (
               <>
                 {!inApp && <Link className="btn-quiet !py-2" to="/app">{t('common.myVehicles')}</Link>}
                 {inApp && <button className="btn-quiet !py-2 hidden sm:inline-flex" onClick={signOut}>{t('common.signOut')}</button>}
@@ -81,14 +83,15 @@ export default function Layout({ children, wide = false }) {
           <div className="anim-open border-t border-line bg-white md:hidden">
             <div className="wrap flex flex-col py-2">
               {(inApp ? appLinks
-                : [['/#price', t('nav.price')], [me ? '/app/refer' : '/#price', `🎁 ${t('nav.refer')}`],
-                   ['/login', t('common.signIn')], ['/terms', t('nav.terms')], ['/privacy', t('nav.privacy')], ['/refund', t('nav.refunds')]]
+                : [['/#price', t('nav.price')], [me && WEB_LOGIN ? '/app/refer' : '/#price', `🎁 ${t('nav.refer')}`],
+                   WEB_LOGIN ? ['/login', t('common.signIn')] : [waLink('Hi'), t('wa.short')],
+                   ['/terms', t('nav.terms')], ['/privacy', t('nav.privacy')], ['/refund', t('nav.refunds')]]
               ).map(([to, label]) => (
-                to.startsWith('/#')
+                to.startsWith('/#') || to.startsWith('https:')
                   ? <a key={to} href={to} className="py-2.5 text-sm text-body" onClick={() => setOpen(false)}>{label}</a>
                   : <Link key={to} to={to} className="py-2.5 text-sm text-body" onClick={() => setOpen(false)}>{label}</Link>
               ))}
-              {me && <button className="py-2.5 text-left text-sm text-body" onClick={signOut}>{t('common.signOut')}</button>}
+              {me && WEB_LOGIN && <button className="py-2.5 text-left text-sm text-body" onClick={signOut}>{t('common.signOut')}</button>}
             </div>
           </div>
         )}
@@ -106,9 +109,11 @@ export default function Layout({ children, wide = false }) {
           <div>
             <div className="text-2xs font-semibold uppercase tracking-wider text-muted">{t('footer.product')}</div>
             <ul className="mt-2 space-y-1.5 text-sm">
-              <li><Link className="text-body hover:text-ink" to="/app/check">{t('common.checkVehicle')}</Link></li>
+              {WEB_LOGIN
+                ? <li><Link className="text-body hover:text-ink" to="/app/check">{t('common.checkVehicle')}</Link></li>
+                : <li><a className="text-body hover:text-ink" href={waLink('Hi')}>{t('common.checkVehicle')}</a></li>}
               {WHATSAPP_ENABLED && <li><a className="text-body hover:text-ink" href={waLink('Hi')}>GaadiPe on WhatsApp</a></li>}
-              <li><Link className="text-body hover:text-ink" to="/login">{t('common.signIn')}</Link></li>
+              {WEB_LOGIN && <li><Link className="text-body hover:text-ink" to="/login">{t('common.signIn')}</Link></li>}
               {QUIZPE_ENABLED && <li><a className="text-body hover:text-ink" href="https://quizpe.in/?utm_source=gaadipe&utm_medium=footer" target="_blank" rel="noopener noreferrer">{t('footer.quizpe')}</a></li>}
             </ul>
           </div>
