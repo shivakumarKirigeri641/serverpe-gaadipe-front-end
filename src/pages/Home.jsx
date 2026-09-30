@@ -157,6 +157,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ------------------------------------------------------ GaadiPe so far */}
+      <SoFar />
+
       {/* ------------------------------------------------ how it works, in chat */}
       {wa && (
         <section className="wrap py-14">
@@ -318,6 +321,48 @@ export default function Home() {
 }
 
 /* ------------------------------------------------------------ the pieces */
+
+/*
+ * GAADIPE SO FAR (user, 2026-09-30): real totals from the server. A figure the
+ * server does not send — too small yet, or the section switched off — is simply
+ * not shown; nothing here is typed in by hand.
+ */
+const STATS = [
+  ['customers', '👥'], ['vehicles', '🚗'], ['checks', '🔍'], ['records_fetched', '🏛️'],
+  ['reports_bought', '📄'], ['watching', '🔔'], ['expired_found', '⚠️'], ['challans_found', '🧾'], ['states', '🗺️'],
+];
+
+function SoFar() {
+  const { t } = useLang();
+  const [s, setS] = useState(null);
+  useEffect(() => { api.stats().then((r) => setS(r?.stats || null)).catch(() => {}); }, []);
+  const shown = s ? STATS.filter(([k]) => s[k] != null) : [];
+  if (!shown.length) return null;
+  return (
+    <section className="border-b border-line bg-shell/60">
+      <div className="wrap py-12">
+        <Reveal>
+          <h2 className="text-2xl font-bold text-ink">{t('home.stats.h')}</h2>
+          <p className="mt-1.5 text-sm text-body">{t('home.stats.sub')}</p>
+        </Reveal>
+        <div className="mt-6 grid grid-cols-2 gap-3 stagger sm:grid-cols-3 lg:grid-cols-4">
+          {shown.map(([k, icon]) => <Stat key={k} icon={icon} value={s[k]} label={t(`home.stats.${k}`)} />)}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Stat({ icon, value, label }) {
+  const n = useCountUp(value, { durationMs: 1200 });
+  return (
+    <div className="card lift p-4 sm:p-5">
+      <div className="text-xl" aria-hidden="true">{icon}</div>
+      <div className="mt-1 tabular text-2xl font-extrabold text-brand-deep sm:text-3xl">{Math.round(n).toLocaleString('en-IN')}</div>
+      <div className="mt-0.5 text-sm leading-snug text-body">{label}</div>
+    </div>
+  );
+}
 
 const Line = ({ label, value, note, tone }) => (
   <div className="flex items-center justify-between gap-3 border-b border-line/70 pb-2">
