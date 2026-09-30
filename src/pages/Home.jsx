@@ -222,6 +222,14 @@ export default function Home() {
                 <Tick key={k}>{t(`home.price.${k}${wa && (k === 't2' || k === 't4') ? '.wa' : ''}`, { days, validDays })}</Tick>
               ))}
             </ul>
+            {/* Why pay at all (user, 2026-09-30): what the other way costs. */}
+            <div className="mt-6 rounded-xl border border-watch-500/30 bg-watch-50 p-4">
+              <h3 className="text-base font-bold text-ink">{t('home.why.h', { price })}</h3>
+              <ul className="mt-2 space-y-1.5 text-sm text-body">
+                {['time', 'fuel', 'calls'].map((k) => <li key={k}>{t(`home.why.${k}`)}</li>)}
+              </ul>
+              <p className="mt-2.5 text-sm font-semibold text-ink"><Rich text={t('home.why.end', { price })} /></p>
+            </div>
           </Reveal>
 
           <Reveal delay={80} className="card self-start p-6">

@@ -208,6 +208,12 @@ export const STRINGS = {
     'home.stats.challans_found': 'Pending challans found',
     'home.stats.states': 'States & UTs',
 
+    'home.why.h': 'Why run around, when it is just {price}?',
+    'home.why.time': '🕒 Hours at the RTO, or waiting on an agent to call back',
+    'home.why.fuel': '⛽ Fuel and parking, just to get there and back',
+    'home.why.calls': '📞 Calls and follow-ups for details you could read in a minute',
+    'home.why.end': 'Or spend **{price}** once — and get it all on WhatsApp, in minutes.',
+
     'home.who.h': 'Who checks a gaadi on GaadiPe',
     'home.who.sub': 'Four reasons people run a number through us.',
     'home.who.buy.t': 'Buying second-hand',
@@ -713,6 +719,12 @@ export const STRINGS = {
     'home.stats.expired_found': 'एक्सपायर्ड इंश्योरेंस या PUC वाली गाड़ियाँ मिलीं',
     'home.stats.challans_found': 'पेंडिंग चालान मिले',
     'home.stats.states': 'राज्य और केंद्र शासित प्रदेश',
+
+    'home.why.h': 'सिर्फ़ {price} के लिए इतनी भागदौड़ क्यों?',
+    'home.why.time': '🕒 RTO में घंटों, या एजेंट के फ़ोन का इंतज़ार',
+    'home.why.fuel': '⛽ वहाँ आने-जाने का पेट्रोल और पार्किंग',
+    'home.why.calls': '📞 बार-बार फ़ोन और फ़ॉलो-अप, उस जानकारी के लिए जो एक मिनट में पढ़ी जा सकती है',
+    'home.why.end': 'या एक बार **{price}** दीजिए — सब कुछ WhatsApp पर, कुछ ही मिनटों में।',
 
     'home.who.h': 'GaadiPe पर गाड़ी कौन चेक करता है',
     'home.who.sub': 'चार वजहें, जिनसे लोग हमारे यहाँ नंबर डालते हैं।',
