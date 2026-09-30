@@ -121,11 +121,10 @@ export default function Home() {
             {/* Why pay at all (user, 2026-09-30): what the other way costs — up
                 top, where the decision is made. Compact, so the button stays high. */}
             <div className="anim-up mt-4 rounded-xl border border-watch-500/30 bg-watch-50 px-4 py-3" style={{ animationDelay: '.34s' }}>
-              <p className="text-sm font-bold text-ink">{t('home.why.h', { price })}</p>
-              <ul className="mt-1.5 grid gap-1 text-2xs text-body sm:grid-cols-3 sm:gap-2">
-                {['time', 'fuel', 'calls'].map((k) => <li key={k}>{t(`home.why.${k}.s`)}</li>)}
-              </ul>
-              <p className="mt-1.5 text-sm text-ink"><Rich text={t('home.why.end', { price })} /></p>
+              <p className="text-base font-bold text-ink">{t('home.why.h', { price })}</p>
+              <p className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-sm font-medium text-body">
+                {['time', 'fuel', 'calls'].map((k) => <span key={k} className="whitespace-nowrap">{t(`home.why.${k}.s`)}</span>)}
+              </p>
             </div>
             <DataSourceNote compact className="anim-up mt-4" />
           </div>
