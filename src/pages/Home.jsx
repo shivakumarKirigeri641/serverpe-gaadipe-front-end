@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api, waLink, WHATSAPP_ENABLED, WEB_LOGIN } from '../lib/api';
 import WhatsAppCta from '../components/WhatsAppCta.jsx';
@@ -335,32 +335,81 @@ const STATS = [
 function SoFar() {
   const { t } = useLang();
   const [s, setS] = useState(null);
+  const [seen, setSeen] = useState(false);
+  const ref = useRef(null);
   useEffect(() => { api.stats().then((r) => setS(r?.stats || null)).catch(() => {}); }, []);
+  // The numbers roll when the visitor reaches them (user, 2026-09-30), once —
+  // not on load, when they may still be below the fold and the roll is missed.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || seen) return undefined;
+    if (!('IntersectionObserver' in window)) { setSeen(true); return undefined; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setSeen(true); io.disconnect(); } }, { threshold: 0.35 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [s, seen]);
   const shown = s ? STATS.filter(([k]) => s[k] != null) : [];
   if (!shown.length) return null;
   return (
-    <section className="border-b border-line bg-shell/60">
+    <section ref={ref} className="border-b border-line bg-shell/60">
       <div className="wrap py-12">
         <Reveal>
           <h2 className="text-2xl font-bold text-ink">{t('home.stats.h')}</h2>
           <p className="mt-1.5 text-sm text-body">{t('home.stats.sub')}</p>
         </Reveal>
         <div className="mt-6 grid grid-cols-2 gap-3 stagger sm:grid-cols-3 lg:grid-cols-4">
-          {shown.map(([k, icon]) => <Stat key={k} icon={icon} value={s[k]} label={t(`home.stats.${k}`)} />)}
+          {shown.map(([k, icon], i) => <Stat key={k} icon={icon} value={s[k]} label={t(`home.stats.${k}`)} go={seen} delay={i * 90} />)}
         </div>
       </div>
     </section>
   );
 }
 
-function Stat({ icon, value, label }) {
-  const n = useCountUp(value, { durationMs: 1200 });
+function Stat({ icon, value, label, go, delay }) {
   return (
     <div className="card lift p-4 sm:p-5">
       <div className="text-xl" aria-hidden="true">{icon}</div>
-      <div className="mt-1 tabular text-2xl font-extrabold text-brand-deep sm:text-3xl">{Math.round(n).toLocaleString('en-IN')}</div>
+      <div className="mt-1 text-2xl font-extrabold text-brand-deep sm:text-3xl">
+        <Odometer value={value} go={go} delay={delay} />
+      </div>
       <div className="mt-0.5 text-sm leading-snug text-body">{label}</div>
     </div>
+  );
+}
+
+/*
+ * A rolling counter, like a car's odometer: each digit is a strip of 0–9
+ * (three times over, so it spins a couple of turns) that slides to its place.
+ * The rightmost digits spin longest and land last. With reduced motion asked
+ * for, the number is simply there.
+ */
+const SPINS = 2;
+function Odometer({ value, go, delay = 0 }) {
+  const text = Number(value).toLocaleString('en-IN');
+  const reduced = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) return <span className="tabular">{text}</span>;
+  const digits = [...text].filter((c) => /\d/.test(c)).length;
+  let seenDigits = 0;
+  return (
+    <span className="tabular inline-flex overflow-hidden leading-none" aria-label={text} role="text">
+      {[...text].map((c, i) => {
+        if (!/\d/.test(c)) return <span key={i} aria-hidden="true">{c}</span>;
+        const place = digits - seenDigits++; // 1 = units
+        const target = go ? SPINS * 10 + Number(c) : 0;
+        const ms = 1100 + (digits - place) * 180;
+        return (
+          <span key={i} aria-hidden="true" className="relative inline-block h-[1em] overflow-hidden">
+            <span className="flex flex-col"
+              style={{
+                transform: `translateY(-${target}em)`,
+                transition: go ? `transform ${ms}ms cubic-bezier(.16,.84,.3,1) ${delay}ms` : 'none',
+              }}>
+              {Array.from({ length: (SPINS + 1) * 10 }, (_, d) => <span key={d} className="h-[1em] leading-none">{d % 10}</span>)}
+            </span>
+          </span>
+        );
+      })}
+    </span>
   );
 }
 
