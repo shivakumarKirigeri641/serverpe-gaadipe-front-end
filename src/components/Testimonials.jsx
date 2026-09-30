@@ -84,7 +84,10 @@ export default function Testimonials() {
 }
 
 function Card({ t, i, lit, hidden = false }) {
-  const initial = (String(t.name || '?').trim()[0] || '?').toUpperCase();
+  // No name given: the admin's stand-in ("Verified GaadiPe customer") gets a
+  // tick instead of a letter, and the line under it does not repeat itself.
+  const anonymous = /^verified\b|^anonymous\b/i.test(String(t.name || ''));
+  const initial = anonymous ? '✓' : (String(t.name || '?').trim()[0] || '?').toUpperCase();
   return (
     <figure aria-hidden={hidden || undefined}
       className="relative flex w-[280px] shrink-0 flex-col rounded-2xl border border-line bg-white p-5 text-left shadow-card transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg sm:w-[330px]">
@@ -106,7 +109,7 @@ function Card({ t, i, lit, hidden = false }) {
           style={{ background: GRADIENTS[i % GRADIENTS.length] }} aria-hidden="true">{initial}</span>
         <span className="min-w-0">
           <span className="block truncate text-sm font-semibold text-ink">{t.name}</span>
-          <span className="block text-2xs text-muted">✔ GaadiPe customer · {t.month}</span>
+          <span className="block text-2xs text-muted">{anonymous ? t.month : `✔ GaadiPe customer · ${t.month}`}</span>
         </span>
       </figcaption>
     </figure>
