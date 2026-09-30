@@ -51,8 +51,6 @@ export default function Layout({ children, wide = false }) {
               <>
                 <a href="/#report" className="text-sm text-body hover:text-ink">{t('nav.whatYouGet')}</a>
                 <a href="/#price" className="text-sm text-body hover:text-ink">{t('nav.price')}</a>
-                {me ? <Link to="/app/refer" className="text-sm font-semibold text-brand-deep hover:text-ink">🎁 {t('nav.refer')}</Link>
-                  : <a href="/#price" className="text-sm font-semibold text-brand-deep hover:text-ink">🎁 {t('nav.refer')}</a>}
                 <a href="/#faq" className="text-sm text-body hover:text-ink">{t('nav.faq')}</a>
               </>
             )}
@@ -83,7 +81,7 @@ export default function Layout({ children, wide = false }) {
           <div className="anim-open border-t border-line bg-white md:hidden">
             <div className="wrap flex flex-col py-2">
               {(inApp ? appLinks
-                : [['/#price', t('nav.price')], [me && WEB_LOGIN ? '/app/refer' : '/#price', `🎁 ${t('nav.refer')}`],
+                : [['/#price', t('nav.price')],
                    WEB_LOGIN ? ['/login', t('common.signIn')] : [waLink('Hi'), t('wa.short')],
                    ['/terms', t('nav.terms')], ['/privacy', t('nav.privacy')], ['/refund', t('nav.refunds')]]
               ).map(([to, label]) => (

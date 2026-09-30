@@ -245,9 +245,6 @@ export default function Home() {
               <a className="btn-quiet mt-2 w-full" href={waLink('Hi')}>WhatsApp</a>
             )}
             <p className="mt-3 text-2xs text-muted">{t('home.price.final')}</p>
-            <div className="mt-4 rounded-lg border border-brand/20 bg-brand/5 p-3 text-sm text-body">
-              🎁 <b>{t('home.refer.h')}</b> {t('home.refer.b')}
-            </div>
           </Reveal>
         </div>
       </section>
