@@ -129,6 +129,7 @@ export default function Layout({ children, wide = false }) {
             <div className="text-2xs font-semibold uppercase tracking-wider text-muted">{t('footer.support')}</div>
             <ul className="mt-2 space-y-1.5 text-sm">
               <li><Link className="text-body hover:text-ink" to="/help">{t('footer.help')}</Link></li>
+              <li><Link className="text-body hover:text-ink" to="/feedback?src=footer">{lang === 'hi' ? '⭐ फ़ीडबैक दें' : '⭐ Give feedback'}</Link></li>
               <li><a className="text-body hover:text-ink" href="mailto:support@gaadipe.in">support@gaadipe.in</a></li>
               {WHATSAPP_ENABLED && (
                 <li><a className="text-body hover:text-ink" href={waLink('I need help with')}>WhatsApp</a></li>

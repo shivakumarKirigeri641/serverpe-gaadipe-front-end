@@ -13,6 +13,7 @@ import Check from './pages/Check.jsx';
 import Documents from './pages/Documents.jsx';
 import Profile from './pages/Profile.jsx';
 import Support from './pages/Support.jsx';
+import Feedback from './pages/Feedback.jsx';
 import Refer from './pages/Refer.jsx';
 import ReferLanding from './pages/ReferLanding.jsx';
 import SupportTicket from './pages/SupportTicket.jsx';
@@ -79,6 +80,8 @@ export default function App() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={WEB_LOGIN ? <Login /> : <OnWhatsApp />} />
       <Route path="/help" element={<Support />} />
+      {/* Rating and a message from a link — sent in broadcasts (user, 2026-09-30). */}
+      <Route path="/feedback" element={<Feedback />} />
 
       {/* The legal documents, all served from the one published source. */}
       <Route path="/terms" element={<Policy />} />

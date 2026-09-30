@@ -134,6 +134,7 @@ async function pdf(path, download) {
 export const api = {
   /* Public */
   pricing: () => call('/pricing', { auth: false }),
+  feedback: (body) => call('/feedback', { method: 'POST', auth: false, body }),
   stats: () => call('/stats', { auth: false }),
   policies: () => call('/policies', { auth: false, base: PUBLIC }),
 
