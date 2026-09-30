@@ -9,6 +9,7 @@ import DataSourceNote from '../components/DataSourceNote.jsx';
 import SisterQuizpe from '../components/SisterQuizpe.jsx';
 import { QUIZPE_ENABLED } from '../lib/api';
 import Reveal from '../components/Reveal.jsx';
+import Testimonials from '../components/Testimonials.jsx';
 
 /**
  * The landing page, in English and Hindi.
@@ -169,6 +170,9 @@ export default function Home() {
 
       {/* ------------------------------------------------------ GaadiPe so far */}
       <SoFar />
+
+      {/* ------------------------------------------ what customers say (approved) */}
+      <Testimonials />
 
       {/* ------------------------------------------------ how it works, in chat */}
       {wa && (

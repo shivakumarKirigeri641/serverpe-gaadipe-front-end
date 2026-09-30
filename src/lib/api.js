@@ -135,6 +135,7 @@ export const api = {
   /* Public */
   pricing: () => call('/pricing', { auth: false }),
   feedback: (body) => call('/feedback', { method: 'POST', auth: false, body }),
+  testimonials: () => call('/testimonials', { auth: false }),
   stats: () => call('/stats', { auth: false }),
   policies: () => call('/policies', { auth: false, base: PUBLIC }),
 

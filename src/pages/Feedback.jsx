@@ -22,6 +22,7 @@ const PAGE = {
     morePh: { low: 'What went wrong? We will try to put it right.', high: 'What did you like? What should we add?' },
     name: 'Your name (optional)',
     send: 'Send feedback',
+    consent: 'By sending, you agree that we may show your first name, rating and message on gaadipe.in. Nothing else about you is ever shown.',
     sending: 'Sending…',
     thanksH: 'Thank you! 🙏',
     thanksB: 'Your feedback has reached us. It helps make GaadiPe better for everyone.',
@@ -37,6 +38,7 @@ const PAGE = {
     morePh: { low: 'क्या गड़बड़ हुई? हम ठीक करने की कोशिश करेंगे।', high: 'क्या अच्छा लगा? हमें और क्या जोड़ना चाहिए?' },
     name: 'आपका नाम (वैकल्पिक)',
     send: 'फ़ीडबैक भेजें',
+    consent: 'भेजकर आप सहमति देते हैं कि हम आपका पहला नाम, रेटिंग और संदेश gaadipe.in पर दिखा सकते हैं। आपके बारे में और कुछ कभी नहीं दिखाया जाता।',
     sending: 'भेजा जा रहा है…',
     thanksH: 'धन्यवाद! 🙏',
     thanksB: 'आपका फ़ीडबैक हमें मिल गया। इससे GaadiPe सबके लिए बेहतर बनता है।',
@@ -121,6 +123,8 @@ export default function Feedback() {
             {error && <p className="mt-4 rounded-lg bg-wrong-50 px-3 py-2 text-sm text-wrong-700" role="alert">{error}</p>}
 
             <button className="btn-primary btn-big mt-6 w-full" disabled={busy}>{busy ? p.sending : p.send}</button>
+            {/* The consent a testimonial needs (user, 2026-09-30, DPDP). */}
+            <p className="mt-3 text-center text-2xs text-muted">{p.consent}</p>
           </form>
         )}
       </div>
