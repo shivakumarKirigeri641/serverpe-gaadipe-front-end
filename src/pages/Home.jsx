@@ -117,6 +117,16 @@ export default function Home() {
             <p className="anim-up mt-3 text-sm text-muted" style={{ animationDelay: '.3s' }}>
               <Rich text={t('home.freeLine', { price })} />
             </p>
+
+            {/* Why pay at all (user, 2026-09-30): what the other way costs — up
+                top, where the decision is made. Compact, so the button stays high. */}
+            <div className="anim-up mt-4 rounded-xl border border-watch-500/30 bg-watch-50 px-4 py-3" style={{ animationDelay: '.34s' }}>
+              <p className="text-sm font-bold text-ink">{t('home.why.h', { price })}</p>
+              <ul className="mt-1.5 grid gap-1 text-2xs text-body sm:grid-cols-3 sm:gap-2">
+                {['time', 'fuel', 'calls'].map((k) => <li key={k}>{t(`home.why.${k}.s`)}</li>)}
+              </ul>
+              <p className="mt-1.5 text-sm text-ink"><Rich text={t('home.why.end', { price })} /></p>
+            </div>
             <DataSourceNote compact className="anim-up mt-4" />
           </div>
 
@@ -222,14 +232,6 @@ export default function Home() {
                 <Tick key={k}>{t(`home.price.${k}${wa && (k === 't2' || k === 't4') ? '.wa' : ''}`, { days, validDays })}</Tick>
               ))}
             </ul>
-            {/* Why pay at all (user, 2026-09-30): what the other way costs. */}
-            <div className="mt-6 rounded-xl border border-watch-500/30 bg-watch-50 p-4">
-              <h3 className="text-base font-bold text-ink">{t('home.why.h', { price })}</h3>
-              <ul className="mt-2 space-y-1.5 text-sm text-body">
-                {['time', 'fuel', 'calls'].map((k) => <li key={k}>{t(`home.why.${k}`)}</li>)}
-              </ul>
-              <p className="mt-2.5 text-sm font-semibold text-ink"><Rich text={t('home.why.end', { price })} /></p>
-            </div>
           </Reveal>
 
           <Reveal delay={80} className="card self-start p-6">

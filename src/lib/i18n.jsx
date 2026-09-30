@@ -212,6 +212,9 @@ export const STRINGS = {
     'home.why.time': '🕒 Hours at the RTO, or waiting on an agent to call back',
     'home.why.fuel': '⛽ Fuel and parking, just to get there and back',
     'home.why.calls': '📞 Calls and follow-ups for details you could read in a minute',
+    'home.why.time.s': '🕒 Hours at the RTO or waiting on an agent',
+    'home.why.fuel.s': '⛽ Fuel and parking to get there and back',
+    'home.why.calls.s': '📞 Calls and follow-ups, again and again',
     'home.why.end': 'Or spend **{price}** once — and get it all on WhatsApp, in minutes.',
 
     'home.who.h': 'Who checks a gaadi on GaadiPe',
@@ -724,6 +727,9 @@ export const STRINGS = {
     'home.why.time': '🕒 RTO में घंटों, या एजेंट के फ़ोन का इंतज़ार',
     'home.why.fuel': '⛽ वहाँ आने-जाने का पेट्रोल और पार्किंग',
     'home.why.calls': '📞 बार-बार फ़ोन और फ़ॉलो-अप, उस जानकारी के लिए जो एक मिनट में पढ़ी जा सकती है',
+    'home.why.time.s': '🕒 RTO में घंटों या एजेंट का इंतज़ार',
+    'home.why.fuel.s': '⛽ आने-जाने का पेट्रोल और पार्किंग',
+    'home.why.calls.s': '📞 बार-बार फ़ोन और फ़ॉलो-अप',
     'home.why.end': 'या एक बार **{price}** दीजिए — सब कुछ WhatsApp पर, कुछ ही मिनटों में।',
 
     'home.who.h': 'GaadiPe पर गाड़ी कौन चेक करता है',
