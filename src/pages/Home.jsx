@@ -9,7 +9,6 @@ import DataSourceNote from '../components/DataSourceNote.jsx';
 import SisterQuizpe from '../components/SisterQuizpe.jsx';
 import { QUIZPE_ENABLED } from '../lib/api';
 import Reveal from '../components/Reveal.jsx';
-import useCountUp from '../lib/useCountUp';
 
 /**
  * The landing page, in English and Hindi.
@@ -33,7 +32,9 @@ export default function Home() {
   useEffect(() => { api.pricing().then(setPricing).catch(() => {}); }, []);
   // What a free check gives away, so the example card matches it (free_view_detail).
   const detail = pricing?.free_view_detail || 'count';
-  const priceValue = useCountUp(pricing ? Math.round(pricing.price_paise / 100) : 0);
+  // The price rolls on the pump drums when its card comes into view (user, 2026-09-30).
+  const priceRef = useRef(null);
+  const priceSeen = useSeen(priceRef, Boolean(pricing));
   const price = pricing ? rupees(pricing.price_paise) : '₹19';
   const days = pricing?.duration_days ?? 28;
   const validDays = pricing?.report_valid_days ?? 7;
@@ -226,7 +227,7 @@ export default function Home() {
           <Reveal delay={80} className="card self-start p-6">
             <div className="text-2xs font-semibold uppercase tracking-wider text-muted">{t('home.price.card')}</div>
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="tabular text-5xl font-bold text-ink">₹{priceValue}</span>
+              <span ref={priceRef} className="tabular text-5xl font-bold text-ink">₹{pricing ? <Odometer value={Math.round(pricing.price_paise / 100)} go={priceSeen} ms={1300} /> : '—'}</span>
               <span className="text-sm text-muted">{t('home.price.per')}</span>
             </div>
             <p className="mt-2 text-2xs text-muted">{t('home.price.incl')}</p>
@@ -335,19 +336,11 @@ const STATS = [
 function SoFar() {
   const { t } = useLang();
   const [s, setS] = useState(null);
-  const [seen, setSeen] = useState(false);
   const ref = useRef(null);
   useEffect(() => { api.stats().then((r) => setS(r?.stats || null)).catch(() => {}); }, []);
   // The numbers roll when the visitor reaches them (user, 2026-09-30), once —
   // not on load, when they may still be below the fold and the roll is missed.
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || seen) return undefined;
-    if (!('IntersectionObserver' in window)) { setSeen(true); return undefined; }
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setSeen(true); io.disconnect(); } }, { threshold: 0.35 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [s, seen]);
+  const seen = useSeen(ref, Boolean(s));
   const shown = s ? STATS.filter(([k]) => s[k] != null) : [];
   if (!shown.length) return null;
   return (
@@ -378,39 +371,60 @@ function Stat({ icon, value, label, go, delay }) {
 }
 
 /*
- * A rolling counter, like a car's odometer: each digit is a strip of 0–9
- * (three times over, so it spins a couple of turns) that slides to its place.
- * The rightmost digits spin longest and land last. With reduced motion asked
- * for, the number is simply there.
+ * THE PETROL-PUMP READING (user, 2026-09-30), the same as the admin panel's:
+ * each digit is a mechanical drum of 0–9 that only turns forward. The units
+ * drum whirls three extra turns, the tens two, the hundreds one — and all of
+ * them stop together, the way a 1980s fuel pump settles on the amount. The
+ * top and bottom of each window fade, like a drum turning out of sight. With
+ * reduced motion asked for, the number is simply there.
  */
-const SPINS = 2;
-function Odometer({ value, go, delay = 0 }) {
+const DRUM_H = 1.15; // em
+const DRUM = Array.from({ length: 50 }, (_, i) => i % 10);
+function Odometer({ value, go, delay = 0, ms = 1500 }) {
   const text = Number(value).toLocaleString('en-IN');
   const reduced = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   if (reduced) return <span className="tabular">{text}</span>;
-  const digits = [...text].filter((c) => /\d/.test(c)).length;
+  const chars = [...text];
+  const digits = chars.filter((c) => /\d/.test(c)).length;
   let seenDigits = 0;
+  const mask = 'linear-gradient(transparent, #000 22%, #000 78%, transparent)';
   return (
-    <span className="tabular inline-flex overflow-hidden leading-none" aria-label={text} role="text">
-      {[...text].map((c, i) => {
+    <span className="tabular inline-flex overflow-hidden align-bottom" style={{ height: `${DRUM_H}em`, lineHeight: `${DRUM_H}em` }}
+      aria-label={text} role="text">
+      {chars.map((c, i) => {
         if (!/\d/.test(c)) return <span key={i} aria-hidden="true">{c}</span>;
         const place = digits - seenDigits++; // 1 = units
-        const target = go ? SPINS * 10 + Number(c) : 0;
-        const ms = 1100 + (digits - place) * 180;
+        const extra = Math.max(0, 4 - place); // units 3, tens 2, hundreds 1
+        const target = go ? 10 * extra + Number(c) : 0;
         return (
-          <span key={i} aria-hidden="true" className="relative inline-block h-[1em] overflow-hidden">
-            <span className="flex flex-col"
+          <span key={i} aria-hidden="true" className="relative inline-block overflow-hidden"
+            style={{ height: `${DRUM_H}em`, WebkitMaskImage: mask, maskImage: mask }}>
+            <span className="block"
               style={{
-                transform: `translateY(-${target}em)`,
-                transition: go ? `transform ${ms}ms cubic-bezier(.16,.84,.3,1) ${delay}ms` : 'none',
+                transform: `translateY(-${target * DRUM_H}em)`,
+                transition: go ? `transform ${ms}ms cubic-bezier(.3,.1,.2,1) ${delay}ms` : 'none',
               }}>
-              {Array.from({ length: (SPINS + 1) * 10 }, (_, d) => <span key={d} className="h-[1em] leading-none">{d % 10}</span>)}
+              {DRUM.map((d, k) => <span key={k} className="block text-center" style={{ height: `${DRUM_H}em`, lineHeight: `${DRUM_H}em` }}>{d}</span>)}
             </span>
           </span>
         );
       })}
     </span>
   );
+}
+
+/** True once the element has come into view (a third of it), and stays true. */
+function useSeen(ref, ready = true) {
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!ready || !el || seen) return undefined;
+    if (!('IntersectionObserver' in window)) { setSeen(true); return undefined; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setSeen(true); io.disconnect(); } }, { threshold: 0.35 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ref, ready, seen]);
+  return seen;
 }
 
 const Line = ({ label, value, note, tone }) => (
