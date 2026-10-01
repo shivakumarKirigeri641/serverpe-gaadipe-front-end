@@ -166,6 +166,10 @@ export default function Vehicle({ v, open: openProp, onBuy, buying, defaultOpen 
 
               <Section title={t('veh.section.ownership')}>
                 <Grid rows={[
+                  // Masked, as on Parivahan (user, 2026-10-01).
+                  ...(v.ownership?.owner_masked ? [[t('veh.ownerMasked'), v.ownership.owner_masked]] : []),
+                  ...(v.ownership?.chassis_masked ? [[t('veh.chassisMasked'), v.ownership.chassis_masked]] : []),
+                  ...(v.ownership?.engine_masked ? [[t('veh.engineMasked'), v.ownership.engine_masked]] : []),
                   [t('home.lock.loan'), v.ownership?.financer ? titleCase(v.ownership.financer) : '—'],
                   ['Blacklist', v.ownership?.blacklist_status || '—'],
                   ['NOC', v.ownership?.noc_details || '—'],
