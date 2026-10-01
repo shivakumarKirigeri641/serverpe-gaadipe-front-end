@@ -92,8 +92,9 @@ export default function Home() {
                 <span className="flex items-center gap-1.5"><span className="text-good-700">✓</span>{t('home.offer.l1')}</span>
                 <span className="flex items-center gap-1.5"><span className="text-good-700">✓</span>{t('home.offer.l2', { days })}</span>
               </div>
-              <p className="mt-2.5 flex items-start gap-1.5 border-t border-wrong-500/20 pt-2.5 text-2xs font-medium leading-snug text-wrong-700">
-                <span aria-hidden="true">⚠</span>{t('home.offer.law')}
+              {/* A reassurance, not a warning (user, 2026-10-01): personal details are masked. */}
+              <p className="mt-2.5 flex items-start gap-1.5 border-t border-line pt-2.5 text-2xs font-medium leading-snug text-body">
+                <span aria-hidden="true">🔒</span>{t('home.offer.law')}
               </p>
             </div>
 
