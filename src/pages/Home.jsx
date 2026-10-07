@@ -30,6 +30,14 @@ export default function Home() {
   const [reg, setReg] = useState('');
   const navigate = useNavigate();
 
+  /* Someone who has used the chat opens straight into it (2026-10-07); the
+     chat's "Home" link comes back here with ?home=1. */
+  useEffect(() => {
+    let used = false;
+    try { used = localStorage.getItem('gp.chat.used') === '1'; } catch { /* private mode */ }
+    if (used && !new URLSearchParams(window.location.search).has('home')) navigate(`/chat${window.location.search}`, { replace: true });
+  }, [navigate]);
+
   useEffect(() => { api.pricing().then(setPricing).catch(() => {}); }, []);
   // What a free check gives away, so the example card matches it (free_view_detail).
   const detail = pricing?.free_view_detail || 'count';
@@ -46,9 +54,8 @@ export default function Home() {
     e.preventDefault();
     const plate = reg.toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (plate.length < 5) return;
-    // The check itself needs an account, so the plate travels to the sign-in
-    // screen and the check runs the moment they are in.
-    navigate(`/app/check?reg=${plate}`);
+    // The free check needs no account (2026-10-07): it runs in the chat at once.
+    navigate(`/chat?reg=${plate}`);
   };
 
   return (
@@ -160,7 +167,7 @@ export default function Home() {
                 <Locked label={t('home.lock.challans')} />
                 <Locked label={t('home.lock.dates')} />
               </div>
-              <a className="btn-primary btn-arrow mt-3 w-full text-center" href={wa ? waLink('Hi') : '/app/check'}>
+              <a className="btn-primary btn-arrow mt-3 w-full text-center" href={wa ? waLink('Hi') : '/chat'}>
                 {t('home.lock.cta', { price })} <span className="arrow">→</span>
               </a>
             </div>

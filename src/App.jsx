@@ -19,6 +19,7 @@ import ReferLanding from './pages/ReferLanding.jsx';
 import SupportTicket from './pages/SupportTicket.jsx';
 import ReferralLanding from './pages/ReferralLanding.jsx';
 import OnWhatsApp from './pages/OnWhatsApp.jsx';
+import Chat from './pages/Chat.jsx';
 
 /**
  * The public pages render for anybody. The account area waits until the panel
@@ -78,6 +79,8 @@ export default function App() {
     <ClickTracker />
     <Routes>
       <Route path="/" element={<Home />} />
+      {/* The chat (2026-10-07): free check without signing in; full-screen, installable. */}
+      <Route path="/chat" element={<Chat />} />
       <Route path="/login" element={WEB_LOGIN ? <Login /> : <OnWhatsApp />} />
       <Route path="/help" element={<Support />} />
       {/* Rating and a message from a link — sent in broadcasts (user, 2026-09-30). */}

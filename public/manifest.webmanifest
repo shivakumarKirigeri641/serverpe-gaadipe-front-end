@@ -1,0 +1,19 @@
+{
+  "name": "GaadiPe — Vehicle Records",
+  "short_name": "GaadiPe",
+  "description": "Check any vehicle's challans, insurance, PUC, loan and owner history. Free basic check, full report ₹19.",
+  "id": "/chat",
+  "start_url": "/chat?utm_source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef4f3",
+  "theme_color": "#0f766e",
+  "lang": "en-IN",
+  "categories": ["utilities", "auto & vehicles"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
