@@ -77,11 +77,11 @@ export default function Layout({ children, wide = false }) {
               <a className="btn-primary !py-2" href={waLink('Hi')} rel="noopener">{t('wa.short')}</a>
             ) : me ? (
               <>
-                {!inApp && <Link className="btn-quiet !py-2" to="/app">{t('common.myVehicles')}</Link>}
+                {!inApp && <Link className="btn-quiet !py-2" to="/chat">{t('common.myVehicles')}</Link>}
                 {inApp && <button className="btn-quiet !py-2 hidden sm:inline-flex" onClick={signOut}>{t('common.signOut')}</button>}
               </>
             ) : (
-              <Link className="btn-primary !py-2" to="/login">{t('common.signIn')}</Link>
+              <Link className="btn-primary !py-2" to="/chat?signin=1">{t('common.signIn')}</Link>
             )}
             <button className="btn-quiet !px-2.5 !py-2 md:hidden" onClick={() => setOpen(!open)} aria-label="Menu">☰</button>
           </div>
@@ -92,7 +92,7 @@ export default function Layout({ children, wide = false }) {
             <div className="wrap flex flex-col py-2">
               {(inApp ? appLinks
                 : [['/#price', t('nav.price')],
-                   WEB_LOGIN ? ['/login', t('common.signIn')] : [waLink('Hi'), t('wa.short')],
+                   WEB_LOGIN ? [me ? '/chat' : '/chat?signin=1', me ? t('common.myVehicles') : t('common.signIn')] : [waLink('Hi'), t('wa.short')],
                    ['/terms', t('nav.terms')], ['/privacy', t('nav.privacy')], ['/refund', t('nav.refunds')]]
               ).map(([to, label]) => (
                 to.startsWith('/#') || to.startsWith('https:')
@@ -118,10 +118,10 @@ export default function Layout({ children, wide = false }) {
             <div className="text-2xs font-semibold uppercase tracking-wider text-muted">{t('footer.product')}</div>
             <ul className="mt-2 space-y-1.5 text-sm">
               {WEB_LOGIN
-                ? <li><Link className="text-body hover:text-ink" to="/app/check">{t('common.checkVehicle')}</Link></li>
+                ? <li><Link className="text-body hover:text-ink" to="/chat">{t('common.checkVehicle')}</Link></li>
                 : <li><a className="text-body hover:text-ink" href={waLink('Hi')}>{t('common.checkVehicle')}</a></li>}
               {WHATSAPP_ENABLED && <li><a className="text-body hover:text-ink" href={waLink('Hi')}>GaadiPe on WhatsApp</a></li>}
-              {WEB_LOGIN && <li><Link className="text-body hover:text-ink" to="/login">{t('common.signIn')}</Link></li>}
+              {WEB_LOGIN && !me && <li><Link className="text-body hover:text-ink" to="/chat?signin=1">{t('common.signIn')}</Link></li>}
               {QUIZPE_ENABLED && <li><a className="text-body hover:text-ink" href="https://quizpe.in/?utm_source=gaadipe&utm_medium=footer" target="_blank" rel="noopener noreferrer">{t('footer.quizpe')}</a></li>}
             </ul>
           </div>

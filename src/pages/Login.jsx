@@ -23,7 +23,8 @@ export default function Login() {
   const { t } = useLang();
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const next = params.get('next') || '/app';
+  // Signed in, a customer lands in the chat (2026-10-07); an account page they were sent from still wins.
+  const next = params.get('next') || '/chat';
 
   const [step, setStep] = useState('mobile');
   const [mobile, setMobile] = useState('');

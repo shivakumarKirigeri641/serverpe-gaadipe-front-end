@@ -87,7 +87,7 @@ export default function Feedback() {
             {/* WhatsApp only while it is offered (2026-10-07); the website check otherwise. */}
             {WHATSAPP_ENABLED
               ? <WhatsAppCta className="mt-6 w-full" />
-              : <a className="btn-primary btn-arrow mt-6 w-full justify-center text-center" href="/app/check">{t('common.checkVehicle')} <span className="arrow">→</span></a>}
+              : <a className="btn-primary btn-arrow mt-6 w-full justify-center text-center" href="/chat">{t('common.checkVehicle')} <span className="arrow">→</span></a>}
           </div>
         ) : (
           <form onSubmit={submit} className="card anim-up p-5 sm:p-8" noValidate>

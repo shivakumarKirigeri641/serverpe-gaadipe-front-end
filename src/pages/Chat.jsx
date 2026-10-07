@@ -302,6 +302,11 @@ export default function Chat() {
         push({ from: 'bot', kind: 'vehicle', paid: true, report: rep, vehicle: DEMO_FULL });
       }).catch(() => {});
     }
+    // Every "Sign in" on the site lands here (?signin=1) and asks for the mobile number at once.
+    if (params.get('signin')) {
+      const rest = new URLSearchParams(params); rest.delete('signin'); setParams(rest, { replace: true });
+      if (!me) setTimeout(() => startSignIn(), 400);
+    }
     // Back from paying (?paid=REG): the report opens right here in the chat.
     const paid = cleanPlate(params.get('paid'));
     if ((reg && looksLikePlate(reg)) || paid) {

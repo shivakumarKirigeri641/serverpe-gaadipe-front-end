@@ -255,7 +255,7 @@ export default function Home() {
             {wa ? (
               <WhatsAppCta className="mt-5 w-full" />
             ) : (
-              <a className="btn-primary btn-big btn-arrow mt-5 w-full" href="/app/check">
+              <a className="btn-primary btn-big btn-arrow mt-5 w-full" href="/chat">
                 {t('home.price.cta')} <span className="arrow">→</span>
               </a>
             )}
@@ -328,7 +328,7 @@ export default function Home() {
             {wa ? (
               <WhatsAppCta className="mt-4" />
             ) : (
-              <a className="btn-primary btn-big btn-arrow mt-4 inline-flex" href="/app/check">
+              <a className="btn-primary btn-big btn-arrow mt-4 inline-flex" href="/chat">
                 {t('common.checkVehicle')} <span className="arrow">→</span>
               </a>
             )}
