@@ -243,7 +243,7 @@ export default function Chat() {
     const paid = cleanPlate(params.get('paid'));
     if ((reg && looksLikePlate(reg)) || paid) {
       const rest = new URLSearchParams(params); rest.delete('reg'); rest.delete('paid'); setParams(rest, { replace: true });
-      if (paid && me) setTimeout(() => { bot(L.paidThanks(prettyPlate(paid))); openVehicle(paid); }, 600);
+      if (paid && me) setTimeout(() => { bot(L.paidThanks(prettyPlate(paid))); openVehicle(paid, { afterPayment: true }); }, 600);
       else if (reg) setTimeout(() => check(reg), 300);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -348,11 +348,17 @@ export default function Chat() {
 
   /* ────────────── the account, inside the conversation (no other pages) ── */
 
-  /** One vehicle as a card: the full report if they own one, else the free view. */
-  async function openVehicle(reg) {
+  /** One vehicle as a card: the full report if they own one, else the free view.
+      Straight after paying ({ afterPayment }), the report may still be on its way:
+      ask again for up to ~30 seconds before showing what there is. */
+  async function openVehicle(reg, { afterPayment = false } = {}) {
     setBusy(true); typing();
     try {
-      const out = await api.vehicle(reg);
+      let out = await api.vehicle(reg);
+      for (let i = 0; afterPayment && i < 12 && !(out.report || out.vehicle?.paid); i += 1) {
+        await new Promise((r) => setTimeout(r, 2500));
+        out = await api.vehicle(reg).catch(() => out);
+      }
       if (out.error || !out.vehicle) { bot(`⚠️ ${out.message || 'Could not open that vehicle.'}`); return; }
       push({ from: 'bot', kind: 'vehicle', vehicle: out.vehicle, paid: Boolean(out.vehicle.paid), report: out.report || null,
              price: out.price_paise, signedIn: true });
@@ -417,7 +423,8 @@ export default function Chat() {
     else { push({ from: 'me', kind: 'text', text: L.fullReport('').trim() }); startSignIn(reg); }
   }
 
-  const quick = me ? ['another', 'myVehicles', 'myReports', 'invoices', 'profile'] : ['howWorks', 'signIn'];
+  // Nothing until the saved sign-in is known — "Sign in" must never flash for someone signed in.
+  const quick = !ready ? [] : me ? ['another', 'myVehicles', 'myReports', 'invoices', 'profile'] : ['howWorks', 'signIn'];
   const placeholder = mode === 'mobile' ? L.placeholderMobile : mode === 'code' ? L.placeholderCode : L.placeholderPlate;
   const plateHint = mode === 'plate' && looksLikePlate(input);
 

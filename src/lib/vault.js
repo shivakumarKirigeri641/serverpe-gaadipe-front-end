@@ -64,6 +64,11 @@ function deviceKey() {
 }
 
 const usable = () => typeof indexedDB !== 'undefined' && typeof crypto !== 'undefined' && crypto.subtle;
+/* LOCAL TESTING ONLY: a phone on the Wi-Fi opens http://192.168.x.x, where the
+   browser switches Web Crypto off (it needs https). Only a DEVELOPMENT build
+   keeps the token unsealed there, so the sign-in survives a reload while
+   testing. A production build never does this — gaadipe.in is https. */
+const devPlain = () => import.meta.env.DEV && !usable();
 
 async function seal(value) {
   const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -88,6 +93,7 @@ const ls = {
 const ready = (async () => {
   try {
     const legacy = ls.get(LEGACY);
+    if (devPlain()) { token = legacy || null; return; }
     if (!usable()) { token = legacy || null; ls.set(LEGACY, null); return; }
     if (legacy) {
       token = legacy;
@@ -105,6 +111,7 @@ const ready = (async () => {
 
 function set(value) {
   token = value || null;
+  if (devPlain()) { ls.set(LEGACY, token); return; }
   ls.set(LEGACY, null);
   if (!token) { ls.set(SEALED, null); return; }
   if (!usable()) return;                        // memory only

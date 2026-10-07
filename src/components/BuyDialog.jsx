@@ -56,7 +56,10 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
         // Same tab: a payment page opened in a new tab that the browser blocks
         // is a payment that never happens. Opened through the site's own API
         // origin, so checkout never depends on a tunnel being up.
-        window.location.href = out.pay_path ? gatewayUrl(out.pay_path) : out.pay_url;
+        // ?go=1: the details were just given here, so the payment page opens
+        // Razorpay at once instead of asking for them a second time (2026-10-07).
+        const target = out.pay_path ? gatewayUrl(out.pay_path) : out.pay_url;
+        window.location.href = `${target}${target.includes('?') ? '&' : '?'}go=1`;
         return;
       }
       if (out.already) { onAlreadyBought?.(); onClose(); }
