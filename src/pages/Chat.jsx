@@ -94,6 +94,19 @@ const T = {
     notifyOffNow: 'Notifications are off for this phone.', turnOff: 'Turn off', notifyIsOn: '🔔 Notifications are on for this phone.',
     helpH: '❓ Help & support',
     helpBody: 'Write to *support@gaadipe.in* — we reply within a day. Tell us your mobile number and the vehicle number, if it is about one.',
+    // Name and email (2026-10-07): highly recommended while WhatsApp is disabled.
+    emailNudge: '📧 *Highly recommended: add your name and email.*\n\nOur WhatsApp number is currently disabled by Meta due to technical concerns, so we cannot reach you there for now.\n\nWith a confirmed email you get *alerts about your vehicles* — a new challan, insurance or PUC about to expire — and your reports and invoices.',
+    addEmail: 'Add my name & email', later: 'Later',
+    askName: 'Great! First, your *name* — how should we address you?',
+    askEmail: (n) => `Thanks${n ? `, *${n}*` : ''}! Now your *email address* — I’ll send a link to confirm it is yours.`,
+    badName: 'Please write your name — at least two letters, no numbers.',
+    emailConfirm: (e) => `✓ Saved. A confirmation link is on its way to *${e}*.\n\nOpen your inbox (check *Spam* too) and tap *Confirm* — vehicle alerts start by email once it is confirmed.`,
+    emailSame: (e) => `*${e}* is already saved.`,
+    didYouMean: (s) => `Use ${s}`,
+    placeholderName: 'Your name', placeholderEmail: 'you@gmail.com',
+    emailOk: '✅ Confirmed — alerts come here', emailWait: '⏳ Waiting for you to confirm', emailNone: 'Not added — alerts cannot reach you',
+    resend: 'Send the link again', resent: '✓ A new confirmation link was sent. Check your inbox and Spam.',
+    edit: 'Edit', saved: '✓ Saved.', laterOk: 'OK. You can add it any time from the menu ⋮ → Profile.',
   },
   hi: {
     hello: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है।\n\nकोई भी गाड़ी नंबर लिखें — जैसे *KA01AB1234* — और उसकी बेसिक जानकारी *मुफ़्त* देखें, साइन इन की ज़रूरत नहीं।\n\nफिर पूरी रिपोर्ट, अपनी गाड़ियों, रिपोर्ट और अलर्ट के लिए मोबाइल नंबर से साइन इन करें।',
@@ -165,6 +178,18 @@ const T = {
     notifyOffNow: 'इस फ़ोन पर नोटिफ़िकेशन बंद हैं।', turnOff: 'बंद करें', notifyIsOn: '🔔 इस फ़ोन पर नोटिफ़िकेशन चालू हैं।',
     helpH: '❓ मदद और सहायता',
     helpBody: '*support@gaadipe.in* पर लिखें — हम एक दिन में जवाब देते हैं। अपना मोबाइल नंबर और (अगर हो) गाड़ी नंबर ज़रूर लिखें।',
+    emailNudge: '📧 *ज़रूर करें: अपना नाम और ईमेल जोड़ें।*\n\nहमारा WhatsApp नंबर अभी Meta ने तकनीकी कारणों से बंद किया हुआ है, इसलिए फ़िलहाल हम आप तक वहाँ नहीं पहुँच सकते।\n\nकन्फ़र्म ईमेल से आपको *अपनी गाड़ियों के अलर्ट* मिलेंगे — नया चालान, बीमा या PUC खत्म होने वाला हो — और आपकी रिपोर्ट व इनवॉइस भी।',
+    addEmail: 'नाम और ईमेल जोड़ें', later: 'बाद में',
+    askName: 'बढ़िया! पहले अपना *नाम* लिखें — हम आपको किस नाम से बुलाएँ?',
+    askEmail: (n) => `धन्यवाद${n ? `, *${n}*` : ''}! अब अपना *ईमेल पता* लिखें — मैं उसे कन्फ़र्म करने का लिंक भेजूँगा।`,
+    badName: 'कृपया अपना नाम लिखें — कम से कम दो अक्षर, कोई अंक नहीं।',
+    emailConfirm: (e) => `✓ सेव हो गया। *${e}* पर कन्फ़र्म करने का लिंक भेजा जा रहा है।\n\nअपना इनबॉक्स खोलें (*Spam* भी देखें) और *Confirm* दबाएँ — कन्फ़र्म होते ही गाड़ियों के अलर्ट ईमेल पर आने लगेंगे।`,
+    emailSame: (e) => `*${e}* पहले से सेव है।`,
+    didYouMean: (s) => `${s} रखें`,
+    placeholderName: 'आपका नाम', placeholderEmail: 'you@gmail.com',
+    emailOk: '✅ कन्फ़र्म — अलर्ट यहीं आएँगे', emailWait: '⏳ आपके कन्फ़र्म करने का इंतज़ार', emailNone: 'नहीं जोड़ा — अलर्ट आप तक नहीं पहुँच सकते',
+    resend: 'लिंक फिर भेजें', resent: '✓ नया लिंक भेजा गया। इनबॉक्स और Spam देखें।',
+    edit: 'बदलें', saved: '✓ सेव हो गया।', laterOk: 'ठीक है। मेनू ⋮ → प्रोफ़ाइल से कभी भी जोड़ें।',
   },
 };
 
@@ -220,7 +245,8 @@ export default function Chat() {
   // Filled once the sign-in is known: the account's own conversation, or a fresh welcome.
   const [items, setItems] = useState([]);
   const [history, setHistory] = useState({ items: [], more: false, before: null, loaded: false });
-  const [mode, setMode] = useState('plate');         // plate | mobile | code
+  const [mode, setMode] = useState('plate');         // plate | mobile | code | name | email
+  const [pendingName, setPendingName] = useState('');
   const [mobile, setMobile] = useState('');
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -283,7 +309,11 @@ export default function Chat() {
   useEffect(() => {
     if (!ready || greeted.current) return;
     greeted.current = true;
-    if (me) { setItems(loadFor(me.id)); loadedFor.current = me.id; welcome(); }
+    if (me) {
+      setItems(loadFor(me.id)); loadedFor.current = me.id; welcome();
+      // No confirmed email yet: the recommendation again, once a day.
+      if (!me.email_verified && nudgeDue(me.id)) { setTimeout(emailNudge, 900); markNudged(me.id); }
+    }
     else bot(L.hello, { chips: ['howWorks'] });
     // A number brought from the home page (?reg=) is checked at once, then dropped from the address.
     const reg = cleanPlate(params.get('reg'));
@@ -350,6 +380,8 @@ export default function Chat() {
     setInput('');
     if (mode === 'mobile') return sendMobile(text);
     if (mode === 'code') return sendCode(text);
+    if (mode === 'name') return sendName(text);
+    if (mode === 'email') return sendEmail(text);
     if (looksLikePlate(text)) return check(text);
     // A mobile number typed in the vehicle box: they want to sign in.
     if (!me && /^[6-9]\d{9}$/.test(ten(text)) && String(text).replace(/\D/g, '').length >= 10) return sendMobile(text);
@@ -413,6 +445,8 @@ export default function Chat() {
       setMode('plate');
       bot(L.signedIn);
       await welcome({ justSignedIn: true });
+      // Highly recommended while WhatsApp is disabled: a confirmed email is how alerts reach them.
+      if (!out.user?.email_verified) { emailNudge(); markNudged(out.user?.id); }
       // Right after signing in: offer notifications (only where the browser can, and not if already on).
       const ns = await notify.state().catch(() => 'unsupported');
       setNotifyState(ns);
@@ -423,6 +457,53 @@ export default function Chat() {
         setPendingReg(null);
       }
     } catch (e) { bot(`⚠️ ${e.message}`); } finally { setBusy(false); }
+  }
+
+  /* ──────── name and email (2026-10-07): highly recommended while WhatsApp is off ── */
+
+  function emailNudge() { push({ from: 'bot', kind: 'text', text: L.emailNudge, chips: ['addEmail', 'later'] }); }
+  /* Signed in already and still no confirmed email: reminded once a day on this device, not every visit. */
+  const NUDGE = (id) => `gp.emailNudge.${id}`;
+  const todayIst = () => new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 10);
+  function markNudged(id) { try { if (id) localStorage.setItem(NUDGE(id), todayIst()); } catch { /* private mode */ } }
+  function nudgeDue(id) { try { return localStorage.getItem(NUDGE(id)) !== todayIst(); } catch { return true; } }
+
+  function startProfile() {
+    const first = String(me?.name || '').split(/\s+/)[0];
+    if (me?.name) { setPendingName(''); setMode('email'); bot(L.askEmail(first)); }
+    else { setMode('name'); bot(L.askName); }
+    setTimeout(() => inputRef.current?.focus(), 50);
+  }
+
+  function sendName(text) {
+    const n = String(text).trim().replace(/\s+/g, ' ');
+    push({ from: 'me', kind: 'text', text: n });
+    if (!/^[\p{L}\p{M}][\p{L}\p{M} .'-]{1,59}$/u.test(n)) { bot(L.badName); return; }
+    setPendingName(n); setMode('email');
+    bot(L.askEmail(n.split(' ')[0]));
+  }
+
+  async function sendEmail(text, { echo = true } = {}) {
+    const e = String(text).trim().toLowerCase();
+    if (echo) push({ from: 'me', kind: 'text', text: e });
+    setBusy(true); typing();
+    try {
+      const out = await api.saveMe({ ...(pendingName ? { name: pendingName } : {}), email: e });
+      setMe?.(out.user); setMode('plate'); setPendingName('');
+      if (out.email_confirmation_sent) bot(L.emailConfirm(e));
+      else if (out.user?.email_verified) bot(`${L.emailSame(e)} ${L.emailOk}`);
+      else bot(L.emailSame(e), { chips: ['resendEmail'] });
+    } catch (err) {
+      const b = err.body || {};
+      if (b.error === 'bad_name') { setMode('name'); bot(`⚠️ ${err.message}`); return; }
+      // Stay on the email step: they can type it again, or take the suggested spelling.
+      bot(`⚠️ ${err.message}`, { chips: b.suggestion ? [`useEmail:${b.suggestion}`] : [] });
+    } finally { setBusy(false); }
+  }
+
+  async function resendLink() {
+    try { const out = await api.resendEmail(); bot(out.already ? L.emailOk : L.resent); }
+    catch (e) { bot(`⚠️ ${e.message}`); }
   }
 
   /* ────────────── the account, inside the conversation (no other pages) ── */
@@ -484,9 +565,12 @@ export default function Chat() {
     try {
       const out = await api.saveMe({ email: e });
       setMe?.(out.user);
-      bot(out.email_confirmation_sent ? L.emailSent(e) : L.emailSaved);
+      bot(out.email_confirmation_sent ? L.emailConfirm(e) : L.emailSaved);
       return true;
-    } catch (err) { bot(`⚠️ ${err.message}`); return false; }
+    } catch (err) {
+      bot(`⚠️ ${err.message}`, { chips: err.body?.suggestion ? [`useEmail:${err.body.suggestion}`] : [] });
+      return false;
+    }
   }
   async function deactivate(reason) {
     try {
@@ -534,13 +618,17 @@ export default function Chat() {
     if (key === 'invoices') { showList('invoices'); return; }
     if (key === 'profile') { showProfile(); return; }
     if (key === 'notifyOff') { notify.disable().then(() => { setNotifyState('off'); bot(L.notifyOffNow); }); return; }
+    if (key === 'addEmail') { push({ from: 'me', kind: 'text', text: L.addEmail }); startProfile(); return; }
+    if (key === 'later') { push({ from: 'me', kind: 'text', text: L.later }); bot(L.laterOk); return; }
+    if (key === 'resendEmail') { push({ from: 'me', kind: 'text', text: L.resend }); resendLink(); return; }
+    if (key.startsWith('useEmail:')) { push({ from: 'me', kind: 'text', text: key.slice(9) }); sendEmail(key.slice(9), { echo: false }); return; }
     if (key.startsWith('open:')) { push({ from: 'me', kind: 'plate', text: prettyPlate(key.slice(5)) }); openVehicle(key.slice(5)); }
   }
   const chipLabel = (key) => (key.startsWith('open:') ? `🔓 ${prettyPlate(key.slice(5))}` : {
     howWorks: `❓ ${L.howWorks}`, another: `🔍 ${L.another}`, signIn: `🔐 ${L.signIn}`,
     myVehicles: `🚗 ${L.myVehicles}`, myReports: `📄 ${L.myReports}`, profile: `👤 ${L.profile}`, invoices: `🧾 ${L.invoices}`,
-    notifyOff: `🔕 ${L.turnOff}`,
-  }[key] || key);
+    notifyOff: `🔕 ${L.turnOff}`, addEmail: `📧 ${L.addEmail}`, later: `⏰ ${L.later}`, resendEmail: `↻ ${L.resend}`,
+  }[key] || (key.startsWith('useEmail:') ? `✓ ${L.didYouMean(key.slice(9))}` : key));
 
   // The payment window opens over the chat; paying returns to /chat?paid=REG.
   function fullReport(reg, price) {
@@ -549,8 +637,10 @@ export default function Chat() {
   }
 
   // Nothing until the saved sign-in is known — "Sign in" must never flash for someone signed in.
-  const quick = !ready ? [] : me ? ['another', 'myVehicles', 'myReports', 'invoices', 'profile'] : ['howWorks', 'signIn'];
-  const placeholder = mode === 'mobile' ? L.placeholderMobile : mode === 'code' ? L.placeholderCode : L.placeholderPlate;
+  const quick = !ready ? [] : me
+    ? [...(me.email_verified ? [] : ['addEmail']), 'another', 'myVehicles', 'myReports', 'invoices', 'profile'] : ['howWorks', 'signIn'];
+  const placeholder = { mobile: L.placeholderMobile, code: L.placeholderCode, name: L.placeholderName, email: L.placeholderEmail }[mode] || L.placeholderPlate;
+  const typed = mode === 'name' || mode === 'email';   // free text: no capitals forced, no digit spacing
   const plateHint = mode === 'plate' && looksLikePlate(input);
 
   return (
@@ -610,8 +700,10 @@ export default function Chat() {
             if (it.kind === 'help') return <CardShell key={it.id} title={L.helpH}><div className="text-[13.5px] text-[#0b2e2b]"><Text text={L.helpBody} /></div>
               <a href="mailto:support@gaadipe.in" className="mt-2 inline-block rounded-full bg-[#0f766e] px-3 py-1.5 text-[12px] font-bold text-white">✉️ support@gaadipe.in</a></CardShell>;
             if (it.kind === 'profile') {
-              return <ProfileCard key={it.id} user={it.user} L={L} onSignOut={doSignOut}
-                onPromo={async (agree) => { const out = await api.setPromoConsent(agree); setMe?.(out.user); return out.user; }} />;
+              return <ProfileCard key={it.id} user={me ? { ...it.user, ...me } : it.user} L={L} onSignOut={doSignOut}
+                onPromo={async (agree) => { const out = await api.setPromoConsent(agree); setMe?.(out.user); return out.user; }}
+                onSave={async (body) => { const out = await api.saveMe(body); setMe?.(out.user); return out; }}
+                onResend={() => api.resendEmail()} />;
             }
             return <Bubble key={it.id} item={it} onChip={chip} chipLabel={chipLabel} L={L} />;
           })}
@@ -632,9 +724,12 @@ export default function Chat() {
           <form className="flex items-end gap-2 px-3 py-2" onSubmit={(e) => { e.preventDefault(); send(); }}>
             <div className="relative flex-1">
               <input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} placeholder={placeholder}
-                inputMode={mode === 'plate' ? 'text' : 'numeric'} autoComplete={mode === 'mobile' ? 'tel' : mode === 'code' ? 'one-time-code' : 'off'}
-                maxLength={mode === 'code' ? 6 : 20} disabled={busy}
-                className={`w-full rounded-2xl border bg-[#f6f9f9] px-4 py-3 text-[15px] outline-none transition focus:border-[#0f766e] focus:bg-white ${mode === 'plate' ? 'uppercase tracking-wider' : 'tracking-widest'} placeholder:normal-case placeholder:tracking-normal ${plateHint ? 'border-[#12a150]' : 'border-black/10'}`} />
+                type={mode === 'email' ? 'email' : 'text'}
+                inputMode={mode === 'email' ? 'email' : mode === 'plate' || mode === 'name' ? 'text' : 'numeric'}
+                autoComplete={{ mobile: 'tel', code: 'one-time-code', name: 'name', email: 'email' }[mode] || 'off'}
+                autoCapitalize={mode === 'name' ? 'words' : mode === 'email' ? 'none' : undefined}
+                maxLength={{ code: 6, name: 60, email: 160 }[mode] || 20} disabled={busy}
+                className={`w-full rounded-2xl border bg-[#f6f9f9] px-4 py-3 text-[15px] outline-none transition focus:border-[#0f766e] focus:bg-white ${mode === 'plate' ? 'uppercase tracking-wider' : typed ? '' : 'tracking-widest'} placeholder:normal-case placeholder:tracking-normal ${plateHint ? 'border-[#12a150]' : 'border-black/10'}`} />
               {plateHint && <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#12a150]">✓ {prettyPlate(input)}</span>}
             </div>
             <button type="submit" disabled={busy || !input.trim()} aria-label="Send"
@@ -913,18 +1008,83 @@ function DocsList({ kind, rows, L, onDownload }) {
   );
 }
 
-function ProfileCard({ user, L, onSignOut, onPromo }) {
+/*
+ * THE PROFILE (2026-10-07): name and email can be changed here. Both are checked
+ * on the server (a real name; an address that can receive mail, with "did you
+ * mean …?" for common typos), and a new email gets a confirmation link — the
+ * card says whether it is confirmed, waiting, or missing, and can send the link again.
+ */
+function ProfileCard({ user, L, onSignOut, onPromo, onSave, onResend }) {
   const [promo, setPromo] = useState(Boolean(user?.promo_consent));
   const [busy, setBusy] = useState(false);
+  const [editing, setEditing] = useState(!user?.email);
+  const [name, setName] = useState(user?.name || user?.display_name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [note, setNote] = useState(null);       // { tone, text, suggestion? }
   const m = String(user?.mobile || '').slice(-10);
+  const status = !user?.email ? ['none', L.emailNone] : user?.email_verified ? ['ok', L.emailOk] : ['wait', L.emailWait];
+
+  const save = async (override) => {
+    const e = String(override ?? email).trim().toLowerCase();
+    const n = name.trim().replace(/\s+/g, ' ');
+    if (n && !/^[\p{L}\p{M}][\p{L}\p{M} .'-]{1,59}$/u.test(n)) { setNote({ tone: 'bad', text: L.badName }); return; }
+    setBusy(true); setNote(null);
+    try {
+      const out = await onSave({ ...(n ? { name: n } : {}), ...(e ? { email: e } : {}) });
+      if (override) setEmail(e);
+      setEditing(false);
+      setNote({ tone: 'good', text: out.email_confirmation_sent ? L.emailConfirm(e) : L.saved });
+    } catch (err) {
+      setNote({ tone: 'bad', text: err.message, suggestion: err.body?.suggestion || null });
+    } finally { setBusy(false); }
+  };
+
   return (
     <div className="anim-up flex flex-col items-start">
       <div className="w-[94%] max-w-md overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
-        <div className="px-3.5 pt-3 text-[14px] font-bold text-[#0b2e2b]">{L.profileH}</div>
+        <div className="flex items-center justify-between px-3.5 pt-3">
+          <span className="text-[14px] font-bold text-[#0b2e2b]">{L.profileH}</span>
+          {!editing && <button type="button" data-test="profile-edit" onClick={() => { setEditing(true); setNote(null); }}
+            className="rounded-full bg-[#0f766e]/10 px-2.5 py-1 text-[11.5px] font-bold text-[#0f766e]">✎ {L.edit}</button>}
+        </div>
         <div className="px-3.5 py-2">
-          <Row k={L.nameL} v={user?.name || user?.display_name || '—'} />
           <Row k={L.mobileL} v={m ? `${m.slice(0, 5)} ${m.slice(5)}` : '—'} />
-          <Row k={L.emailL} v={user?.email || '—'} />
+          {editing ? (
+            <form className="mt-1 space-y-2" onSubmit={(ev) => { ev.preventDefault(); save(); }}>
+              <label className="block text-[11px] font-semibold text-black/50">{L.nameL}
+                <input data-test="profile-name" value={name} onChange={(ev) => setName(ev.target.value)} maxLength={60} autoComplete="name"
+                  placeholder={L.placeholderName} className="mt-0.5 w-full rounded-lg border border-black/10 bg-[#f6f9f9] px-3 py-2 text-[14px] text-[#0b2e2b] outline-none focus:border-[#0f766e]" />
+              </label>
+              <label className="block text-[11px] font-semibold text-black/50">{L.emailL}
+                <input data-test="profile-email" type="email" inputMode="email" autoCapitalize="none" value={email} onChange={(ev) => setEmail(ev.target.value)}
+                  maxLength={160} autoComplete="email" placeholder={L.placeholderEmail}
+                  className="mt-0.5 w-full rounded-lg border border-black/10 bg-[#f6f9f9] px-3 py-2 text-[14px] text-[#0b2e2b] outline-none focus:border-[#0f766e]" />
+              </label>
+              <button type="submit" data-test="profile-save" disabled={busy || (!email.trim() && !name.trim())}
+                className="w-full rounded-full bg-[#0f766e] py-2 text-[13px] font-bold text-white disabled:opacity-40">{busy ? '…' : L.save}</button>
+            </form>
+          ) : (
+            <>
+              <Row k={L.nameL} v={user?.name || user?.display_name || '—'} />
+              <Row k={L.emailL} v={user?.email || '—'} />
+            </>
+          )}
+          <div data-test="profile-email-status" className={`mt-2 rounded-lg px-3 py-2 text-[12.5px] font-semibold ${status[0] === 'ok' ? 'bg-[#e9f8ef] text-[#0a6c34]' : status[0] === 'wait' ? 'bg-[#fff6e6] text-[#8f5600]' : 'bg-[#fdecec] text-[#912018]'}`}>
+            {status[1]}
+            {status[0] === 'wait' && !editing && (
+              <button type="button" data-test="profile-resend" disabled={busy} className="ml-2 underline"
+                onClick={async () => { setBusy(true); try { const o = await onResend(); setNote({ tone: 'good', text: o?.already ? L.emailOk : L.resent }); } catch (e) { setNote({ tone: 'bad', text: e.message }); } finally { setBusy(false); } }}>
+                {L.resend}
+              </button>
+            )}
+          </div>
+          {note && (
+            <div className={`mt-2 rounded-lg px-3 py-2 text-[12.5px] ${note.tone === 'good' ? 'bg-[#f3f7f6] text-[#0b2e2b]' : 'bg-[#fdecec] text-[#912018]'}`}>
+              <Text text={note.text} />
+              {note.suggestion && <button type="button" data-test="profile-suggestion" onClick={() => save(note.suggestion)}
+                className="mt-1.5 block rounded-full bg-[#0f766e] px-3 py-1 text-[12px] font-bold text-white">✓ {L.didYouMean(note.suggestion)}</button>}
+            </div>
+          )}
           <label className="mt-2 flex cursor-pointer items-center justify-between gap-3 rounded-lg bg-[#f3f7f6] px-3 py-2 text-[13px]">
             <span className="text-[#0b2e2b]">{L.offers}</span>
             <input type="checkbox" data-test="profile-offers" className="h-5 w-5 accent-[#0f766e]" checked={promo} disabled={busy}
