@@ -275,6 +275,12 @@ export default function Chat() {
   const [mode, setMode] = useState('plate');         // plate | mobile | code | name | email
   const [pendingName, setPendingName] = useState('');
   const [pendingEmail, setPendingEmail] = useState('');
+  /* "Government services may be down" (user, 2026-10-07): from /notice, switched in
+     Configuration (check_notice_mode). Said before the first check, and when one fails. */
+  const [checkNotice, setCheckNotice] = useState(null);
+  const noticeSaid = useRef(false);
+  useEffect(() => { api.notice().then((n) => setCheckNotice(n?.check || null)).catch(() => {}); }, []);
+  const noticeText = checkNotice ? (lang === 'hi' ? checkNotice.hi : checkNotice.en) : '';
   const [mobile, setMobile] = useState('');
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -471,6 +477,9 @@ export default function Chat() {
     const reg = cleanPlate(raw);
     // Shown as a number plate, not a plain bubble (2026-10-07).
     push({ from: 'me', kind: 'plate', text: prettyPlate(reg) });
+    // Said before the first check; after that, only alongside a failure (never twice in a row).
+    const again = noticeText && noticeSaid.current ? `\n\n${noticeText}` : '';
+    if (noticeText && !noticeSaid.current) { noticeSaid.current = true; bot(`⚠️ ${noticeText}`); }
     setBusy(true); typing();
     journey({ step: 'checking' });
     interaction('search', `Searched ${reg}`, { reg_no: reg });
@@ -479,7 +488,7 @@ export default function Chat() {
       if (out.error === 'sign_in_needed') { interaction('error', 'Free checks used up — asked to sign in'); bot(out.message); setPendingReg(reg); startSignIn(); return; }
       if (out.error || !out.vehicle) {
         interaction('error', `Check of ${reg} failed: ${String(out.message || out.error || '').slice(0, 60)}`, { reg_no: reg });
-        bot(`⚠️ ${out.message || 'Something went wrong. Please try again.'}`, { chips: ['another'] }); return;
+        bot(`⚠️ ${out.message || 'Something went wrong. Please try again.'}${again}`, { chips: ['another'] }); return;
       }
       const paidCard = Boolean(out.report || out.vehicle.paid);
       journey({ step: 'viewing', section: paidCard ? `full report · ${reg}` : `vehicle card · ${reg}` });
@@ -489,7 +498,7 @@ export default function Chat() {
              price: out.price_paise, signedIn: Boolean(me), left: out.left_today });
     } catch (e) {
       interaction('error', `Check of ${reg} failed: ${String(e.message).slice(0, 60)}`, { reg_no: reg });
-      bot(`⚠️ ${e.message}`, { chips: ['another'] });
+      bot(`⚠️ ${e.message}${again}`, { chips: ['another'] });
     } finally { setBusy(false); }
   }
 
