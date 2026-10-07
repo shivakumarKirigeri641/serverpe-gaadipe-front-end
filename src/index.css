@@ -135,6 +135,47 @@
   * { scroll-behavior: auto !important; }
 }
 
+/*
+ * THE CHAT'S OWN LOOK (user, 2026-10-07: "a different background with
+ * animations, so it is clearly not WhatsApp"). A slowly shifting teal → sky →
+ * sand gradient with soft glows drifting behind the messages, a faint road
+ * line, gradient bubbles and a small pop as each message arrives — nothing like
+ * WhatsApp's beige wallpaper. Still under prefers-reduced-motion.
+ */
+@keyframes gp-shift { 0%, 100% { background-position: 0% 40%; } 50% { background-position: 100% 60%; } }
+@keyframes gp-glow-a { 0%, 100% { transform: translate(-10%, -5%) scale(1); } 50% { transform: translate(25%, 20%) scale(1.2); } }
+@keyframes gp-glow-b { 0%, 100% { transform: translate(10%, 10%) scale(1.1); } 50% { transform: translate(-30%, -15%) scale(.9); } }
+@keyframes gp-glow-c { 0%, 100% { transform: translate(0, 0) scale(.9); } 50% { transform: translate(-15%, 25%) scale(1.15); } }
+@keyframes gp-road { from { background-position: 0 0; } to { background-position: 0 120px; } }
+@keyframes gp-pop { 0% { opacity: 0; transform: translateY(8px) scale(.96); } 70% { opacity: 1; transform: translateY(-1px) scale(1.01); } 100% { opacity: 1; transform: none; } }
+@keyframes gp-shine { 0% { transform: translateX(-120%) skewX(-20deg); } 60%, 100% { transform: translateX(260%) skewX(-20deg); } }
+
+.gp-chat-bg {
+  position: relative; isolation: isolate;
+  background: linear-gradient(135deg, #e8f7f4 0%, #eaf3ff 35%, #fff7e3 65%, #e6f6f1 100%);
+  background-size: 300% 300%;
+  animation: gp-shift 22s ease-in-out infinite;
+}
+.gp-glows { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.gp-glows span { position: absolute; border-radius: 9999px; filter: blur(60px); opacity: .55; }
+.gp-glows .a { width: 340px; height: 340px; left: -80px; top: 12%; background: #5eead4; animation: gp-glow-a 18s ease-in-out infinite; }
+.gp-glows .b { width: 300px; height: 300px; right: -90px; top: 45%; background: #fde68a; animation: gp-glow-b 24s ease-in-out infinite; }
+.gp-glows .c { width: 260px; height: 260px; left: 30%; bottom: -80px; background: #93c5fd; animation: gp-glow-c 20s ease-in-out infinite; }
+/* A faint dashed "road" down the middle — a quiet nod to vehicles. */
+.gp-glows .road { position: absolute; left: 50%; top: 0; bottom: 0; width: 6px; margin-left: -3px; opacity: .09;
+  background-image: linear-gradient(#0f766e 60%, transparent 60%); background-size: 6px 40px; animation: gp-road 6s linear infinite; }
+
+.gp-pop { animation: gp-pop .45s cubic-bezier(.2,.8,.3,1.2) both; }
+.gp-bot { background: rgba(255,255,255,.92); backdrop-filter: blur(6px); border-left: 3px solid #14a08f; }
+.gp-me { background: linear-gradient(135deg, #0f766e 0%, #14a08f 55%, #0ea5a4 100%); }
+.gp-shine { position: relative; overflow: hidden; }
+.gp-shine::after { content: ''; position: absolute; top: 0; bottom: 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+  animation: gp-shine 3.2s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gp-chat-bg, .gp-glows span, .gp-glows .road, .gp-pop, .gp-shine::after { animation: none !important; }
+}
+
 /* Tap targets on a phone: 44px is the smallest a thumb reliably hits. */
 @media (max-width: 640px) {
   .btn { min-height: 44px; }

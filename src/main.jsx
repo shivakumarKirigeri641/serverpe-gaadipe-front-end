@@ -7,6 +7,12 @@ import { LanguageProvider } from './lib/i18n.jsx';
 import LanguageGate from './components/LanguageGate.jsx';
 import './index.css';
 
+/* The app shell (public/sw.js, 2026-10-07): installable, and a notification tap
+   opens the chat. It caches nothing, so registering it cannot serve stale pages. */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(() => {}); });
+}
+
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>

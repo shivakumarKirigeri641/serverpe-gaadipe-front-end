@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { api, getToken, setToken, onSignedOut } from './api';
+import { api, getToken, setToken, onSignedOut, tokenReady } from './api';
 
 /**
  * Who is signed in.
@@ -14,6 +14,8 @@ export function SessionProvider({ children }) {
   const [ready, setReady] = useState(false);
 
   const load = useCallback(async () => {
+    // The saved sign-in is sealed on the device (lib/vault.js): unseal it first.
+    await tokenReady.catch(() => {});
     if (!getToken()) { setMe(null); setReady(true); return; }
     try {
       const out = await api.session();

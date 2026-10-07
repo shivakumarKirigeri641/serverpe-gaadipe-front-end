@@ -1,6 +1,7 @@
 import { clientInfo } from './device';
 import { available as secureAvailable, secureCall } from './secure';
 import { withCode } from './track';
+import { vault } from './vault';
 /**
  * api.js — every call gaadipe.in makes.
  *
@@ -57,10 +58,13 @@ export const waLink = (text) => {
   return `https://wa.me/${WHATSAPP}${t ? `?text=${encodeURIComponent(t)}` : ''}`;
 };
 
-export const getToken = () => { try { return localStorage.getItem(KEY) || null; } catch { return null; } };
-export const setToken = (t) => {
-  try { t ? localStorage.setItem(KEY, t) : localStorage.removeItem(KEY); } catch { /* private mode */ }
-};
+/* The sign-in is kept SEALED on the device (lib/vault.js, 2026-10-07): AES-256
+   under a non-extractable key; never plain text. KEY is the old plain-text
+   place, which the vault migrates and empties. */
+export const getToken = () => vault.get();
+export const setToken = (t) => vault.set(t);
+export const tokenReady = vault.ready;
+void KEY;
 
 const listeners = new Set();
 export const onSignedOut = (fn) => { listeners.add(fn); return () => listeners.delete(fn); };
@@ -76,6 +80,7 @@ export class ApiError extends Error {
 async function call(path, { method = 'GET', body, auth = true, base = SITE, timeoutMs = 45000 } = {}) {
   const headers = { Accept: 'application/json' };
   if (body) headers['Content-Type'] = 'application/json';
+  if (auth) await vault.ready;          // the saved sign-in is unsealed before the first call
   const token = getToken();
   if (auth && token) headers.Authorization = `Bearer ${token}`;
 
@@ -118,6 +123,7 @@ async function call(path, { method = 'GET', body, auth = true, base = SITE, time
 
 /** A PDF the customer owns, fetched with their token rather than a plain link. */
 async function pdf(path, download) {
+  await vault.ready;
   const token = getToken();
   const res = await fetch(`${SITE}${path}${download ? '?download=1' : ''}`,
     { headers: token ? { Authorization: `Bearer ${token}` } : {} });

@@ -3,6 +3,8 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useSession } from '../lib/session';
 import { useLang } from '../lib/i18n.jsx';
+import BuyDialog from '../components/BuyDialog.jsx';
+import { saveBlob } from '../components/ui.jsx';
 
 /**
  * THE GAADIPE CHAT (user, 2026-10-07: "a chat in the browser — better than
@@ -58,6 +60,24 @@ const T = {
     trust: '🔒 VAHAN records via ULIP · Secure payments · Owner details masked',
     online: 'online',
     leftToday: (n) => `${n} free check${n === 1 ? '' : 's'} left today without signing in.`,
+    invoices: 'Invoices',
+    noVehicles: 'No vehicles yet. Send any vehicle number to check it.',
+    noReports: 'No reports yet. Check a vehicle and get its full report for ₹19.',
+    noInvoices: 'No invoices yet.',
+    yourVehicles: (n) => `🚗 Your vehicles (${n})`,
+    yourReports: (n) => `📄 Your reports (${n})`,
+    yourInvoices: (n) => `🧾 Your invoices (${n})`,
+    reportValid: (d) => `valid till ${d}`,
+    reportExpired: 'download window ended',
+    download: 'Download PDF',
+    paidThanks: (r) => `✅ Payment received — thank you! Here is the full report for *${r}*.`,
+    documents: 'Documents', challansH: 'Challans', ownership: 'Ownership & loan', fastag: 'FASTag',
+    owners: (n) => `Owner no. ${n}`, loan: 'Loan', noLoan: 'No loan on record', blacklist: 'Blacklist',
+    pendingAmt: (n, a) => `${n} pending · ${a}`, noChallans: 'No pending challans',
+    daysLeft: (d) => (d < 0 ? `expired ${-d} days ago` : d === 0 ? 'expires today' : `${d} days left`),
+    profileH: '👤 Your profile', mobileL: 'Mobile', nameL: 'Name', emailL: 'Email',
+    offers: 'Tips & offers by SMS / email', signOut: 'Sign out', signedOut: 'You are signed out. Send any vehicle number for a free check.',
+    vehicleBtn: 'Open',
   },
   hi: {
     hello: 'नमस्ते! 🙏 मैं GaadiPe हूँ। कोई भी गाड़ी नंबर भेजें — जैसे *KA01AB1234* — मैं उसका रिकॉर्ड दिखाऊँगा। बेसिक जाँच *मुफ़्त* है, साइन इन की ज़रूरत नहीं।',
@@ -96,6 +116,24 @@ const T = {
     trust: '🔒 ULIP से VAHAN रिकॉर्ड · सुरक्षित भुगतान · मालिक की जानकारी छिपी',
     online: 'ऑनलाइन',
     leftToday: (n) => `बिना साइन इन आज ${n} मुफ़्त जाँच बाकी।`,
+    invoices: 'बिल',
+    noVehicles: 'अभी कोई गाड़ी नहीं। जाँच के लिए कोई भी गाड़ी नंबर भेजें।',
+    noReports: 'अभी कोई रिपोर्ट नहीं। गाड़ी जाँचें और ₹19 में पूरी रिपोर्ट लें।',
+    noInvoices: 'अभी कोई बिल नहीं।',
+    yourVehicles: (n) => `🚗 आपकी गाड़ियाँ (${n})`,
+    yourReports: (n) => `📄 आपकी रिपोर्ट (${n})`,
+    yourInvoices: (n) => `🧾 आपके बिल (${n})`,
+    reportValid: (d) => `${d} तक मान्य`,
+    reportExpired: 'डाउनलोड समय समाप्त',
+    download: 'PDF डाउनलोड',
+    paidThanks: (r) => `✅ भुगतान मिल गया — धन्यवाद! *${r}* की पूरी रिपोर्ट यह रही।`,
+    documents: 'दस्तावेज़', challansH: 'चालान', ownership: 'मालिक और लोन', fastag: 'FASTag',
+    owners: (n) => `मालिक क्रमांक ${n}`, loan: 'लोन', noLoan: 'कोई लोन दर्ज नहीं', blacklist: 'ब्लैकलिस्ट',
+    pendingAmt: (n, a) => `${n} बाकी · ${a}`, noChallans: 'कोई चालान बाकी नहीं',
+    daysLeft: (d) => (d < 0 ? `${-d} दिन पहले समाप्त` : d === 0 ? 'आज समाप्त' : `${d} दिन बाकी`),
+    profileH: '👤 आपकी प्रोफ़ाइल', mobileL: 'मोबाइल', nameL: 'नाम', emailL: 'ईमेल',
+    offers: 'SMS / ईमेल पर टिप्स और ऑफ़र', signOut: 'साइन आउट', signedOut: 'आप साइन आउट हो गए। मुफ़्त जाँच के लिए कोई भी गाड़ी नंबर भेजें।',
+    vehicleBtn: 'खोलें',
   },
 };
 
@@ -134,7 +172,7 @@ const time = (at) => {
 };
 
 export default function Chat() {
-  const { me, ready, signIn } = useSession();
+  const { me, ready, signIn, signOut, setMe } = useSession();
   const { lang, setLang } = useLang();
   const L = T[lang === 'hi' ? 'hi' : 'en'];
   const navigate = useNavigate();
@@ -149,13 +187,22 @@ export default function Chat() {
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [pendingReg, setPendingReg] = useState(null);
+  const [buying, setBuying] = useState(null);       // { reg, price } — the payment window over the chat
   const listRef = useRef(null);
   const inputRef = useRef(null);
   const greeted = useRef(false);
 
-  // Remember the conversation on this device (not the history — that is read fresh).
+  /* Remember the conversation on this device (not the history — that is read
+     fresh). Paid reports, the profile and document lists are NOT kept on the
+     device — a shared phone must not show them to the next person; they are
+     reopened from the account. */
   useEffect(() => {
-    try { localStorage.setItem(STORE, JSON.stringify(items.filter((x) => x.kind !== 'typing').slice(-60))); } catch { /* private mode */ }
+    const keep = items.filter((x) => x.kind !== 'typing').map((x) => {
+      if (x.kind === 'vehicle' && x.paid) return { ...x, kind: 'text', from: 'bot', text: `📄 *${x.vehicle?.pretty || x.vehicle?.reg_no}* — full report`, chips: [`open:${x.vehicle?.reg_no}`], vehicle: undefined };
+      if (['profile', 'reports', 'invoices', 'vehicles'].includes(x.kind)) return null;
+      return x;
+    }).filter(Boolean);
+    try { localStorage.setItem(STORE, JSON.stringify(keep.slice(-60))); } catch { /* private mode */ }
   }, [items]);
   useEffect(() => { try { localStorage.setItem(USED, '1'); } catch { /* private mode */ } }, []);
   useEffect(() => { document.title = 'GaadiPe — Chat'; }, []);
@@ -177,9 +224,27 @@ export default function Chat() {
     else if (!items.length) bot(L.hello, { chips: ['howWorks'] });
     // A number brought from the home page (?reg=) is checked at once, then dropped from the address.
     const reg = cleanPlate(params.get('reg'));
-    if (reg && looksLikePlate(reg)) {
-      const rest = new URLSearchParams(params); rest.delete('reg'); setParams(rest, { replace: true });
-      setTimeout(() => check(reg), 300);
+    /* LOCAL DEVELOPMENT ONLY (?demo=full): the full-report card with sample data,
+       to try its buttons without a live lookup. Never in a production build. */
+    // ?demo=basic — a free-check card, to try "Full report ₹19" while the records server is down.
+    if (import.meta.env.DEV && params.get('demo') === 'basic') {
+      push({ from: 'bot', kind: 'vehicle', paid: false, signedIn: Boolean(me), price: 1900, vehicle: {
+        reg_no: 'KA31N8147', pretty: 'KA 31 N 8147', identity: { maker: 'KIA INDIA', model: 'SELTOS D1.5 6AT HTX PLUS', fuel: 'Diesel', vehicle_class: 'Motor Car' },
+        found: { needs_attention: 2, documents_total: 5, has_record: true },
+        locked: ['Loan / hypothecation status', 'Blacklist and NOC status', 'Every challan, with its offence, place and amount'] } });
+    }
+    if (import.meta.env.DEV && params.get('demo') === 'full') {
+      api.reports().then((r) => {
+        const rep = (r.rows || []).find((x) => x.downloadable) || null;
+        push({ from: 'bot', kind: 'vehicle', paid: true, report: rep, vehicle: DEMO_FULL });
+      }).catch(() => {});
+    }
+    // Back from paying (?paid=REG): the report opens right here in the chat.
+    const paid = cleanPlate(params.get('paid'));
+    if ((reg && looksLikePlate(reg)) || paid) {
+      const rest = new URLSearchParams(params); rest.delete('reg'); rest.delete('paid'); setParams(rest, { replace: true });
+      if (paid && me) setTimeout(() => { bot(L.paidThanks(prettyPlate(paid))); openVehicle(paid); }, 600);
+      else if (reg) setTimeout(() => check(reg), 300);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, me]);
@@ -234,7 +299,7 @@ export default function Chat() {
       const out = me ? await api.check(reg) : await api.chatCheck(reg);
       if (out.error === 'sign_in_needed') { bot(out.message); setPendingReg(reg); startSignIn(); return; }
       if (out.error || !out.vehicle) { bot(`⚠️ ${out.message || 'Something went wrong. Please try again.'}`, { chips: ['another'] }); return; }
-      push({ from: 'bot', kind: 'vehicle', vehicle: out.vehicle, paid: Boolean(out.report || out.vehicle.paid),
+      push({ from: 'bot', kind: 'vehicle', vehicle: out.vehicle, paid: Boolean(out.report || out.vehicle.paid), report: out.report || null,
              price: out.price_paise, signedIn: Boolean(me), left: out.left_today });
     } catch (e) {
       bot(`⚠️ ${e.message}`, { chips: ['another'] });
@@ -281,33 +346,85 @@ export default function Chat() {
     } catch (e) { bot(`⚠️ ${e.message}`); } finally { setBusy(false); }
   }
 
+  /* ────────────── the account, inside the conversation (no other pages) ── */
+
+  /** One vehicle as a card: the full report if they own one, else the free view. */
+  async function openVehicle(reg) {
+    setBusy(true); typing();
+    try {
+      const out = await api.vehicle(reg);
+      if (out.error || !out.vehicle) { bot(`⚠️ ${out.message || 'Could not open that vehicle.'}`); return; }
+      push({ from: 'bot', kind: 'vehicle', vehicle: out.vehicle, paid: Boolean(out.vehicle.paid), report: out.report || null,
+             price: out.price_paise, signedIn: true });
+    } catch (e) { bot(`⚠️ ${e.message}`); } finally { setBusy(false); }
+  }
+
+  async function showList(kind) {
+    const label = { vehicles: L.myVehicles, reports: L.myReports, invoices: L.invoices }[kind];
+    push({ from: 'me', kind: 'text', text: label });
+    setBusy(true); typing();
+    try {
+      const out = await (kind === 'vehicles' ? api.vehicles() : kind === 'reports' ? api.reports() : api.invoices());
+      const rows = out.rows || [];
+      if (!rows.length) { bot({ vehicles: L.noVehicles, reports: L.noReports, invoices: L.noInvoices }[kind], { chips: ['another'] }); return; }
+      push({ from: 'bot', kind, rows });
+    } catch (e) { bot(`⚠️ ${e.message}`); } finally { setBusy(false); }
+  }
+
+  async function showProfile() {
+    push({ from: 'me', kind: 'text', text: L.profile });
+    setBusy(true); typing();
+    try {
+      const out = await api.me();
+      push({ from: 'bot', kind: 'profile', user: out.user || out });
+    } catch (e) { bot(`⚠️ ${e.message}`); } finally { setBusy(false); }
+  }
+
+  async function download(kind, row) {
+    try {
+      const { blob, filename } = await (kind === 'invoice' ? api.invoicePdf(row.id, true) : api.reportPdf(row.id, true));
+      saveBlob(blob, filename);
+    } catch (e) { bot(`⚠️ ${e.message}`); }
+  }
+
+  async function doSignOut() {
+    await signOut().catch(() => {});
+    setHistory({ items: [], more: false, before: null, loaded: false });
+    setItems([]);
+    bot(L.signedOut, { chips: ['howWorks'] });
+  }
+
   /* ────────────────────────────── chips and buttons ── */
 
   function chip(key) {
     if (key === 'howWorks') { push({ from: 'me', kind: 'text', text: L.howWorks }); bot(L.howAnswer, { chips: ['another'] }); return; }
     if (key === 'another') { setMode('plate'); inputRef.current?.focus(); return; }
     if (key === 'signIn') { startSignIn(); return; }
-    if (key === 'myVehicles') { navigate('/app'); return; }
-    if (key === 'myReports') { navigate('/app/reports'); return; }
-    if (key === 'profile') { navigate('/app/profile'); return; }
-    if (key.startsWith('open:')) { navigate(`/app/vehicle/${encodeURIComponent(key.slice(5))}`); return; }
+    if (key === 'myVehicles') { showList('vehicles'); return; }
+    if (key === 'myReports') { showList('reports'); return; }
+    if (key === 'invoices') { showList('invoices'); return; }
+    if (key === 'profile') { showProfile(); return; }
+    if (key.startsWith('open:')) { push({ from: 'me', kind: 'text', text: prettyPlate(key.slice(5)) }); openVehicle(key.slice(5)); }
   }
   const chipLabel = (key) => (key.startsWith('open:') ? `🔓 ${prettyPlate(key.slice(5))}` : {
     howWorks: `❓ ${L.howWorks}`, another: `🔍 ${L.another}`, signIn: `🔐 ${L.signIn}`,
-    myVehicles: `🚗 ${L.myVehicles}`, myReports: `📄 ${L.myReports}`, profile: `👤 ${L.profile}`,
+    myVehicles: `🚗 ${L.myVehicles}`, myReports: `📄 ${L.myReports}`, profile: `👤 ${L.profile}`, invoices: `🧾 ${L.invoices}`,
   }[key] || key);
 
-  function fullReport(reg) {
-    if (me) navigate(`/app/vehicle/${encodeURIComponent(reg)}`);
-    else { push({ from: 'me', kind: 'text', text: L.fullReport('') .trim() }); startSignIn(reg); }
+  // The payment window opens over the chat; paying returns to /chat?paid=REG.
+  function fullReport(reg, price) {
+    if (me) setBuying({ reg, price });
+    else { push({ from: 'me', kind: 'text', text: L.fullReport('').trim() }); startSignIn(reg); }
   }
 
-  const quick = me ? ['another', 'myVehicles', 'myReports', 'profile'] : ['howWorks', 'signIn'];
+  const quick = me ? ['another', 'myVehicles', 'myReports', 'invoices', 'profile'] : ['howWorks', 'signIn'];
   const placeholder = mode === 'mobile' ? L.placeholderMobile : mode === 'code' ? L.placeholderCode : L.placeholderPlate;
   const plateHint = mode === 'plate' && looksLikePlate(input);
 
   return (
-    <div className="flex h-[100dvh] flex-col bg-[#eef4f3]">
+    <div className="gp-chat-bg flex h-[100dvh] flex-col">
+      {/* GaadiPe's own moving background (index.css) — clearly not WhatsApp. */}
+      <div className="gp-glows" aria-hidden="true"><span className="a" /><span className="b" /><span className="c" /><span className="road" /></div>
       {/* The top bar: who you are talking to, why it can be trusted, a way home. */}
       <header className="z-10 bg-gradient-to-r from-[#0a4f49] via-[#0f766e] to-[#14a08f] text-white shadow-md"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}>
@@ -327,8 +444,7 @@ export default function Chat() {
       </header>
 
       {/* The conversation. */}
-      <main ref={listRef} className="flex-1 overflow-y-auto"
-        style={{ backgroundImage: 'radial-gradient(rgba(15,118,110,.07) 1px, transparent 1px)', backgroundSize: '18px 18px' }}>
+      <main ref={listRef} className="flex-1 overflow-y-auto">
         <div className="mx-auto flex max-w-2xl flex-col gap-2 px-3 py-4">
           {me && history.items.length > 0 && (
             <>
@@ -342,11 +458,23 @@ export default function Chat() {
               <Divider>{L.nowHere}</Divider>
             </>
           )}
-          {items.map((it) => (
-            it.kind === 'vehicle'
-              ? <VehicleCard key={it.id} it={it} L={L} onFull={() => fullReport(it.vehicle.reg_no)} onAnother={() => chip('another')} />
-              : <Bubble key={it.id} item={it} onChip={chip} chipLabel={chipLabel} L={L} />
-          ))}
+          {items.map((it) => {
+            if (it.kind === 'vehicle' && it.paid && it.vehicle?.paid) {
+              return <FullCard key={it.id} it={it} L={L} onDownload={() => it.report && download('report', it.report)} onAnother={() => chip('another')} />;
+            }
+            if (it.kind === 'vehicle') {
+              return <VehicleCard key={it.id} it={it} L={L} onFull={() => (it.paid ? openVehicle(it.vehicle.reg_no) : fullReport(it.vehicle.reg_no, it.price))} onAnother={() => chip('another')} />;
+            }
+            if (it.kind === 'vehicles') return <VehiclesList key={it.id} rows={it.rows} L={L} onOpen={(r) => chip(`open:${r}`)} />;
+            if (it.kind === 'reports' || it.kind === 'invoices') {
+              return <DocsList key={it.id} kind={it.kind} rows={it.rows} L={L} onDownload={(row) => download(it.kind === 'invoices' ? 'invoice' : 'report', row)} />;
+            }
+            if (it.kind === 'profile') {
+              return <ProfileCard key={it.id} user={it.user} L={L} onSignOut={doSignOut}
+                onPromo={async (agree) => { const out = await api.setPromoConsent(agree); setMe?.(out.user); return out.user; }} />;
+            }
+            return <Bubble key={it.id} item={it} onChip={chip} chipLabel={chipLabel} L={L} />;
+          })}
         </div>
       </main>
 
@@ -355,7 +483,7 @@ export default function Chat() {
         <div className="mx-auto max-w-2xl">
           <div className="flex gap-2 overflow-x-auto px-3 pt-2 [scrollbar-width:none]">
             {quick.map((k) => (
-              <button key={k} type="button" onClick={() => chip(k)}
+              <button key={k} type="button" data-test={`quick-${k}`} onClick={() => chip(k)}
                 className="shrink-0 rounded-full border border-[#0f766e]/20 bg-[#0f766e]/5 px-3 py-1.5 text-xs font-semibold text-[#0a4f49] active:scale-95">
                 {chipLabel(k)}
               </button>
@@ -376,6 +504,189 @@ export default function Chat() {
           </form>
         </div>
       </footer>
+
+      {/* Paying: the declaration and checkout open over the chat (BuyDialog); the
+          payment page returns to /chat?paid=REG, where the report opens. */}
+      {buying && (
+        <BuyDialog regNo={buying.reg} pricePaise={buying.price} onClose={() => setBuying(null)}
+          onAlreadyBought={() => { setBuying(null); openVehicle(buying.reg); }} />
+      )}
+    </div>
+  );
+}
+
+/* Sample data for ?demo=full in local development (see above). */
+const DEMO_FULL = {
+  reg_no: 'KA02EX1480', pretty: 'KA 02 EX 1480', paid: true,
+  identity: { maker: 'MARUTI SUZUKI', model: 'SWIFT VXI', fuel: 'Petrol', vehicle_class: 'Motor Car', colour: 'Red', manufactured: '03/2019' },
+  documents: [
+    { label: 'insurance', name: 'Insurance', valid_until: '2027-03-14', days: 158, state: 'valid' },
+    { label: 'puc', name: 'PUC (emission test)', valid_until: '2026-10-12', days: 5, state: 'due' },
+    { label: 'tax', name: 'Road tax', valid_until: '2034-03-01', days: 2700, state: 'valid' },
+    { label: 'fitness', name: 'Fitness', valid_until: '2026-01-10', days: -270, state: 'expired' },
+  ],
+  challans: { pending_count: 2, pending_amount_paise: 150000, pending: [
+    { challan_no: 'KA1', offence: 'Over-speeding', place: 'Bengaluru', date: '2026-08-14', amount_paise: 100000, status: 'Pending' },
+    { challan_no: 'KA2', offence: 'Wrong parking', place: 'Bengaluru', date: '2026-07-02', amount_paise: 50000, status: 'Pending' } ] },
+  ownership: { owner_serial: 2, owner_masked: 'R***** K****', financer: 'HDFC BANK LTD', blacklist_status: null },
+  fastag: { active: true, balance: 245 },
+};
+
+const inr = (p) => (p == null ? '—' : `₹${(Number(p) / 100).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`);
+const day = (d) => { try { return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); } catch { return d || ''; } };
+const STATE = { expired: ['#c62828', '#fdecea'], due: ['#b26a00', '#fff4e0'], valid: ['#12813f', '#e7f6ec'] };
+
+/** The full report, as a card in the conversation. */
+function FullCard({ it, L, onDownload, onAnother }) {
+  const v = it.vehicle || {};
+  const id = v.identity || {};
+  const docs = v.documents || [];
+  const ch = v.challans || {};
+  const own = v.ownership || {};
+  const bad = docs.filter((d) => d.state !== 'valid').length + (ch.pending_count ? 1 : 0);
+  return (
+    <div className="anim-up flex flex-col items-start">
+      <div className="w-[94%] max-w-md overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
+        <div className="bg-gradient-to-br from-[#0f766e] to-[#0a4f49] p-3.5 text-white">
+          <div className="flex items-center justify-between gap-3">
+            <span className="rounded-md border-2 border-black bg-white px-2.5 py-0.5 font-mono text-[17px] font-black tracking-[2px] text-black shadow">{v.pretty || v.reg_no}</span>
+            <span className="rounded-full bg-[#ffd84d] px-2.5 py-1 text-[11px] font-black text-[#0a4f49]">FULL REPORT</span>
+          </div>
+          <div className="mt-2 text-[15px] font-bold">{[id.maker, id.model].filter(Boolean).join(' · ')}</div>
+          <div className="text-[12px] text-white/80">{[id.fuel, id.vehicle_class, id.colour, id.manufactured].filter(Boolean).join(' · ')}</div>
+          <div className="mt-1 text-[12px] text-white/80">{bad ? `⚠️ ${bad} need attention` : '✅ All in order'}</div>
+        </div>
+
+        <Section title={`📋 ${L.documents}`}>
+          {docs.map((d) => (
+            <div key={d.label} className="flex items-center justify-between gap-2 py-1">
+              <span className="text-[13px] text-[#0b2e2b]">{d.name || d.label}</span>
+              <span className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ color: STATE[d.state]?.[0], background: STATE[d.state]?.[1] }}>
+                {L.daysLeft(d.days)}{d.valid_until ? ` · ${day(d.valid_until)}` : ''}
+              </span>
+            </div>
+          ))}
+        </Section>
+
+        <Section title={`🚨 ${L.challansH}`}>
+          {ch.pending_count ? (
+            <>
+              <div className="text-[13px] font-bold text-[#c62828]">{L.pendingAmt(ch.pending_count, inr(ch.pending_amount_paise))}</div>
+              {(ch.pending || []).slice(0, 6).map((c, i) => (
+                <div key={c.challan_no || i} className="mt-1.5 rounded-lg bg-[#fdecea]/50 p-2 text-[12.5px]">
+                  <div className="flex justify-between gap-2 font-semibold text-[#0b2e2b]"><span>{c.offence || 'Challan'}</span><span>{inr(c.amount_paise)}</span></div>
+                  <div className="text-black/50">{[c.place, c.date ? day(c.date) : null, c.status].filter(Boolean).join(' · ')}</div>
+                </div>
+              ))}
+            </>
+          ) : <div className="text-[13px] font-semibold text-[#12813f]">✅ {L.noChallans}</div>}
+        </Section>
+
+        <Section title={`🏦 ${L.ownership}`}>
+          {own.owner_serial != null && <Row k={L.owners(own.owner_serial)} v={own.owner_masked || ''} />}
+          <Row k={L.loan} v={own.financer || L.noLoan} tone={own.financer ? 'due' : 'valid'} />
+          {own.blacklist_status && <Row k={L.blacklist} v={own.blacklist_status} tone="expired" />}
+        </Section>
+
+        {v.fastag && (
+          <Section title={`🛣 ${L.fastag}`}>
+            <Row k={v.fastag.active ? 'Active' : 'Not active'} v={v.fastag.balance != null ? inr(Number(v.fastag.balance) * 100) : ''} tone={v.fastag.active ? 'valid' : 'expired'} />
+          </Section>
+        )}
+
+        <div className="grid grid-cols-2 border-t border-black/5">
+          <button type="button" data-test="full-download" onClick={onDownload} disabled={!it.report} className="gp-shine bg-[#ffd84d] py-3 text-[14px] font-black text-[#0a4f49] disabled:opacity-50">📄 {L.download}</button>
+          <button type="button" data-test="full-another" onClick={onAnother} className="py-3 text-[14px] font-bold text-[#0f766e]">🔍 {L.another}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const Section = ({ title, children }) => (
+  <div className="border-t border-black/5 px-3.5 py-2.5">
+    <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[#0f766e]">{title}</div>
+    {children}
+  </div>
+);
+const Row = ({ k, v, tone }) => (
+  <div className="flex items-center justify-between gap-2 py-0.5 text-[13px]">
+    <span className="text-black/60">{k}</span>
+    <span className="text-right font-semibold" style={{ color: tone ? STATE[tone][0] : '#0b2e2b' }}>{v}</span>
+  </div>
+);
+
+function VehiclesList({ rows, L, onOpen }) {
+  return (
+    <div className="anim-up flex flex-col items-start">
+      <div className="w-[94%] max-w-md overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
+        <div className="px-3.5 pt-3 text-[14px] font-bold text-[#0b2e2b]">{L.yourVehicles(rows.length)}</div>
+        {rows.map((r) => (
+          <button key={r.reg_no} type="button" data-test={`open-${r.reg_no}`} onClick={() => onOpen(r.reg_no)}
+            className="flex w-full items-center gap-3 border-t border-black/5 px-3.5 py-2.5 text-left first-of-type:mt-2 active:bg-black/5">
+            <span className="rounded border-2 border-black bg-white px-1.5 font-mono text-[12px] font-black tracking-wider text-black">{prettyPlate(r.reg_no)}</span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[13px] font-semibold text-[#0b2e2b]">{[r.maker, r.model].filter(Boolean).join(' ') || '—'}</span>
+              <span className="block text-[11.5px] text-black/50">
+                {r.report_id ? '📄 Full report' : r.needs_attention ? `⚠️ ${r.needs_attention} need attention` : r.expired?.length ? `⚠️ ${r.expired.join(', ')}` : ''}
+                {r.watched ? ' · 🔔 watched' : ''}
+              </span>
+            </span>
+            <span className="text-[12px] font-bold text-[#0f766e]">{L.vehicleBtn} ›</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DocsList({ kind, rows, L, onDownload }) {
+  const reports = kind === 'reports';
+  return (
+    <div className="anim-up flex flex-col items-start">
+      <div className="w-[94%] max-w-md overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
+        <div className="px-3.5 pt-3 text-[14px] font-bold text-[#0b2e2b]">{reports ? L.yourReports(rows.length) : L.yourInvoices(rows.length)}</div>
+        {rows.map((r) => (
+          <div key={r.id} className="mt-2 flex items-center gap-3 border-t border-black/5 px-3.5 py-2.5">
+            <div className="grid h-10 w-9 shrink-0 place-items-center rounded-md bg-[#e53935] text-[10px] font-black text-white">PDF</div>
+            <div className="min-w-0 flex-1 text-[12.5px]">
+              <div className="truncate font-semibold text-[#0b2e2b]">{reports ? r.report_number : r.invoice_number}{r.reg_no ? ` · ${prettyPlate(r.reg_no)}` : ''}</div>
+              <div className="text-black/50">
+                {reports ? (r.downloadable ? L.reportValid(day(r.valid_until)) : L.reportExpired) : `${day(r.invoice_date)} · ${inr(r.total_paise)}`}
+              </div>
+            </div>
+            <button type="button" data-test={`pdf-${r.id}`} onClick={() => onDownload(r)} disabled={!r.downloadable}
+              className="shrink-0 rounded-full bg-[#0f766e] px-3 py-1.5 text-[11.5px] font-bold text-white disabled:opacity-40">⬇ PDF</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProfileCard({ user, L, onSignOut, onPromo }) {
+  const [promo, setPromo] = useState(Boolean(user?.promo_consent));
+  const [busy, setBusy] = useState(false);
+  const m = String(user?.mobile || '').slice(-10);
+  return (
+    <div className="anim-up flex flex-col items-start">
+      <div className="w-[94%] max-w-md overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
+        <div className="px-3.5 pt-3 text-[14px] font-bold text-[#0b2e2b]">{L.profileH}</div>
+        <div className="px-3.5 py-2">
+          <Row k={L.nameL} v={user?.name || user?.display_name || '—'} />
+          <Row k={L.mobileL} v={m ? `${m.slice(0, 5)} ${m.slice(5)}` : '—'} />
+          <Row k={L.emailL} v={user?.email || '—'} />
+          <label className="mt-2 flex cursor-pointer items-center justify-between gap-3 rounded-lg bg-[#f3f7f6] px-3 py-2 text-[13px]">
+            <span className="text-[#0b2e2b]">{L.offers}</span>
+            <input type="checkbox" data-test="profile-offers" className="h-5 w-5 accent-[#0f766e]" checked={promo} disabled={busy}
+              onChange={async (e) => {
+                const agree = e.target.checked; setPromo(agree); setBusy(true);
+                try { await onPromo(agree); } catch { setPromo(!agree); } finally { setBusy(false); }
+              }} />
+          </label>
+        </div>
+        <button type="button" data-test="signout" onClick={onSignOut} className="w-full border-t border-black/5 py-3 text-[14px] font-bold text-[#c62828]">↪ {L.signOut}</button>
+      </div>
     </div>
   );
 }
@@ -402,11 +713,11 @@ function Bubble({ item, onChip, chipLabel, faded = false }) {
   if (item.kind === 'note') return <div className="mx-auto text-[11px] text-black/40">{item.text}</div>;
   const welcome = item.kind === 'welcome';
   return (
-    <div className={`flex flex-col ${mine ? 'items-end' : 'items-start'} ${faded ? 'opacity-80' : 'anim-up'}`}>
+    <div className={`flex flex-col ${mine ? 'items-end' : 'items-start'} ${faded ? 'opacity-75' : 'gp-pop'}`}>
       <div className={`max-w-[85%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2 text-[14.5px] leading-snug shadow-sm ${mine
-        ? 'rounded-br-md bg-[#0f766e] text-white'
+        ? 'gp-me rounded-br-md text-white'
         : welcome ? 'rounded-bl-md border border-[#ffd84d] bg-gradient-to-br from-white to-[#fff8d6] text-[#0b2e2b]'
-          : 'rounded-bl-md bg-white text-[#0b2e2b]'}`}>
+          : 'gp-bot rounded-bl-md text-[#0b2e2b]'}`}>
         {item.label && <div className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-[#0f766e]">📣 {item.label}</div>}
         {item.kind === 'file'
           ? <FileLine item={item} />
@@ -415,14 +726,15 @@ function Bubble({ item, onChip, chipLabel, faded = false }) {
       </div>
       {item.chips?.length > 0 && (
         <div className={`mt-1.5 flex max-w-[90%] flex-wrap gap-1.5 ${mine ? 'justify-end' : ''}`}>
-          {item.chips.map((c) => (
-            <button key={c} type="button" onClick={() => onChip(c)} disabled={faded}
-              className={`rounded-full border px-3 py-1 text-xs font-semibold ${faded
-                ? 'border-black/10 bg-white/60 text-black/40'
-                : 'border-[#0f766e]/30 bg-white text-[#0f766e] shadow-sm active:scale-95'}`}>
-              {chipLabel(c)}
-            </button>
-          ))}
+          {/* Old WhatsApp buttons are shown as plain labels — never tappable, never mistaken for real ones. */}
+          {item.chips.map((c) => (faded
+            ? <span key={c} className="rounded-full border border-black/10 bg-white/50 px-3 py-1 text-xs font-semibold text-black/40">{c}</span>
+            : (
+              <button key={c} type="button" data-test={`chip-${c}`} onClick={() => onChip(c)}
+                className="rounded-full border border-[#0f766e]/30 bg-white px-3 py-1 text-xs font-semibold text-[#0f766e] shadow-sm active:scale-95">
+                {chipLabel(c)}
+              </button>
+            )))}
         </div>
       )}
     </div>
@@ -445,6 +757,7 @@ function FileLine({ item }) {
 
 /** The vehicle as a card — the free view, honest about what is locked. */
 function VehicleCard({ it, L, onFull, onAnother }) {
+  // A signed-in check of a vehicle they own a report for comes back full: open it in the chat.
   const v = it.vehicle || {};
   const id = v.identity || {};
   const f = v.found || {};
@@ -482,10 +795,10 @@ function VehicleCard({ it, L, onFull, onAnother }) {
           )}
         </div>
         <div className="grid grid-cols-2 border-t border-black/5">
-          <button type="button" onClick={onFull} className="bg-[#ffd84d] py-3 text-[14px] font-black text-[#0a4f49] active:brightness-95">
+          <button type="button" data-test="card-full" onClick={onFull} className="gp-shine bg-[#ffd84d] py-3 text-[14px] font-black text-[#0a4f49] active:brightness-95">
             {it.paid ? `📄 ${L.open}` : `🔓 ${L.fullReport(rupee(it.price))}`}
           </button>
-          <button type="button" onClick={onAnother} className="py-3 text-[14px] font-bold text-[#0f766e] active:bg-black/5">🔍 {L.another}</button>
+          <button type="button" data-test="card-another" onClick={onAnother} className="py-3 text-[14px] font-bold text-[#0f766e] active:bg-black/5">🔍 {L.another}</button>
         </div>
       </div>
       {!it.signedIn && !it.paid && (
