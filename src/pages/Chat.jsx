@@ -5,6 +5,7 @@ import { useSession } from '../lib/session';
 import { useLang } from '../lib/i18n.jsx';
 import BuyDialog from '../components/BuyDialog.jsx';
 import * as notify from '../lib/notify';
+import { journey, interaction, scrollSource, onEnded } from '../lib/track';
 import { saveBlob } from '../components/ui.jsx';
 
 /**
@@ -296,6 +297,19 @@ export default function Chat() {
   useEffect(() => { try { localStorage.setItem(USED, '1'); } catch { /* private mode */ } }, []);
   useEffect(() => { document.title = 'GaadiPe — Chat'; }, []);
 
+  /* The web admin's live view (lib/track.js): the journey step follows the chat. */
+  useEffect(() => {
+    const step = { mobile: 'signing_in', code: 'code', name: 'name', email: 'email' }[mode];
+    journey(step ? { step, section: null } : { step: 'welcome' });
+  }, [mode]);
+  useEffect(() => { if (buying) journey({ step: 'paying', section: `₹19 payment · ${buying.reg}` }); }, [buying]);
+  useEffect(() => { scrollSource(listRef.current); return () => scrollSource(null); }, []);
+  // An admin ended this visit (support or security): sign out, and say so.
+  useEffect(() => onEnded(() => {
+    resetNote.current = lang === 'hi' ? '↪ GaadiPe सपोर्ट ने यह सत्र समाप्त किया। फिर से साइन इन करें।' : '↪ This session was ended by GaadiPe support. Please sign in again.';
+    signOut().catch(() => {});
+  }), [lang, signOut]);
+
   const scrollDown = useCallback(() => {
     requestAnimationFrame(() => { const el = listRef.current; if (el) el.scrollTop = el.scrollHeight; });
   }, []);
@@ -341,7 +355,7 @@ export default function Chat() {
     const paid = cleanPlate(params.get('paid'));
     if ((reg && looksLikePlate(reg)) || paid) {
       const rest = new URLSearchParams(params); rest.delete('reg'); rest.delete('paid'); setParams(rest, { replace: true });
-      if (paid && me) setTimeout(() => { bot(L.paidThanks(prettyPlate(paid))); openVehicle(paid, { afterPayment: true }); }, 600);
+      if (paid && me) setTimeout(() => { journey({ step: 'paid', section: `full report · ${paid}` }); bot(L.paidThanks(prettyPlate(paid))); openVehicle(paid, { afterPayment: true }); }, 600);
       else if (reg) setTimeout(() => check(reg), 300);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -396,13 +410,21 @@ export default function Chat() {
     // Shown as a number plate, not a plain bubble (2026-10-07).
     push({ from: 'me', kind: 'plate', text: prettyPlate(reg) });
     setBusy(true); typing();
+    journey({ step: 'checking' });
+    interaction('search', `Searched ${reg}`, { reg_no: reg });
     try {
       const out = me ? await api.check(reg) : await api.chatCheck(reg);
-      if (out.error === 'sign_in_needed') { bot(out.message); setPendingReg(reg); startSignIn(); return; }
-      if (out.error || !out.vehicle) { bot(`⚠️ ${out.message || 'Something went wrong. Please try again.'}`, { chips: ['another'] }); return; }
-      push({ from: 'bot', kind: 'vehicle', vehicle: out.vehicle, paid: Boolean(out.report || out.vehicle.paid), report: out.report || null,
+      if (out.error === 'sign_in_needed') { interaction('error', 'Free checks used up — asked to sign in'); bot(out.message); setPendingReg(reg); startSignIn(); return; }
+      if (out.error || !out.vehicle) {
+        interaction('error', `Check of ${reg} failed: ${String(out.message || out.error || '').slice(0, 60)}`, { reg_no: reg });
+        bot(`⚠️ ${out.message || 'Something went wrong. Please try again.'}`, { chips: ['another'] }); return;
+      }
+      const paidCard = Boolean(out.report || out.vehicle.paid);
+      journey({ step: 'viewing', section: paidCard ? `full report · ${reg}` : `vehicle card · ${reg}` });
+      push({ from: 'bot', kind: 'vehicle', vehicle: out.vehicle, paid: paidCard, report: out.report || null,
              price: out.price_paise, signedIn: Boolean(me), left: out.left_today });
     } catch (e) {
+      interaction('error', `Check of ${reg} failed: ${String(e.message).slice(0, 60)}`, { reg_no: reg });
       bot(`⚠️ ${e.message}`, { chips: ['another'] });
     } finally { setBusy(false); }
   }
@@ -417,7 +439,7 @@ export default function Chat() {
   async function sendMobile(text) {
     const m = ten(text);
     push({ from: 'me', kind: 'text', text: m.length === 10 ? `${m.slice(0, 5)} ${m.slice(5)}` : text });
-    if (!/^[6-9]\d{9}$/.test(m)) { bot(L.badMobile); return; }
+    if (!/^[6-9]\d{9}$/.test(m)) { interaction('error', 'Mobile number did not look right'); bot(L.badMobile); return; }
     setBusy(true); typing();
     try {
       const out = await api.requestCode(m);
@@ -430,7 +452,7 @@ export default function Chat() {
   async function sendCode(text) {
     const code = String(text).replace(/\D/g, '');
     push({ from: 'me', kind: 'text', text: '••••••' });
-    if (code.length < 4) { bot(L.badCode); return; }
+    if (code.length < 4) { interaction('error', 'Sign-in code too short'); bot(L.badCode); return; }
     setBusy(true); typing();
     try {
       const out = await api.verifyCode(mobile, code, false, false);
@@ -526,6 +548,7 @@ export default function Chat() {
   }
 
   async function showList(kind) {
+    journey({ step: 'reports', section: { vehicles: 'my vehicles', reports: 'my reports', invoices: 'my invoices' }[kind] });
     const label = { vehicles: L.myVehicles, reports: L.myReports, invoices: L.invoices }[kind];
     push({ from: 'me', kind: 'text', text: label });
     setBusy(true); typing();
@@ -538,6 +561,7 @@ export default function Chat() {
   }
 
   async function showProfile() {
+    journey({ step: 'profile', section: 'profile' });
     push({ from: 'me', kind: 'text', text: L.profile });
     setBusy(true); typing();
     try {

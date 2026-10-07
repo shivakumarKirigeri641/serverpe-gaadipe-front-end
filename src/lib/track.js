@@ -99,6 +99,87 @@ export function startSession() {
 
 export const pageView = () => send('page_view', { utm: utmOf() });
 
+/* ────────────────────────── the live view (2026-10-07) ──
+ * THE HEARTBEAT AND THE INTERACTIONS behind the web admin's Live users:
+ *   journey({ step, section })   where the visitor is: a step of the journey and
+ *                                what is on screen (a vehicle card, the full report…)
+ *   interaction(kind, label)     a meaningful moment — tap | focus | error | search | open
+ *   heartbeat                    every 20 s while the tab is visible, at once when it is
+ *                                hidden or shown again: page, step, section, scroll depth
+ * NOTHING TYPED IS EVER SENT. A focused field is named, never read; the sign-in
+ * code field is only ever "a protected field". Labels are masked: an email
+ * address or a long number in a button's text is replaced before it leaves.
+ * If the server says monitoring is off for this visit, interactions stop
+ * (the heartbeat keeps going: it is how the site knows the visit is alive).
+ */
+const URL_HB = `${BASE}/serverpe/platform/gaadipe/v1/public/users/hb`;
+const state = { step: null, section: null, monitor: true, scrollEl: null };
+const endedFns = new Set();
+const maskLabel = (s) => String(s || '').replace(/\s+/g, ' ').trim()
+  .replace(/[^\s@]+@[^\s@]+\.[^\s@]+/g, '[email]').replace(/\d{6,}/g, (d) => `${'•'.repeat(Math.max(0, d.length - 2))}${d.slice(-2)}`).slice(0, 80);
+
+export function journey({ step, section } = {}) {
+  let changed = false;
+  if (step !== undefined && step !== state.step) { state.step = step; changed = true; }
+  if (section !== undefined && section !== state.section) { state.section = section; changed = true; }
+  if (changed) beatSoon();
+}
+/** The element whose scroll depth is reported (the chat's message list); the window if none. */
+export const scrollSource = (el) => { state.scrollEl = el || null; };
+export function interaction(kind, label, extra = {}) {
+  if (!state.monitor) return;
+  send('interaction', { kind, label: maskLabel(label), step: state.step, section: state.section, ...extra });
+}
+/** Called when an admin ends this visit (the heartbeat says so): sign out. */
+export const onEnded = (fn) => { endedFns.add(fn); return () => endedFns.delete(fn); };
+
+function scrollPct() {
+  try {
+    const el = state.scrollEl;
+    if (el) return el.scrollHeight <= el.clientHeight ? 100 : Math.round((100 * (el.scrollTop + el.clientHeight)) / el.scrollHeight);
+    const h = document.documentElement;
+    return h.scrollHeight <= innerHeight ? 100 : Math.round((100 * (scrollY + innerHeight)) / h.scrollHeight);
+  } catch { return null; }
+}
+async function beat() {
+  try {
+    const res = await fetch(URL_HB, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+      body: JSON.stringify({ visitor_id: visitorId(), session_id: sessionId(), page: location.pathname + location.search,
+        step: state.step, section: state.section, scroll: scrollPct(), visible: document.visibilityState === 'visible' }),
+    });
+    const out = await res.json().catch(() => ({}));
+    state.monitor = out.m !== 'off';
+    if (out.end) endedFns.forEach((fn) => { try { fn(); } catch { /* the page's own problem */ } });
+  } catch { /* offline: try again on the next beat */ }
+}
+let soon = null;
+const beatSoon = () => { clearTimeout(soon); soon = setTimeout(beat, 800); };
+let started = false;
+export function startHeartbeat() {
+  if (started) return; started = true;
+  beat();
+  setInterval(() => { if (document.visibilityState === 'visible') beat(); }, 20000);
+  document.addEventListener('visibilitychange', beat);
+  addEventListener('pagehide', () => { try { navigator.sendBeacon?.(URL_HB, new Blob([JSON.stringify({ visitor_id: visitorId(), session_id: sessionId(), page: location.pathname, step: state.step, visible: false })], { type: 'application/json' })); } catch { /* gone */ } });
+
+  // Every tap on a button or link, by its label — never what is typed.
+  document.addEventListener('click', (e) => {
+    const el = e.target?.closest?.('button, a, [role="button"], [role="switch"], [data-track]');
+    if (!el || el.closest('[data-no-track]')) return;
+    const label = el.getAttribute('data-track') || el.getAttribute('aria-label') || el.innerText || el.getAttribute('title') || '';
+    if (label.trim()) interaction('tap', `Tapped “${maskLabel(label)}”`);
+  }, true);
+  // Which field has focus — its name only. The sign-in code is a protected field.
+  document.addEventListener('focusin', (e) => {
+    const f = e.target;
+    if (!f || !/^(INPUT|TEXTAREA|SELECT)$/.test(f.tagName)) return;
+    const protectedField = f.autocomplete === 'one-time-code' || f.type === 'password';
+    const name = protectedField ? 'a protected field' : (f.getAttribute('data-field') || f.getAttribute('aria-label') || f.placeholder || f.name || 'a field');
+    interaction('focus', `Interacting with ${protectedField ? name : `“${maskLabel(name)}”`}`);
+  }, true);
+}
+
 /*
  * Every tap on a link into WhatsApp, wherever it is on the site: recorded,
  * and — if the link was drawn before the code was ready — given the code on
