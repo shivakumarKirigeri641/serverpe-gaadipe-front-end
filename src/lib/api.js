@@ -163,6 +163,11 @@ export const api = {
   saveMe: (body) => call('/me', { method: 'PUT', body }),
   deactivate: (reason) => call('/me/deactivate', { method: 'POST', body: { reason } }),
   resendEmail: () => call('/me/email/resend', { method: 'POST', body: {} }),
+  // An email confirmed with a code; a new mobile number confirmed with its code (2026-10-07).
+  emailCode: (email) => call('/me/email/code', { method: 'POST', body: { email } }),
+  emailVerify: (email, code) => call('/me/email/verify', { method: 'POST', body: { email, code } }),
+  mobileCode: (mobile) => call('/me/mobile/code', { method: 'POST', body: { mobile } }),
+  mobileChange: (mobile, code, transfer, note) => call('/me/mobile/change', { method: 'POST', body: { mobile, code, transfer, note } }),
   setQuizpeConsent: (agree) => call('/me/consents', { method: 'PUT', body: { quizpe: agree === true } }),
   // Tips and offers on any channel — optional, its own switch (2026-10-07).
   setPromoConsent: (agree) => call('/me/promo-consent', { method: 'PUT', body: { agree: agree === true } }),

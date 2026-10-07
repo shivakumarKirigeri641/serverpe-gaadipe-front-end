@@ -6,12 +6,7 @@ import { startSession, pageView, watchWhatsAppLinks, startHeartbeat, journey } f
 import EmailPrompt from './components/EmailCard.jsx';
 import ClickTracker from './components/ClickTracker.jsx';
 import Home from './pages/Home.jsx';
-import Login from './pages/Login.jsx';
 import Policy from './pages/Policy.jsx';
-import Dashboard from './pages/Dashboard.jsx';
-import Check from './pages/Check.jsx';
-import Documents from './pages/Documents.jsx';
-import Profile from './pages/Profile.jsx';
 import Support from './pages/Support.jsx';
 import Feedback from './pages/Feedback.jsx';
 import Refer from './pages/Refer.jsx';
@@ -31,8 +26,22 @@ function Private({ children }) {
   const { me, ready } = useSession();
   const { pathname, search } = useLocation();
   if (!ready) return <div className="grid min-h-screen place-items-center text-sm text-muted">Loading…</div>;
-  if (!me) return <Navigate to={`/login?next=${encodeURIComponent(pathname + search)}`} replace />;
+  if (!me) return <Navigate to={`/chat?signin=1&next=${encodeURIComponent(pathname + search)}`} replace />;
   return children;
+}
+
+/*
+ * An old address, into the chat (2026-10-07): /login → sign in; /app/vehicle/REG →
+ * that vehicle; /app/reports, /app/invoices, /app/profile → that view; the rest → the chat.
+ */
+function ToChat() {
+  const { pathname, search } = useLocation();
+  const q = new URLSearchParams(search);
+  const reg = /^\/app\/vehicle\/([^/]+)/.exec(pathname)?.[1];
+  const open = { '/app/reports': 'reports', '/app/invoices': 'invoices', '/app/profile': 'profile', '/app': 'vehicles' }[pathname.replace(/\/$/, '')];
+  const to = pathname.startsWith('/login') ? `/chat?signin=1${q.get('next') ? `&next=${encodeURIComponent(q.get('next'))}` : ''}`
+    : reg ? `/chat?reg=${encodeURIComponent(reg)}` : open ? `/chat?open=${open}` : '/chat';
+  return <Navigate to={to} replace />;
 }
 
 /*
@@ -85,7 +94,10 @@ export default function App() {
       <Route path="/" element={<Home />} />
       {/* The chat (2026-10-07): free check without signing in; full-screen, installable. */}
       <Route path="/chat" element={<Chat />} />
-      <Route path="/login" element={WEB_LOGIN ? <Login /> : <OnWhatsApp />} />
+      {/* THE OLD ACCOUNT PAGES ARE RETIRED (user, 2026-10-07: "sign-in on mobile goes to
+          the old style"). Every one of them opens the chat, which does it all — so an
+          old link in an email, a bookmark or a redirect always lands in the app view. */}
+      <Route path="/login" element={<ToChat />} />
       <Route path="/help" element={<Support />} />
       {/* Rating and a message from a link — sent in broadcasts (user, 2026-09-30). */}
       <Route path="/feedback" element={<Feedback />} />
@@ -106,13 +118,9 @@ export default function App() {
           Every /app address then says where things went and opens the chat. */}
       {WEB_LOGIN ? (
         <>
-          <Route path="/app" element={<Private><Dashboard /></Private>} />
-          <Route path="/app/check" element={<Private><Check /></Private>} />
-          <Route path="/app/vehicle/:regNo" element={<Private><Check /></Private>} />
-          <Route path="/app/reports" element={<Private><Documents kind="reports" /></Private>} />
-          <Route path="/app/invoices" element={<Private><Documents kind="invoices" /></Private>} />
-          <Route path="/app/profile" element={<Private><Profile /></Private>} />
+          {/* The referral page has no chat view yet; it stays, signing in through the chat. */}
           <Route path="/app/refer" element={<Private><Refer /></Private>} />
+          <Route path="/app/*" element={<ToChat />} />
         </>
       ) : (
         <Route path="/app/*" element={<OnWhatsApp />} />

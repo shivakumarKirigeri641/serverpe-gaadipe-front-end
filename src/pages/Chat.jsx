@@ -6,6 +6,7 @@ import { useLang } from '../lib/i18n.jsx';
 import BuyDialog from '../components/BuyDialog.jsx';
 import * as notify from '../lib/notify';
 import { journey, interaction, scrollSource, onEnded } from '../lib/track';
+import EmailVerify from '../components/EmailVerify.jsx';
 import { saveBlob } from '../components/ui.jsx';
 
 /**
@@ -86,7 +87,7 @@ const T = {
     emailSent: (e) => `✓ Saved. A confirmation link was sent to *${e}* — tap it to get your reports and invoices there.`,
     emailSaved: '✓ Saved.', emailBad: 'That email address does not look right.',
     deactH: '⛔ Deactivate my account',
-    deactBody: 'Monitoring, alerts and messages stop, notifications are switched off and you are signed out. Your tax invoices are kept, as the law requires. Signing in again with the same number reopens the account.',
+    deactBody: 'Monitoring, alerts and messages stop, notifications are switched off and you are signed out. Your tax invoices are kept, as the law requires.',
     deactReason: 'Why are you leaving? (optional)', deactBtn: 'Deactivate', cancel: 'Cancel', cancelled: 'OK — nothing changed.',
     notifyAsk: '🔔 Get alerts here about your vehicles — a new challan, insurance or PUC about to expire, your report ready? Tap *Allow*, then allow it in your browser.',
     allow: 'Allow notifications', notNow: 'Not now', notifyOn: '✅ Notifications are on for this phone. Tapping one opens this chat.',
@@ -108,6 +109,18 @@ const T = {
     emailOk: '✅ Confirmed — alerts come here', emailWait: '⏳ Waiting for you to confirm', emailNone: 'Not added — alerts cannot reach you',
     resend: 'Send the link again', resent: '✓ A new confirmation link was sent. Check your inbox and Spam.',
     edit: 'Edit', saved: '✓ Saved.', laterOk: 'OK. You can add it any time from the menu ⋮ → Profile.',
+    update: 'Update', changeNumber: 'Change number', changeWarnH: 'Changing your mobile number',
+    changeWarn: 'You will be signed in on the new number as a fresh account. Your vehicles, reports and alerts stay with this number — they do not move by themselves.',
+    transferAsk: 'Ask GaadiPe to move my vehicles, reports and alerts to the new number',
+    transferNote: 'Anything support should know (optional)', sendCode: 'Send code to the new number', verifySwitch: 'Verify and switch',
+    transferHelp: 'Support checks every transfer and emails you the answer. Questions: support@gaadipe.in.',
+    switched: (m) => `You are now signed in on *${m}*.`, transferSent: 'Your transfer request is with support — you will get an email when it is approved.',
+    emailVerifiedNow: '✅ Your email is confirmed. Alerts, reports and invoices will come there.',
+    emailCodeSent: (e) => `📧 A 6-digit code is on its way to *${e}*.\n\nType it here to confirm your email (check *Spam* too). It works for 10 minutes.`,
+    badEmailCode: 'Please type the 6-digit code from the email.',
+    signOutH: '↪ Sign out?', signOutBody: 'You will need your mobile number and an SMS code to sign in again on this phone. Notifications to this phone stop.',
+    signOutYes: 'Sign out', deactReasons: ['I don’t need GaadiPe any more', 'I sold my vehicle', 'Too expensive', 'I got wrong or old information', 'Privacy concerns', 'Other'],
+    deactWhy: 'Why are you leaving?', deactOther: 'Tell us a little more', deactFresh: 'If you sign in again later, it will be a completely new, empty account — your old vehicles and reports will not come back.',
   },
   hi: {
     hello: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है।\n\nकोई भी गाड़ी नंबर लिखें — जैसे *KA01AB1234* — और उसकी बेसिक जानकारी *मुफ़्त* देखें, साइन इन की ज़रूरत नहीं।\n\nफिर पूरी रिपोर्ट, अपनी गाड़ियों, रिपोर्ट और अलर्ट के लिए मोबाइल नंबर से साइन इन करें।',
@@ -170,7 +183,7 @@ const T = {
     emailSent: (e) => `✓ सहेजा गया। *${e}* पर पुष्टि लिंक भेजा गया — रिपोर्ट और बिल वहाँ पाने के लिए उसे टैप करें।`,
     emailSaved: '✓ सहेजा गया।', emailBad: 'यह ईमेल पता सही नहीं लगता।',
     deactH: '⛔ मेरा खाता बंद करें',
-    deactBody: 'निगरानी, अलर्ट और संदेश रुक जाएँगे, नोटिफ़िकेशन बंद होंगे और आप साइन आउट हो जाएँगे। कानून के अनुसार आपके टैक्स बिल रखे जाएँगे। उसी नंबर से फिर साइन इन करने पर खाता फिर खुल जाएगा।',
+    deactBody: 'निगरानी, अलर्ट और संदेश रुक जाएँगे, नोटिफ़िकेशन बंद होंगे और आप साइन आउट हो जाएँगे। कानून के अनुसार आपके टैक्स बिल रखे जाएँगे।',
     deactReason: 'आप क्यों जा रहे हैं? (वैकल्पिक)', deactBtn: 'खाता बंद करें', cancel: 'रद्द करें', cancelled: 'ठीक है — कुछ नहीं बदला।',
     notifyAsk: '🔔 अपनी गाड़ियों के अलर्ट यहीं पाएँ — नया चालान, बीमा या PUC समाप्त होने वाला, रिपोर्ट तैयार? *अनुमति दें* दबाएँ, फिर ब्राउज़र में अनुमति दें।',
     allow: 'नोटिफ़िकेशन की अनुमति दें', notNow: 'अभी नहीं', notifyOn: '✅ इस फ़ोन पर नोटिफ़िकेशन चालू हैं। टैप करने पर यही चैट खुलेगी।',
@@ -191,6 +204,18 @@ const T = {
     emailOk: '✅ कन्फ़र्म — अलर्ट यहीं आएँगे', emailWait: '⏳ आपके कन्फ़र्म करने का इंतज़ार', emailNone: 'नहीं जोड़ा — अलर्ट आप तक नहीं पहुँच सकते',
     resend: 'लिंक फिर भेजें', resent: '✓ नया लिंक भेजा गया। इनबॉक्स और Spam देखें।',
     edit: 'बदलें', saved: '✓ सेव हो गया।', laterOk: 'ठीक है। मेनू ⋮ → प्रोफ़ाइल से कभी भी जोड़ें।',
+    update: 'अपडेट करें', changeNumber: 'नंबर बदलें', changeWarnH: 'मोबाइल नंबर बदलना',
+    changeWarn: 'नए नंबर पर आप एक नए खाते से साइन इन होंगे। आपकी गाड़ियाँ, रिपोर्ट और अलर्ट इसी नंबर पर रहेंगे — वे अपने आप नहीं जाते।',
+    transferAsk: 'GaadiPe से कहें कि मेरी गाड़ियाँ, रिपोर्ट और अलर्ट नए नंबर पर ले जाएँ',
+    transferNote: 'सपोर्ट के लिए कुछ (वैकल्पिक)', sendCode: 'नए नंबर पर कोड भेजें', verifySwitch: 'पुष्टि करें और बदलें',
+    transferHelp: 'सपोर्ट हर ट्रांसफ़र की जाँच करता है और आपको ईमेल पर जवाब देता है। सवाल: support@gaadipe.in',
+    switched: (m) => `अब आप *${m}* पर साइन इन हैं।`, transferSent: 'आपका ट्रांसफ़र अनुरोध सपोर्ट के पास है — मंज़ूरी पर ईमेल आएगा।',
+    emailVerifiedNow: '✅ आपके ईमेल की पुष्टि हो गई। अलर्ट, रिपोर्ट और इनवॉइस वहीं आएँगे।',
+    emailCodeSent: (e) => `📧 *${e}* पर 6 अंकों का कोड भेजा जा रहा है।\n\nईमेल की पुष्टि के लिए उसे यहाँ लिखें (*Spam* भी देखें)। कोड 10 मिनट तक चलेगा।`,
+    badEmailCode: 'कृपया ईमेल का 6 अंकों का कोड लिखें।',
+    signOutH: '↪ साइन आउट करें?', signOutBody: 'इस फ़ोन पर दोबारा साइन इन के लिए मोबाइल नंबर और SMS कोड लगेगा। इस फ़ोन पर नोटिफ़िकेशन बंद हो जाएँगे।',
+    signOutYes: 'साइन आउट', deactReasons: ['अब GaadiPe की ज़रूरत नहीं', 'मैंने गाड़ी बेच दी', 'बहुत महँगा', 'जानकारी गलत या पुरानी मिली', 'प्राइवेसी की चिंता', 'अन्य'],
+    deactWhy: 'आप क्यों जा रहे हैं?', deactOther: 'थोड़ा और बताएँ', deactFresh: 'बाद में दोबारा साइन इन करने पर बिल्कुल नया, खाली खाता बनेगा — पुरानी गाड़ियाँ और रिपोर्ट वापस नहीं आएँगी।',
   },
 };
 
@@ -208,6 +233,7 @@ const uid = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(
 const rupee = (p) => (p == null ? '₹19' : `₹${Math.round(p / 100)}`);
 const cleanPlate = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 const looksLikePlate = (s) => /^[A-Z]{2}\d{1,2}[A-Z]{0,3}\d{3,4}$/.test(cleanPlate(s)) || /^\d{2}BH\d{4}[A-Z]{1,2}$/.test(cleanPlate(s));
+const prettyMobile = (m) => { const d = String(m || '').replace(/\D/g, '').slice(-10); return d.length === 10 ? `${d.slice(0, 5)} ${d.slice(5)}` : d; };
 const prettyPlate = (s) => {
   const p = cleanPlate(s);
   const m = p.match(/^([A-Z]{2})(\d{1,2})([A-Z]{0,3})(\d{1,4})$/);
@@ -248,6 +274,7 @@ export default function Chat() {
   const [history, setHistory] = useState({ items: [], more: false, before: null, loaded: false });
   const [mode, setMode] = useState('plate');         // plate | mobile | code | name | email
   const [pendingName, setPendingName] = useState('');
+  const [pendingEmail, setPendingEmail] = useState('');
   const [mobile, setMobile] = useState('');
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -283,6 +310,7 @@ export default function Chat() {
      was given). Nothing of the account stays on screen. */
   const prevMe = useRef(null);
   const resetNote = useRef(null);
+  const afterSignIn = useRef(null);          // { open, next } from an old account address
   useEffect(() => {
     if (prevMe.current && !me) {
       loadedFor.current = null;
@@ -290,6 +318,14 @@ export default function Chat() {
       setMode('plate');
       const note = resetNote.current; resetNote.current = null;
       setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note ? `${note}\n\n${L.hello}` : L.hello, chips: ['howWorks'] }]);
+    } else if (prevMe.current && me && String(prevMe.current.id) !== String(me.id)) {
+      // Another account on this phone (a new mobile number): its own conversation, nothing of the old one.
+      loadedFor.current = me.id;
+      setHistory({ items: [], more: false, before: null, loaded: false });
+      setMode('plate');
+      const note = resetNote.current; resetNote.current = null;
+      setItems([...loadFor(me.id), ...(note ? [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note }] : [])]);
+      setTimeout(() => welcome({ justSignedIn: true }), 300);
     }
     prevMe.current = me;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -314,6 +350,23 @@ export default function Chat() {
     requestAnimationFrame(() => { const el = listRef.current; if (el) el.scrollTop = el.scrollHeight; });
   }, []);
   useEffect(scrollDown, [items.length, scrollDown]);
+  /* A card that grows after it is added (a list, a report, an image) would end up under the
+     input bar (user, 2026-10-07: "my vehicles list is cropping at the end"): whenever the
+     conversation grows, follow it down — if the reader was at the bottom already. */
+  const innerRef = useRef(null);
+  useEffect(() => {
+    const el = listRef.current; const inner = innerRef.current;
+    if (!el || !inner || typeof ResizeObserver === 'undefined') return undefined;
+    let lastH = inner.scrollHeight;
+    const ro = new ResizeObserver(() => {
+      const grew = inner.scrollHeight > lastH;
+      const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < (inner.scrollHeight - lastH) + 160;
+      lastH = inner.scrollHeight;
+      if (grew && nearBottom) el.scrollTop = el.scrollHeight;
+    });
+    ro.observe(inner);
+    return () => ro.disconnect();
+  }, []);
 
   const push = useCallback((...list) => setItems((cur) => [...cur.filter((x) => x.kind !== 'typing'), ...list.map((x) => ({ id: uid(), at: new Date().toISOString(), ...x }))]), []);
   const typing = useCallback(() => setItems((cur) => [...cur.filter((x) => x.kind !== 'typing'), { id: 'typing', kind: 'typing', from: 'bot' }]), []);
@@ -347,9 +400,17 @@ export default function Chat() {
       }).catch(() => {});
     }
     // Every "Sign in" on the site lands here (?signin=1) and asks for the mobile number at once.
-    if (params.get('signin')) {
-      const rest = new URLSearchParams(params); rest.delete('signin'); setParams(rest, { replace: true });
-      if (!me) setTimeout(() => startSignIn(), 400);
+    // An old account address (App.jsx ToChat): ?open=reports|invoices|profile|vehicles, ?next=/app/refer.
+    const open = params.get('open');
+    const next = params.get('next');
+    if (next && /^\/app\/refer/.test(next)) afterSignIn.current = { next };
+    if (open && ['reports', 'invoices', 'profile', 'vehicles'].includes(open)) {
+      if (me) setTimeout(() => (open === 'profile' ? showProfile() : showList(open)), 500);
+      else afterSignIn.current = { ...(afterSignIn.current || {}), open };
+    }
+    if (params.get('signin') || open || next) {
+      const rest = new URLSearchParams(params); ['signin', 'open', 'next'].forEach((k) => rest.delete(k)); setParams(rest, { replace: true });
+      if (!me && (params.get('signin') || open || next)) setTimeout(() => startSignIn(), 400);
     }
     // Back from paying (?paid=REG): the report opens right here in the chat.
     const paid = cleanPlate(params.get('paid'));
@@ -396,6 +457,7 @@ export default function Chat() {
     if (mode === 'code') return sendCode(text);
     if (mode === 'name') return sendName(text);
     if (mode === 'email') return sendEmail(text);
+    if (mode === 'ecode') return sendEmailCode(text);
     if (looksLikePlate(text)) return check(text);
     // A mobile number typed in the vehicle box: they want to sign in.
     if (!me && /^[6-9]\d{9}$/.test(ten(text)) && String(text).replace(/\D/g, '').length >= 10) return sendMobile(text);
@@ -471,6 +533,10 @@ export default function Chat() {
       await welcome({ justSignedIn: true });
       // Highly recommended while WhatsApp is disabled: a confirmed email is how alerts reach them.
       if (!out.user?.email_verified) { emailNudge(); markNudged(out.user?.id); }
+      // Signed in from an old account address: on to where they were going.
+      const after = afterSignIn.current; afterSignIn.current = null;
+      if (after?.next) { navigate(after.next); return; }
+      if (after?.open) setTimeout(() => (after.open === 'profile' ? showProfile() : showList(after.open)), 600);
       // Right after signing in: offer notifications (only where the browser can, and not if already on).
       const ns = await notify.state().catch(() => 'unsupported');
       setNotifyState(ns);
@@ -512,17 +578,31 @@ export default function Chat() {
     if (echo) push({ from: 'me', kind: 'text', text: e });
     setBusy(true); typing();
     try {
-      const out = await api.saveMe({ ...(pendingName ? { name: pendingName } : {}), email: e });
-      setMe?.(out.user); setMode('plate'); setPendingName('');
-      if (out.email_confirmation_sent) bot(L.emailConfirm(e));
-      else if (out.user?.email_verified) bot(`${L.emailSame(e)} ${L.emailOk}`);
-      else bot(L.emailSame(e), { chips: ['resendEmail'] });
+      // The name is saved first; the email is confirmed with a code typed right here (2026-10-07).
+      if (pendingName) { const o = await api.saveMe({ name: pendingName }); setMe?.(o.user); setPendingName(''); }
+      if (me?.email_verified && String(me.email).toLowerCase() === e) { setMode('plate'); bot(`${L.emailSame(e)} ${L.emailOk}`); return; }
+      const out = await api.emailCode(e);
+      setPendingEmail(e); setMode('ecode');
+      bot(L.emailCodeSent(e) + (out.dev ? '\n\n_(testing: the code is in the server log)_' : ''));
     } catch (err) {
       const b = err.body || {};
       if (b.error === 'bad_name') { setMode('name'); bot(`⚠️ ${err.message}`); return; }
       // Stay on the email step: they can type it again, or take the suggested spelling.
       bot(`⚠️ ${err.message}`, { chips: b.suggestion ? [`useEmail:${b.suggestion}`] : [] });
     } finally { setBusy(false); }
+  }
+
+  async function sendEmailCode(text) {
+    const code = String(text).replace(/\D/g, '');
+    push({ from: 'me', kind: 'text', text: '••••••' });
+    if (code.length !== 6) { bot(L.badEmailCode); return; }
+    setBusy(true); typing();
+    try {
+      const out = await api.emailVerify(pendingEmail, code);
+      setMe?.(out.user); setMode('plate'); setPendingEmail('');
+      bot(L.emailVerifiedNow);
+    } catch (err) { bot(`⚠️ ${err.message}`); }
+    finally { setBusy(false); }
   }
 
   async function resendLink() {
@@ -665,7 +745,7 @@ export default function Chat() {
   // Nothing until the saved sign-in is known — "Sign in" must never flash for someone signed in.
   const quick = !ready ? [] : me
     ? [...(me.email_verified ? [] : ['addEmail']), 'another', 'myVehicles', 'myReports', 'invoices', 'profile'] : ['howWorks', 'signIn'];
-  const placeholder = { mobile: L.placeholderMobile, code: L.placeholderCode, name: L.placeholderName, email: L.placeholderEmail }[mode] || L.placeholderPlate;
+  const placeholder = { mobile: L.placeholderMobile, code: L.placeholderCode, ecode: L.placeholderCode, name: L.placeholderName, email: L.placeholderEmail }[mode] || L.placeholderPlate;
   const typed = mode === 'name' || mode === 'email';   // free text: no capitals forced, no digit spacing
   const plateHint = mode === 'plate' && looksLikePlate(input);
 
@@ -696,7 +776,7 @@ export default function Chat() {
 
       {/* The conversation. */}
       <main ref={listRef} className="flex-1 overflow-y-auto">
-        <div className="mx-auto flex max-w-2xl flex-col gap-2 px-3 py-4">
+        <div ref={innerRef} className="mx-auto flex max-w-2xl flex-col gap-2 px-3 pb-8 pt-4">
           {me && history.items.length > 0 && (
             <>
               {history.more && (
@@ -722,14 +802,20 @@ export default function Chat() {
             }
             if (it.kind === 'email') return <EmailCard key={it.id} L={L} current={me?.email} onSave={saveEmail} />;
             if (it.kind === 'deactivate') return <DeactivateCard key={it.id} L={L} onConfirm={deactivate} onCancel={() => bot(L.cancelled)} />;
+            if (it.kind === 'signout') return <SignOutCard key={it.id} L={L} onConfirm={doSignOut} onCancel={() => bot(L.cancelled)} />;
             if (it.kind === 'notify') return <NotifyCard key={it.id} L={L} state={notifyState} onAllow={allowNotifications} onLater={() => bot(lang === 'hi' ? 'ठीक है। मेनू ⋮ → नोटिफ़िकेशन से कभी भी चालू करें।' : 'OK. Turn them on any time from the menu ⋮ → Notifications.')} />;
             if (it.kind === 'help') return <CardShell key={it.id} title={L.helpH}><div className="text-[13.5px] text-[#0b2e2b]"><Text text={L.helpBody} /></div>
               <a href="mailto:support@gaadipe.in" className="mt-2 inline-block rounded-full bg-[#0f766e] px-3 py-1.5 text-[12px] font-bold text-white">✉️ support@gaadipe.in</a></CardShell>;
             if (it.kind === 'profile') {
-              return <ProfileCard key={it.id} user={me ? { ...it.user, ...me } : it.user} L={L} onSignOut={doSignOut}
+              return <ProfileCard key={it.id} user={me ? { ...it.user, ...me } : it.user} L={L}
                 onPromo={async (agree) => { const out = await api.setPromoConsent(agree); setMe?.(out.user); return out.user; }}
-                onSave={async (body) => { const out = await api.saveMe(body); setMe?.(out.user); return out; }}
-                onResend={() => api.resendEmail()} />;
+                onSaveName={async (name) => { const out = await api.saveMe({ name }); setMe?.(out.user); return out; }}
+                onVerified={(u) => { setMe?.(u); bot(L.emailVerifiedNow); }}
+                onSwitched={async (out) => {
+                  // Signed in on the new number: its own (fresh) conversation, and a word on what happened.
+                  resetNote.current = `📱 ${L.switched(prettyMobile(out.user?.mobile))}${out.transfer_request_id ? `\n\n${L.transferSent}` : ''}`;
+                  await signIn(out.token, out.user);
+                }} />;
             }
             return <Bubble key={it.id} item={it} onChip={chip} chipLabel={chipLabel} L={L} />;
           })}
@@ -752,9 +838,9 @@ export default function Chat() {
               <input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} placeholder={placeholder}
                 type={mode === 'email' ? 'email' : 'text'}
                 inputMode={mode === 'email' ? 'email' : mode === 'plate' || mode === 'name' ? 'text' : 'numeric'}
-                autoComplete={{ mobile: 'tel', code: 'one-time-code', name: 'name', email: 'email' }[mode] || 'off'}
+                autoComplete={{ mobile: 'tel', code: 'one-time-code', ecode: 'one-time-code', name: 'name', email: 'email' }[mode] || 'off'}
                 autoCapitalize={mode === 'name' ? 'words' : mode === 'email' ? 'none' : undefined}
-                maxLength={{ code: 6, name: 60, email: 160 }[mode] || 20} disabled={busy}
+                maxLength={{ code: 6, ecode: 6, name: 60, email: 160 }[mode] || 20} disabled={busy}
                 className={`w-full rounded-2xl border bg-[#f6f9f9] px-4 py-3 text-[15px] outline-none transition focus:border-[#0f766e] focus:bg-white ${mode === 'plate' ? 'uppercase tracking-wider' : typed ? '' : 'tracking-widest'} placeholder:normal-case placeholder:tracking-normal ${plateHint ? 'border-[#12a150]' : 'border-black/10'}`} />
               {plateHint && <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#12a150]">✓ {prettyPlate(input)}</span>}
             </div>
@@ -777,7 +863,7 @@ export default function Chat() {
           ['🌐', L.mLang, () => { setMenuOpen(false); setLang(lang === 'hi' ? 'en' : 'hi'); }, 'lang'],
           ['❓', L.mHelp, () => showCard('help', L.mHelp), 'help'],
           ['📜', L.mTerms, () => { setMenuOpen(false); window.open('/terms', '_blank', 'noopener'); }, 'terms'],
-          ['↪', L.signOut, doSignOut, 'signout', 'warn'],
+          ['↪', L.signOut, () => showCard('signout', L.signOut), 'signout', 'warn'],
           ['⛔', L.mDeactivate, () => showCard('deactivate', L.mDeactivate), 'deactivate', 'danger'],
         ] : [
           ['🔐', L.signIn, () => { setMenuOpen(false); startSignIn(); }, 'signin'],
@@ -809,7 +895,7 @@ function Menu({ items, onClose, me }) {
         style={{ top: 'calc(env(safe-area-inset-top) + 64px)' }}>
         {me && (
           <div className="border-b border-black/5 bg-gradient-to-r from-[#0f766e] to-[#14a08f] px-4 py-3 text-white">
-            <div className="text-[14px] font-bold">{me.name || 'GaadiPe'}</div>
+            <div className="text-[14px] font-bold">{me.name || '-'}</div>
             <div className="text-[12px] text-white/80">{m ? `${m.slice(0, 5)} ${m.slice(5)}` : ''}</div>
           </div>
         )}
@@ -847,16 +933,46 @@ function EmailCard({ L, current, onSave }) {
   );
 }
 
-function DeactivateCard({ L, onConfirm, onCancel }) {
-  const [reason, setReason] = useState('');
+/* SIGN OUT, ASKED FIRST (user, 2026-10-07: "a warning when tapping Sign out"). */
+function SignOutCard({ L, onConfirm, onCancel }) {
   const [done, setDone] = useState(false);
+  return (
+    <CardShell title={L.signOutH}>
+      <p className="text-[13px] leading-relaxed text-black/70">{L.signOutBody}</p>
+      <div className="mt-2 flex gap-2">
+        <button type="button" data-test="signout-confirm" disabled={done} onClick={() => { setDone(true); onConfirm(); }}
+          className="flex-1 rounded-xl bg-[#b26a00] py-2.5 text-[13px] font-bold text-white disabled:opacity-50">↪ {L.signOutYes}</button>
+        <button type="button" data-test="signout-cancel" disabled={done} onClick={() => { setDone(true); onCancel(); }}
+          className="flex-1 rounded-xl border border-black/10 py-2.5 text-[13px] font-bold text-[#0b2e2b] disabled:opacity-50">{L.cancel}</button>
+      </div>
+    </CardShell>
+  );
+}
+
+/* DEACTIVATE (user, 2026-10-07): a warning, a reason (required), and the truth —
+   signing in again later starts a fresh, empty account. */
+function DeactivateCard({ L, onConfirm, onCancel }) {
+  const [pick, setPick] = useState('');
+  const [more, setMore] = useState('');
+  const [done, setDone] = useState(false);
+  const other = pick === L.deactReasons[L.deactReasons.length - 1];
+  const reason = [pick, more.trim()].filter(Boolean).join(' — ');
+  const ok = pick && (!other || more.trim().length >= 3);
   return (
     <CardShell title={L.deactH}>
       <p className="text-[13px] leading-relaxed text-black/70">{L.deactBody}</p>
-      <textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder={L.deactReason} rows={2} maxLength={500} disabled={done}
+      <p className="mt-2 rounded-lg bg-[#fdecec] px-3 py-2 text-[12.5px] font-semibold text-[#912018]">⚠️ {L.deactFresh}</p>
+      <div className="mt-2 text-[12px] font-bold text-[#0b2e2b]">{L.deactWhy}</div>
+      <div className="mt-1 space-y-1">
+        {L.deactReasons.map((r) => (
+          <label key={r} className="flex items-center gap-2 text-[13px] text-[#0b2e2b]">
+            <input type="radio" name="deact-reason" className="h-4 w-4 accent-[#c62828]" checked={pick === r} disabled={done} onChange={() => setPick(r)} />{r}
+          </label>))}
+      </div>
+      <textarea value={more} onChange={(e) => setMore(e.target.value)} placeholder={other ? L.deactOther : L.deactReason} rows={2} maxLength={400} disabled={done}
         className="mt-2 w-full rounded-xl border border-black/10 bg-[#f6f9f9] px-3 py-2 text-[13px] outline-none focus:border-[#c62828]" />
       <div className="mt-2 flex gap-2">
-        <button type="button" data-test="deactivate-confirm" disabled={done} onClick={() => { setDone(true); onConfirm(reason); }}
+        <button type="button" data-test="deactivate-confirm" disabled={done || !ok} onClick={() => { setDone(true); onConfirm(reason); }}
           className="flex-1 rounded-xl bg-[#c62828] py-2.5 text-[13px] font-bold text-white disabled:opacity-50">⛔ {L.deactBtn}</button>
         <button type="button" data-test="deactivate-cancel" disabled={done} onClick={() => { setDone(true); onCancel(); }}
           className="flex-1 rounded-xl border border-black/10 py-2.5 text-[13px] font-bold text-[#0b2e2b] disabled:opacity-50">{L.cancel}</button>
@@ -1001,6 +1117,19 @@ function VehiclesList({ rows, L, onOpen }) {
                 {r.report_id ? '📄 Full report' : r.needs_attention ? `⚠️ ${r.needs_attention} need attention` : r.expired?.length ? `⚠️ ${r.expired.join(', ')}` : ''}
                 {r.watched ? ' · 🔔 watched' : ''}
               </span>
+              {/* The vehicle in full (user, 2026-10-07, #13): what it is, and — only with a paid report — its document dates. */}
+              <span className="mt-1 flex flex-wrap gap-1 text-[10.5px] text-[#0b2e2b]">
+                {[r.fuel, r.vehicle_class, r.rc_status ? `RC ${String(r.rc_status).toLowerCase()}` : null, r.check_count ? `${r.check_count} check${r.check_count === 1 ? '' : 's'}` : null]
+                  .filter(Boolean).map((t) => <span key={t} className="rounded-full bg-[#eef5f4] px-1.5 py-0.5">{t}</span>)}
+              </span>
+              {r.report_id ? (
+                <span className="mt-1 grid grid-cols-2 gap-x-3 text-[10.5px] text-black/60">
+                  {[['Insurance', r.insurance_upto], ['PUC', r.pucc_upto], ['Fitness', r.fitness_upto], ['Tax', r.tax_upto], ['Permit', r.permit_upto], ['Registration', r.reg_upto]]
+                    .filter(([, d]) => d).map(([k, d]) => {
+                      const left = Math.ceil((new Date(d) - Date.now()) / 86400000);
+                      return <span key={k} className={left < 0 ? 'text-[#c62828]' : left <= 30 ? 'text-[#b26a00]' : ''}>{k}: {day(d)}</span>;
+                    })}
+                </span>) : null}
             </span>
             <span className="text-[12px] font-bold text-[#0f766e]">{L.vehicleBtn} ›</span>
           </button>
@@ -1035,92 +1164,100 @@ function DocsList({ kind, rows, L, onDownload }) {
 }
 
 /*
- * THE PROFILE (2026-10-07): name and email can be changed here. Both are checked
- * on the server (a real name; an address that can receive mail, with "did you
- * mean …?" for common typos), and a new email gets a confirmation link — the
- * card says whether it is confirmed, waiting, or missing, and can send the link again.
+ * THE PROFILE (user, 2026-10-07: "the profile must be editable, and the button at
+ * the end must be Update, not Sign out — that is confusing"). One form:
+ *   Name     typed and saved with Update ('-' when there is none)
+ *   Email    confirmed with a six-digit code (components/EmailVerify)
+ *   Mobile   Change number → a warning that the old number's vehicles and reports
+ *            stay with it (a transfer can be asked for, which support approves) →
+ *            a code to the new number → signed in again on it
+ *   Tips & offers, by SMS / email
+ * Sign out and Deactivate live in the ⋮ menu, each with its own warning.
  */
-function ProfileCard({ user, L, onSignOut, onPromo, onSave, onResend }) {
+function ProfileCard({ user, L, onPromo, onSaveName, onVerified, onSwitched }) {
   const [promo, setPromo] = useState(Boolean(user?.promo_consent));
   const [busy, setBusy] = useState(false);
-  const [editing, setEditing] = useState(!user?.email);
   const [name, setName] = useState(user?.name || user?.display_name || '');
   const [email, setEmail] = useState(user?.email || '');
-  const [note, setNote] = useState(null);       // { tone, text, suggestion? }
+  const [note, setNote] = useState(null);
+  const [mob, setMob] = useState(null);       // null | { stage: 'warn' | 'code', mobile, code, transfer, why }
   const m = String(user?.mobile || '').slice(-10);
-  const status = !user?.email ? ['none', L.emailNone] : user?.email_verified ? ['ok', L.emailOk] : ['wait', L.emailWait];
+  const verified = user?.email_verified ? user.email : null;
+  const nameChanged = name.trim().replace(/\s+/g, ' ') !== String(user?.name || '').trim();
 
-  const save = async (override) => {
-    const e = String(override ?? email).trim().toLowerCase();
+  const update = async () => {
     const n = name.trim().replace(/\s+/g, ' ');
-    if (n && !/^[\p{L}\p{M}][\p{L}\p{M} .'-]{1,59}$/u.test(n)) { setNote({ tone: 'bad', text: L.badName }); return; }
+    if (!/^[\p{L}\p{M}][\p{L}\p{M} .'-]{1,59}$/u.test(n)) { setNote({ tone: 'bad', text: L.badName }); return; }
+    setBusy(true); setNote(null);
+    try { await onSaveName(n); setNote({ tone: 'good', text: L.saved }); }
+    catch (err) { setNote({ tone: 'bad', text: err.message }); }
+    finally { setBusy(false); }
+  };
+  const mobileStep = async () => {
     setBusy(true); setNote(null);
     try {
-      const out = await onSave({ ...(n ? { name: n } : {}), ...(e ? { email: e } : {}) });
-      if (override) setEmail(e);
-      setEditing(false);
-      setNote({ tone: 'good', text: out.email_confirmation_sent ? L.emailConfirm(e) : L.saved });
-    } catch (err) {
-      setNote({ tone: 'bad', text: err.message, suggestion: err.body?.suggestion || null });
-    } finally { setBusy(false); }
+      if (mob.stage === 'warn') {
+        await api.mobileCode(mob.mobile);
+        setMob({ ...mob, stage: 'code', code: '' });
+      } else {
+        const out = await api.mobileChange(mob.mobile, mob.code, mob.transfer, mob.why);
+        setMob(null);
+        onSwitched?.(out);
+      }
+    } catch (err) { setNote({ tone: 'bad', text: err.message }); }
+    finally { setBusy(false); }
   };
+  const field = 'mt-0.5 w-full rounded-xl border border-black/10 bg-[#f6f9f9] px-3 py-2.5 text-[14px] text-[#0b2e2b] outline-none focus:border-[#0f766e]';
 
   return (
     <div className="anim-up flex flex-col items-start">
       <div className="w-[94%] max-w-md overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
-        <div className="flex items-center justify-between px-3.5 pt-3">
-          <span className="text-[14px] font-bold text-[#0b2e2b]">{L.profileH}</span>
-          {!editing && <button type="button" data-test="profile-edit" onClick={() => { setEditing(true); setNote(null); }}
-            className="rounded-full bg-[#0f766e]/10 px-2.5 py-1 text-[11.5px] font-bold text-[#0f766e]">✎ {L.edit}</button>}
+        <div className="flex items-center gap-3 bg-gradient-to-r from-[#0f766e] to-[#14a08f] px-4 py-3 text-white">
+          <div className="grid h-11 w-11 place-items-center rounded-full bg-white/20 text-[18px] font-black">{(user?.name || '-').slice(0, 1).toUpperCase()}</div>
+          <div className="min-w-0"><div className="truncate text-[15px] font-bold">{user?.name || '-'}</div><div className="text-[12px] text-white/85">{m ? `${m.slice(0, 5)} ${m.slice(5)}` : '-'}</div></div>
         </div>
-        <div className="px-3.5 py-2">
-          <Row k={L.mobileL} v={m ? `${m.slice(0, 5)} ${m.slice(5)}` : '—'} />
-          {editing ? (
-            <form className="mt-1 space-y-2" onSubmit={(ev) => { ev.preventDefault(); save(); }}>
-              <label className="block text-[11px] font-semibold text-black/50">{L.nameL}
-                <input data-test="profile-name" value={name} onChange={(ev) => setName(ev.target.value)} maxLength={60} autoComplete="name"
-                  placeholder={L.placeholderName} className="mt-0.5 w-full rounded-lg border border-black/10 bg-[#f6f9f9] px-3 py-2 text-[14px] text-[#0b2e2b] outline-none focus:border-[#0f766e]" />
-              </label>
-              <label className="block text-[11px] font-semibold text-black/50">{L.emailL}
-                <input data-test="profile-email" type="email" inputMode="email" autoCapitalize="none" value={email} onChange={(ev) => setEmail(ev.target.value)}
-                  maxLength={160} autoComplete="email" placeholder={L.placeholderEmail}
-                  className="mt-0.5 w-full rounded-lg border border-black/10 bg-[#f6f9f9] px-3 py-2 text-[14px] text-[#0b2e2b] outline-none focus:border-[#0f766e]" />
-              </label>
-              <button type="submit" data-test="profile-save" disabled={busy || (!email.trim() && !name.trim())}
-                className="w-full rounded-full bg-[#0f766e] py-2 text-[13px] font-bold text-white disabled:opacity-40">{busy ? '…' : L.save}</button>
-            </form>
-          ) : (
-            <>
-              <Row k={L.nameL} v={user?.name || user?.display_name || '—'} />
-              <Row k={L.emailL} v={user?.email || '—'} />
-            </>
-          )}
-          <div data-test="profile-email-status" className={`mt-2 rounded-lg px-3 py-2 text-[12.5px] font-semibold ${status[0] === 'ok' ? 'bg-[#e9f8ef] text-[#0a6c34]' : status[0] === 'wait' ? 'bg-[#fff6e6] text-[#8f5600]' : 'bg-[#fdecec] text-[#912018]'}`}>
-            {status[1]}
-            {status[0] === 'wait' && !editing && (
-              <button type="button" data-test="profile-resend" disabled={busy} className="ml-2 underline"
-                onClick={async () => { setBusy(true); try { const o = await onResend(); setNote({ tone: 'good', text: o?.already ? L.emailOk : L.resent }); } catch (e) { setNote({ tone: 'bad', text: e.message }); } finally { setBusy(false); } }}>
-                {L.resend}
-              </button>
-            )}
+        <div className="space-y-3 px-4 py-3">
+          <label className="block text-[11px] font-semibold text-black/50">{L.nameL}
+            <input data-test="profile-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={60} autoComplete="name" placeholder={L.placeholderName} className={field} />
+          </label>
+          <div className="text-[11px] font-semibold text-black/50">{L.emailL}
+            <div className="mt-0.5"><EmailVerify email={email} onEmail={setEmail} verifiedEmail={verified} onVerified={onVerified} inputClass={field.replace('mt-0.5 w-full ', '')} dataTest="profile" /></div>
+            {!verified ? <div className="mt-1 font-normal text-[#8f5600]">{user?.email ? L.emailWait : L.emailNone}</div> : null}
           </div>
-          {note && (
-            <div className={`mt-2 rounded-lg px-3 py-2 text-[12.5px] ${note.tone === 'good' ? 'bg-[#f3f7f6] text-[#0b2e2b]' : 'bg-[#fdecec] text-[#912018]'}`}>
-              <Text text={note.text} />
-              {note.suggestion && <button type="button" data-test="profile-suggestion" onClick={() => save(note.suggestion)}
-                className="mt-1.5 block rounded-full bg-[#0f766e] px-3 py-1 text-[12px] font-bold text-white">✓ {L.didYouMean(note.suggestion)}</button>}
+          <div className="text-[11px] font-semibold text-black/50">{L.mobileL}
+            <div className="mt-0.5 flex items-center justify-between rounded-xl border border-black/10 bg-[#f6f9f9] px-3 py-2.5 text-[14px] text-[#0b2e2b]">
+              <span className="tabular-nums">{m ? `${m.slice(0, 5)} ${m.slice(5)}` : '-'}</span>
+              {!mob ? <button type="button" data-test="profile-change-mobile" onClick={() => { setMob({ stage: 'warn', mobile: '', code: '', transfer: true, why: '' }); setNote(null); }}
+                className="text-[12.5px] font-bold text-[#0f766e]">{L.changeNumber}</button> : null}
             </div>
-          )}
-          <label className="mt-2 flex cursor-pointer items-center justify-between gap-3 rounded-lg bg-[#f3f7f6] px-3 py-2 text-[13px]">
+          </div>
+          {mob ? (
+            <div className="space-y-2 rounded-xl border border-[#e08700]/40 bg-[#fff6e6] p-3 text-[12.5px] text-[#5c3a00]">
+              <div className="font-bold">⚠️ {L.changeWarnH}</div>
+              <div className="leading-snug">{L.changeWarn}</div>
+              <input data-test="profile-new-mobile" className={field} inputMode="numeric" maxLength={10} disabled={mob.stage === 'code'} placeholder={L.placeholderMobile}
+                value={mob.mobile} onChange={(e) => setMob({ ...mob, mobile: e.target.value.replace(/\D/g, '').slice(0, 10) })} />
+              <label className="flex items-start gap-2"><input type="checkbox" className="mt-0.5 h-4 w-4 accent-[#0f766e]" checked={mob.transfer} disabled={mob.stage === 'code'}
+                onChange={(e) => setMob({ ...mob, transfer: e.target.checked })} /><span>{L.transferAsk}</span></label>
+              {mob.transfer && mob.stage === 'warn' ? <input className={field} maxLength={300} placeholder={L.transferNote} value={mob.why} onChange={(e) => setMob({ ...mob, why: e.target.value })} /> : null}
+              {mob.stage === 'code' ? <input data-test="profile-mobile-code" className={`${field} tracking-[0.3em]`} inputMode="numeric" autoComplete="one-time-code" maxLength={6}
+                placeholder={L.placeholderCode} value={mob.code} onChange={(e) => setMob({ ...mob, code: e.target.value.replace(/\D/g, '') })} /> : null}
+              <div className="flex gap-2">
+                <button type="button" data-test="profile-mobile-next" disabled={busy || (mob.stage === 'warn' ? !/^[6-9]\d{9}$/.test(mob.mobile) : mob.code.length < 4)} onClick={mobileStep}
+                  className="flex-1 rounded-xl bg-[#0f766e] py-2.5 text-[13px] font-bold text-white disabled:opacity-40">{busy ? '…' : mob.stage === 'warn' ? L.sendCode : L.verifySwitch}</button>
+                <button type="button" disabled={busy} onClick={() => setMob(null)} className="rounded-xl border border-black/10 px-4 text-[13px] font-bold text-[#0b2e2b]">{L.cancel}</button>
+              </div>
+              <div className="text-[11.5px]">{L.transferHelp}</div>
+            </div>) : null}
+          {note ? <div className={`rounded-lg px-3 py-2 text-[12.5px] ${note.tone === 'good' ? 'bg-[#e9f8ef] text-[#0a6c34]' : 'bg-[#fdecec] text-[#912018]'}`}><Text text={note.text} /></div> : null}
+          <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl bg-[#f3f7f6] px-3 py-2.5 text-[13px]">
             <span className="text-[#0b2e2b]">{L.offers}</span>
             <input type="checkbox" data-test="profile-offers" className="h-5 w-5 accent-[#0f766e]" checked={promo} disabled={busy}
-              onChange={async (e) => {
-                const agree = e.target.checked; setPromo(agree); setBusy(true);
-                try { await onPromo(agree); } catch { setPromo(!agree); } finally { setBusy(false); }
-              }} />
+              onChange={async (e) => { const agree = e.target.checked; setPromo(agree); setBusy(true); try { await onPromo(agree); } catch { setPromo(!agree); } finally { setBusy(false); } }} />
           </label>
         </div>
-        <button type="button" data-test="signout" onClick={onSignOut} className="w-full border-t border-black/5 py-3 text-[14px] font-bold text-[#c62828]">↪ {L.signOut}</button>
+        <button type="button" data-test="profile-save" onClick={update} disabled={busy || !nameChanged}
+          className="w-full bg-[#0f766e] py-3.5 text-[14.5px] font-black text-white disabled:bg-[#0f766e]/40">{busy ? '…' : `✓ ${L.update}`}</button>
       </div>
     </div>
   );

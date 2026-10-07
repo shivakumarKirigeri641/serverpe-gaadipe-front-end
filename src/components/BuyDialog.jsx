@@ -7,6 +7,7 @@ import { Modal, Banner } from './ui.jsx';
 import { useSession } from '../lib/session';
 import { STATES } from '../lib/states';
 import DataSourceNote from './DataSourceNote.jsx';
+import EmailVerify from './EmailVerify.jsx';
 
 /**
  * The last step before paying: the declaration, then the payment page.
@@ -23,7 +24,7 @@ import DataSourceNote from './DataSourceNote.jsx';
  */
 export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought }) {
   const { t, lang } = useLang();
-  const { me } = useSession();
+  const { me, setMe } = useSession();
   const [text, setText] = useState('');
   const [agreed, setAgreed] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -35,7 +36,10 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
   const [stateCode, setStateCode] = useState(me?.state_code || '');
   /* THE EMAIL, REQUIRED (user, 2026-09-21): the report's daily updates go there. */
   const [email, setEmail] = useState(me?.email || '');
-  const emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email.trim());
+  /* …AND CONFIRMED (user, 2026-10-07): the report, invoice and alerts go there, so
+     Pay waits until the address has been confirmed with its code. */
+  const verified = me?.email_verified ? me.email : null;
+  const emailOk = Boolean(verified) && email.trim().toLowerCase() === String(verified).toLowerCase();
   const ready = agreed && text && name.trim().length >= 2 && stateCode && emailOk;
 
   /* Opening the dialog, and leaving it, are part of the trail the Live screen shows. */
@@ -99,12 +103,11 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
       </div>
       <p className="-mt-1 text-2xs text-muted">{t('buy.invoiceNote')}</p>
 
-      <label className="block">
-        <span className="label">{t('buy.email')}</span>
-        <input className="input" type="email" inputMode="email" autoComplete="email" value={email} maxLength={160}
-          onChange={(e) => setEmail(e.target.value)} placeholder={t('buy.emailPh')} />
-        <span className="mt-1 block text-2xs text-muted">{t('buy.emailNote')}</span>
-      </label>
+      <div className="block">
+        <span className="label">{t('buy.email')} *</span>
+        <EmailVerify email={email} onEmail={setEmail} verifiedEmail={verified} onVerified={(u) => setMe?.(u)} dataTest="buy" />
+        <span className="mt-1 block text-2xs text-muted">{emailOk ? t('buy.emailNote') : (lang === 'hi' ? 'भुगतान से पहले ईमेल की पुष्टि ज़रूरी है — रिपोर्ट, इनवॉइस और अलर्ट वहीं आते हैं।' : 'Confirm your email before paying — your report, invoice and alerts are sent there.')}</span>
+      </div>
 
       <DataSourceNote compact />
 

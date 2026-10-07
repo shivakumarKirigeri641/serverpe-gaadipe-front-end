@@ -35,7 +35,10 @@ export default function Home() {
   useEffect(() => {
     let used = false;
     try { used = localStorage.getItem('gp.chat.used') === '1'; } catch { /* private mode */ }
-    if (used && !new URLSearchParams(window.location.search).has('home')) navigate(`/chat${window.location.search}`, { replace: true });
+    // On a phone, GaadiPe IS the app (user, 2026-10-07: "must look exactly like a mobile app"):
+    // the chat opens at once. A computer still sees this page; ?home=1 shows it anywhere.
+    const phone = window.matchMedia?.('(max-width: 767px)').matches;
+    if ((used || phone) && !new URLSearchParams(window.location.search).has('home')) navigate(`/chat${window.location.search}`, { replace: true });
   }, [navigate]);
 
   useEffect(() => { api.pricing().then(setPricing).catch(() => {}); }, []);
