@@ -138,6 +138,8 @@ export const api = {
   testimonials: () => call('/testimonials', { auth: false }),
   stats: () => call('/stats', { auth: false }),
   policies: () => call('/policies', { auth: false, base: PUBLIC }),
+  // The notice at the top of every page, set from the admin panel (2026-10-07).
+  notice: () => call('/notice', { auth: false, base: PUBLIC }),
 
   /* Signing in */
   /* Each sign-in step carries what the browser says about itself (lib/device.js). */

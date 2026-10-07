@@ -22,6 +22,11 @@ export default function Layout({ children, wide = false }) {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
   const inApp = pathname.startsWith('/app');
+  // The notice from the admin panel (2026-10-07: WhatsApp unavailable). Read
+  // once per visit; a failure simply shows nothing.
+  const [notice, setNotice] = useState(null);
+  useEffect(() => { api.notice().then((n) => setNotice(n?.on ? n : null)).catch(() => {}); }, []);
+  const noticeText = notice && ((lang === 'hi' && notice.hi) || notice.en);
 
   useEffect(() => {
     if (!me || me.language === lang) return;
@@ -36,6 +41,11 @@ export default function Layout({ children, wide = false }) {
 
   return (
     <div className="flex min-h-screen flex-col">
+      {noticeText && (
+        <div role="status" className="border-b border-watch-500/25 bg-watch-50 px-4 py-2.5 text-center text-sm font-medium text-watch-700">
+          ⚠️ {noticeText}
+        </div>
+      )}
       <header className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
         <div className="wrap flex h-16 items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2.5">

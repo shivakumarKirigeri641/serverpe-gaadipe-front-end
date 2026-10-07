@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { api } from '../lib/api';
+import { api, WHATSAPP_ENABLED } from '../lib/api';
 import { useLang } from '../lib/i18n.jsx';
 import Layout from '../components/Layout.jsx';
 import WhatsAppCta from '../components/WhatsAppCta.jsx';
@@ -48,7 +48,7 @@ const PAGE = {
 };
 
 export default function Feedback() {
-  const { lang } = useLang();
+  const { lang, t } = useLang();
   const p = PAGE[lang] || PAGE.en;
   const [params] = useSearchParams();
   const [rating, setRating] = useState(0);
@@ -84,7 +84,10 @@ export default function Feedback() {
             <p className="mt-2 text-body">{p.thanksB}</p>
             {rating <= 2 && <p className="mt-2 text-sm text-muted">{p.thanksLow}</p>}
             <div className="mt-2 text-2xl text-watch-500" aria-label={`${rating} / 5`}>{'★'.repeat(rating)}<span className="text-line">{'★'.repeat(5 - rating)}</span></div>
-            <WhatsAppCta className="mt-6 w-full" />
+            {/* WhatsApp only while it is offered (2026-10-07); the website check otherwise. */}
+            {WHATSAPP_ENABLED
+              ? <WhatsAppCta className="mt-6 w-full" />
+              : <a className="btn-primary btn-arrow mt-6 w-full justify-center text-center" href="/app/check">{t('common.checkVehicle')} <span className="arrow">→</span></a>}
           </div>
         ) : (
           <form onSubmit={submit} className="card anim-up p-5 sm:p-8" noValidate>
