@@ -25,7 +25,7 @@ import { saveBlob } from '../components/ui.jsx';
 
 const T = {
   en: {
-    hello: 'Namaste! 🙏 I’m GaadiPe. Send me any vehicle number — like *KA01AB1234* — and I’ll show its record. The basic check is *free*, no sign-in needed.',
+    hello: 'Namaste! 🙏 Welcome to *GaadiPe*.\n\nType any vehicle number — like *KA01AB1234* — to see its basic details *free*, no sign-in needed.\n\nThen sign in with your mobile number for the full report, your vehicles, reports and alerts.',
     checking: (r) => `Checking *${r}* …`,
     placeholderPlate: 'Type a vehicle number…',
     placeholderMobile: 'Your 10-digit mobile number',
@@ -96,7 +96,7 @@ const T = {
     helpBody: 'Write to *support@gaadipe.in* — we reply within a day. Tell us your mobile number and the vehicle number, if it is about one.',
   },
   hi: {
-    hello: 'नमस्ते! 🙏 मैं GaadiPe हूँ। कोई भी गाड़ी नंबर भेजें — जैसे *KA01AB1234* — मैं उसका रिकॉर्ड दिखाऊँगा। बेसिक जाँच *मुफ़्त* है, साइन इन की ज़रूरत नहीं।',
+    hello: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है।\n\nकोई भी गाड़ी नंबर लिखें — जैसे *KA01AB1234* — और उसकी बेसिक जानकारी *मुफ़्त* देखें, साइन इन की ज़रूरत नहीं।\n\nफिर पूरी रिपोर्ट, अपनी गाड़ियों, रिपोर्ट और अलर्ट के लिए मोबाइल नंबर से साइन इन करें।',
     checking: (r) => `*${r}* की जाँच हो रही है…`,
     placeholderPlate: 'गाड़ी नंबर लिखें…',
     placeholderMobile: 'अपना 10 अंकों का मोबाइल नंबर',
@@ -168,7 +168,15 @@ const T = {
   },
 };
 
-const STORE = 'gp.chat.v1';
+/* The conversation is kept on the device PER SIGNED-IN ACCOUNT only
+   (gp.chat.u.<user id>). A visitor who is not signed in always starts fresh
+   with the welcome; nothing from an earlier sign-in is ever shown to them.
+   gp.chat.v1 was the old shared key, removed on load. */
+const STORE = 'gp.chat.u.';
+const OLD_STORE = 'gp.chat.v1';
+const loadFor = (userId) => {
+  try { return JSON.parse(localStorage.getItem(`${STORE}${userId}`) || '[]').filter((x) => x.kind !== 'typing'); } catch { return []; }
+};
 const USED = 'gp.chat.used';
 const uid = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
 const rupee = (p) => (p == null ? '₹19' : `₹${Math.round(p / 100)}`);
@@ -209,9 +217,8 @@ export default function Chat() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
 
-  const [items, setItems] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(STORE) || '[]').filter((x) => x.kind !== 'typing'); } catch { return []; }
-  });
+  // Filled once the sign-in is known: the account's own conversation, or a fresh welcome.
+  const [items, setItems] = useState([]);
   const [history, setHistory] = useState({ items: [], more: false, before: null, loaded: false });
   const [mode, setMode] = useState('plate');         // plate | mobile | code
   const [mobile, setMobile] = useState('');
@@ -230,14 +237,36 @@ export default function Chat() {
      fresh). Paid reports, the profile and document lists are NOT kept on the
      device — a shared phone must not show them to the next person; they are
      reopened from the account. */
+  // Whose saved conversation is on screen — nothing is saved until it has been loaded,
+  // or the empty screen of the first moment would overwrite it.
+  const loadedFor = useRef(null);
   useEffect(() => {
+    if (!me?.id || loadedFor.current !== me.id) return;   // a visitor's conversation is never kept
     const keep = items.filter((x) => x.kind !== 'typing').map((x) => {
       if (x.kind === 'vehicle' && x.paid) return { ...x, kind: 'text', from: 'bot', text: `📄 *${x.vehicle?.pretty || x.vehicle?.reg_no}* — full report`, chips: [`open:${x.vehicle?.reg_no}`], vehicle: undefined };
-      if (['profile', 'reports', 'invoices', 'vehicles', 'email', 'deactivate', 'notify', 'help'].includes(x.kind)) return null;
+      if (['profile', 'reports', 'invoices', 'vehicles', 'email', 'deactivate', 'notify', 'help', 'welcome'].includes(x.kind)) return null;
       return x;
     }).filter(Boolean);
-    try { localStorage.setItem(STORE, JSON.stringify(keep.slice(-60))); } catch { /* private mode */ }
-  }, [items]);
+    try { localStorage.setItem(`${STORE}${me.id}`, JSON.stringify(keep.slice(-60))); } catch { /* private mode */ }
+  }, [items, me?.id]);
+  useEffect(() => { try { localStorage.removeItem(OLD_STORE); } catch { /* private mode */ } }, []);
+
+  /* Signed out — by the menu, by deactivating, or because the session ended:
+     the screen goes straight back to a fresh welcome (with the reason, if one
+     was given). Nothing of the account stays on screen. */
+  const prevMe = useRef(null);
+  const resetNote = useRef(null);
+  useEffect(() => {
+    if (prevMe.current && !me) {
+      loadedFor.current = null;
+      setHistory({ items: [], more: false, before: null, loaded: false });
+      setMode('plate');
+      const note = resetNote.current; resetNote.current = null;
+      setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note ? `${note}\n\n${L.hello}` : L.hello, chips: ['howWorks'] }]);
+    }
+    prevMe.current = me;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [me]);
   useEffect(() => { try { localStorage.setItem(USED, '1'); } catch { /* private mode */ } }, []);
   useEffect(() => { document.title = 'GaadiPe — Chat'; }, []);
 
@@ -254,8 +283,8 @@ export default function Chat() {
   useEffect(() => {
     if (!ready || greeted.current) return;
     greeted.current = true;
-    if (me) welcome();
-    else if (!items.length) bot(L.hello, { chips: ['howWorks'] });
+    if (me) { setItems(loadFor(me.id)); loadedFor.current = me.id; welcome(); }
+    else bot(L.hello, { chips: ['howWorks'] });
     // A number brought from the home page (?reg=) is checked at once, then dropped from the address.
     const reg = cleanPlate(params.get('reg'));
     /* LOCAL DEVELOPMENT ONLY (?demo=full): the full-report card with sample data,
@@ -370,6 +399,12 @@ export default function Chat() {
       const out = await api.verifyCode(mobile, code, false, false);
       if (!out.ok) { bot(`⚠️ ${out.message}`); return; }
       await signIn(out.token, out.user);
+      // Their earlier conversation (saved on this device) first, then this visit's messages.
+      if (out.user?.id) {
+        const earlier = loadFor(out.user.id);
+        setItems((cur) => [...earlier, ...cur.filter((x) => !earlier.some((e) => e.id === x.id))]);
+        loadedFor.current = out.user.id;
+      }
       setMode('plate');
       bot(L.signedIn);
       await welcome({ justSignedIn: true });
@@ -452,10 +487,9 @@ export default function Chat() {
     try {
       await notify.disable().catch(() => {});
       const out = await api.deactivate(reason || '');
+      // The screen resets to a fresh welcome when the sign-in ends (the effect on `me`), with this note on top.
+      resetNote.current = `✅ ${out.message || 'Your account is deactivated.'}`;
       await signOut().catch(() => {});
-      setHistory({ items: [], more: false, before: null, loaded: false });
-      setItems([]);
-      bot(`✅ ${out.message || 'Your account is deactivated.'}`, { chips: ['howWorks'] });
     } catch (e) { bot(`⚠️ ${e.message}`); }
   }
   async function allowNotifications() {
@@ -480,10 +514,8 @@ export default function Chat() {
     setMenuOpen(false);
     // This phone stops getting the account's notifications (they would belong to someone else next).
     await notify.disable().catch(() => {});
+    resetNote.current = `↪ ${lang === 'hi' ? 'आप साइन आउट हो गए।' : 'You are signed out.'}`;
     await signOut().catch(() => {});
-    setHistory({ items: [], more: false, before: null, loaded: false });
-    setItems([]);
-    bot(L.signedOut, { chips: ['howWorks'] });
   }
 
   /* ────────────────────────────── chips and buttons ── */
