@@ -4,6 +4,7 @@ import { api } from '../lib/api';
 import { useSession } from '../lib/session';
 import { useLang } from '../lib/i18n.jsx';
 import BuyDialog from '../components/BuyDialog.jsx';
+import * as notify from '../lib/notify';
 import { saveBlob } from '../components/ui.jsx';
 
 /**
@@ -78,6 +79,21 @@ const T = {
     profileH: '👤 Your profile', mobileL: 'Mobile', nameL: 'Name', emailL: 'Email',
     offers: 'Tips & offers by SMS / email', signOut: 'Sign out', signedOut: 'You are signed out. Send any vehicle number for a free check.',
     vehicleBtn: 'Open',
+    menu: 'Menu', mEmail: 'Email for reports', mNotify: 'Notifications', mLang: 'हिंदी में देखें', mHelp: 'Help & support',
+    mTerms: 'Terms & privacy', mDeactivate: 'Deactivate my account', mHistory: 'Vehicle history',
+    emailH: '✉️ Email for your reports and invoices', emailPh: 'you@example.com', save: 'Save',
+    emailSent: (e) => `✓ Saved. A confirmation link was sent to *${e}* — tap it to get your reports and invoices there.`,
+    emailSaved: '✓ Saved.', emailBad: 'That email address does not look right.',
+    deactH: '⛔ Deactivate my account',
+    deactBody: 'Monitoring, alerts and messages stop, notifications are switched off and you are signed out. Your tax invoices are kept, as the law requires. Signing in again with the same number reopens the account.',
+    deactReason: 'Why are you leaving? (optional)', deactBtn: 'Deactivate', cancel: 'Cancel', cancelled: 'OK — nothing changed.',
+    notifyAsk: '🔔 Get alerts here about your vehicles — a new challan, insurance or PUC about to expire, your report ready? Tap *Allow*, then allow it in your browser.',
+    allow: 'Allow notifications', notNow: 'Not now', notifyOn: '✅ Notifications are on for this phone. Tapping one opens this chat.',
+    notifyBlocked: 'Notifications are blocked for gaadipe.in in your browser settings. Allow them there to get alerts.',
+    notifyUnsupported: 'This browser cannot show notifications here. On iPhone, add GaadiPe to your Home Screen (Share → Add to Home Screen) and open it from there.',
+    notifyOffNow: 'Notifications are off for this phone.', turnOff: 'Turn off', notifyIsOn: '🔔 Notifications are on for this phone.',
+    helpH: '❓ Help & support',
+    helpBody: 'Write to *support@gaadipe.in* — we reply within a day. Tell us your mobile number and the vehicle number, if it is about one.',
   },
   hi: {
     hello: 'नमस्ते! 🙏 मैं GaadiPe हूँ। कोई भी गाड़ी नंबर भेजें — जैसे *KA01AB1234* — मैं उसका रिकॉर्ड दिखाऊँगा। बेसिक जाँच *मुफ़्त* है, साइन इन की ज़रूरत नहीं।',
@@ -134,6 +150,21 @@ const T = {
     profileH: '👤 आपकी प्रोफ़ाइल', mobileL: 'मोबाइल', nameL: 'नाम', emailL: 'ईमेल',
     offers: 'SMS / ईमेल पर टिप्स और ऑफ़र', signOut: 'साइन आउट', signedOut: 'आप साइन आउट हो गए। मुफ़्त जाँच के लिए कोई भी गाड़ी नंबर भेजें।',
     vehicleBtn: 'खोलें',
+    menu: 'मेनू', mEmail: 'रिपोर्ट के लिए ईमेल', mNotify: 'नोटिफ़िकेशन', mLang: 'View in English', mHelp: 'मदद और सहायता',
+    mTerms: 'नियम और गोपनीयता', mDeactivate: 'मेरा खाता बंद करें', mHistory: 'गाड़ियों का इतिहास',
+    emailH: '✉️ आपकी रिपोर्ट और बिल के लिए ईमेल', emailPh: 'you@example.com', save: 'सहेजें',
+    emailSent: (e) => `✓ सहेजा गया। *${e}* पर पुष्टि लिंक भेजा गया — रिपोर्ट और बिल वहाँ पाने के लिए उसे टैप करें।`,
+    emailSaved: '✓ सहेजा गया।', emailBad: 'यह ईमेल पता सही नहीं लगता।',
+    deactH: '⛔ मेरा खाता बंद करें',
+    deactBody: 'निगरानी, अलर्ट और संदेश रुक जाएँगे, नोटिफ़िकेशन बंद होंगे और आप साइन आउट हो जाएँगे। कानून के अनुसार आपके टैक्स बिल रखे जाएँगे। उसी नंबर से फिर साइन इन करने पर खाता फिर खुल जाएगा।',
+    deactReason: 'आप क्यों जा रहे हैं? (वैकल्पिक)', deactBtn: 'खाता बंद करें', cancel: 'रद्द करें', cancelled: 'ठीक है — कुछ नहीं बदला।',
+    notifyAsk: '🔔 अपनी गाड़ियों के अलर्ट यहीं पाएँ — नया चालान, बीमा या PUC समाप्त होने वाला, रिपोर्ट तैयार? *अनुमति दें* दबाएँ, फिर ब्राउज़र में अनुमति दें।',
+    allow: 'नोटिफ़िकेशन की अनुमति दें', notNow: 'अभी नहीं', notifyOn: '✅ इस फ़ोन पर नोटिफ़िकेशन चालू हैं। टैप करने पर यही चैट खुलेगी।',
+    notifyBlocked: 'ब्राउज़र सेटिंग में gaadipe.in के नोटिफ़िकेशन बंद हैं। अलर्ट पाने के लिए वहाँ अनुमति दें।',
+    notifyUnsupported: 'यह ब्राउज़र यहाँ नोटिफ़िकेशन नहीं दिखा सकता। iPhone पर GaadiPe को होम स्क्रीन पर जोड़ें (Share → Add to Home Screen) और वहीं से खोलें।',
+    notifyOffNow: 'इस फ़ोन पर नोटिफ़िकेशन बंद हैं।', turnOff: 'बंद करें', notifyIsOn: '🔔 इस फ़ोन पर नोटिफ़िकेशन चालू हैं।',
+    helpH: '❓ मदद और सहायता',
+    helpBody: '*support@gaadipe.in* पर लिखें — हम एक दिन में जवाब देते हैं। अपना मोबाइल नंबर और (अगर हो) गाड़ी नंबर ज़रूर लिखें।',
   },
 };
 
@@ -188,6 +219,9 @@ export default function Chat() {
   const [busy, setBusy] = useState(false);
   const [pendingReg, setPendingReg] = useState(null);
   const [buying, setBuying] = useState(null);       // { reg, price } — the payment window over the chat
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [notifyState, setNotifyState] = useState('unknown');
+  useEffect(() => { notify.state().then(setNotifyState).catch(() => setNotifyState('unsupported')); }, [me]);
   const listRef = useRef(null);
   const inputRef = useRef(null);
   const greeted = useRef(false);
@@ -199,7 +233,7 @@ export default function Chat() {
   useEffect(() => {
     const keep = items.filter((x) => x.kind !== 'typing').map((x) => {
       if (x.kind === 'vehicle' && x.paid) return { ...x, kind: 'text', from: 'bot', text: `📄 *${x.vehicle?.pretty || x.vehicle?.reg_no}* — full report`, chips: [`open:${x.vehicle?.reg_no}`], vehicle: undefined };
-      if (['profile', 'reports', 'invoices', 'vehicles'].includes(x.kind)) return null;
+      if (['profile', 'reports', 'invoices', 'vehicles', 'email', 'deactivate', 'notify', 'help'].includes(x.kind)) return null;
       return x;
     }).filter(Boolean);
     try { localStorage.setItem(STORE, JSON.stringify(keep.slice(-60))); } catch { /* private mode */ }
@@ -293,7 +327,8 @@ export default function Chat() {
 
   async function check(raw) {
     const reg = cleanPlate(raw);
-    push({ from: 'me', kind: 'text', text: prettyPlate(reg) });
+    // Shown as a number plate, not a plain bubble (2026-10-07).
+    push({ from: 'me', kind: 'plate', text: prettyPlate(reg) });
     setBusy(true); typing();
     try {
       const out = me ? await api.check(reg) : await api.chatCheck(reg);
@@ -338,6 +373,10 @@ export default function Chat() {
       setMode('plate');
       bot(L.signedIn);
       await welcome({ justSignedIn: true });
+      // Right after signing in: offer notifications (only where the browser can, and not if already on).
+      const ns = await notify.state().catch(() => 'unsupported');
+      setNotifyState(ns);
+      if (ns === 'off') push({ from: 'bot', kind: 'notify' });
       if (pendingReg) {
         push({ from: 'bot', kind: 'text', text: lang === 'hi' ? `*${prettyPlate(pendingReg)}* — आगे बढ़ें?` : `Continue with *${prettyPlate(pendingReg)}*?`,
                chips: [`open:${pendingReg}`, 'another'] });
@@ -393,7 +432,54 @@ export default function Chat() {
     } catch (e) { bot(`⚠️ ${e.message}`); }
   }
 
+  /* ── the ⋮ menu's own cards ── */
+  function showCard(kind, label) {
+    setMenuOpen(false);
+    push({ from: 'me', kind: 'text', text: label });
+    push({ from: 'bot', kind });
+  }
+  async function saveEmail(email) {
+    const e = String(email || '').trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(e)) { bot(L.emailBad); return false; }
+    try {
+      const out = await api.saveMe({ email: e });
+      setMe?.(out.user);
+      bot(out.email_confirmation_sent ? L.emailSent(e) : L.emailSaved);
+      return true;
+    } catch (err) { bot(`⚠️ ${err.message}`); return false; }
+  }
+  async function deactivate(reason) {
+    try {
+      await notify.disable().catch(() => {});
+      const out = await api.deactivate(reason || '');
+      await signOut().catch(() => {});
+      setHistory({ items: [], more: false, before: null, loaded: false });
+      setItems([]);
+      bot(`✅ ${out.message || 'Your account is deactivated.'}`, { chips: ['howWorks'] });
+    } catch (e) { bot(`⚠️ ${e.message}`); }
+  }
+  async function allowNotifications() {
+    try {
+      const s = await notify.enable();
+      setNotifyState(s);
+      bot(s === 'on' ? L.notifyOn : s === 'blocked' ? L.notifyBlocked : s === 'unsupported' ? L.notifyUnsupported : L.notifyOffNow);
+    } catch (e) { bot(`⚠️ ${e.message}`); }
+  }
+  async function notificationsMenu() {
+    setMenuOpen(false);
+    push({ from: 'me', kind: 'text', text: L.mNotify });
+    const s = await notify.state().catch(() => 'unsupported');
+    setNotifyState(s);
+    if (s === 'on') bot(L.notifyIsOn, { chips: ['notifyOff'] });
+    else if (s === 'blocked') bot(L.notifyBlocked);
+    else if (s === 'unsupported') bot(L.notifyUnsupported);
+    else push({ from: 'bot', kind: 'notify' });
+  }
+
   async function doSignOut() {
+    setMenuOpen(false);
+    // This phone stops getting the account's notifications (they would belong to someone else next).
+    await notify.disable().catch(() => {});
     await signOut().catch(() => {});
     setHistory({ items: [], more: false, before: null, loaded: false });
     setItems([]);
@@ -410,11 +496,13 @@ export default function Chat() {
     if (key === 'myReports') { showList('reports'); return; }
     if (key === 'invoices') { showList('invoices'); return; }
     if (key === 'profile') { showProfile(); return; }
-    if (key.startsWith('open:')) { push({ from: 'me', kind: 'text', text: prettyPlate(key.slice(5)) }); openVehicle(key.slice(5)); }
+    if (key === 'notifyOff') { notify.disable().then(() => { setNotifyState('off'); bot(L.notifyOffNow); }); return; }
+    if (key.startsWith('open:')) { push({ from: 'me', kind: 'plate', text: prettyPlate(key.slice(5)) }); openVehicle(key.slice(5)); }
   }
   const chipLabel = (key) => (key.startsWith('open:') ? `🔓 ${prettyPlate(key.slice(5))}` : {
     howWorks: `❓ ${L.howWorks}`, another: `🔍 ${L.another}`, signIn: `🔐 ${L.signIn}`,
     myVehicles: `🚗 ${L.myVehicles}`, myReports: `📄 ${L.myReports}`, profile: `👤 ${L.profile}`, invoices: `🧾 ${L.invoices}`,
+    notifyOff: `🔕 ${L.turnOff}`,
   }[key] || key);
 
   // The payment window opens over the chat; paying returns to /chat?paid=REG.
@@ -443,9 +531,12 @@ export default function Chat() {
             </div>
             <div className="text-[11px] text-white/80">{busy ? (lang === 'hi' ? 'लिख रहा है…' : 'typing…') : L.online}</div>
           </div>
-          <button type="button" onClick={() => setLang(lang === 'hi' ? 'en' : 'hi')}
-            className="rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold hover:bg-white/25">{lang === 'hi' ? 'EN' : 'हिं'}</button>
           <Link to="/?home=1" className="rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold hover:bg-white/25">{L.home} ↗</Link>
+          {/* The ⋮ menu, as on WhatsApp (2026-10-07): every account option, in the conversation. */}
+          <button type="button" data-test="menu" aria-label={L.menu} aria-expanded={menuOpen} onClick={() => setMenuOpen((v) => !v)}
+            className="grid h-9 w-9 place-items-center rounded-full hover:bg-white/15 active:scale-90">
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" /></svg>
+          </button>
         </div>
         <div className="bg-black/15 px-3 py-1 text-center text-[10.5px] text-white/90">{L.trust}</div>
       </header>
@@ -476,6 +567,11 @@ export default function Chat() {
             if (it.kind === 'reports' || it.kind === 'invoices') {
               return <DocsList key={it.id} kind={it.kind} rows={it.rows} L={L} onDownload={(row) => download(it.kind === 'invoices' ? 'invoice' : 'report', row)} />;
             }
+            if (it.kind === 'email') return <EmailCard key={it.id} L={L} current={me?.email} onSave={saveEmail} />;
+            if (it.kind === 'deactivate') return <DeactivateCard key={it.id} L={L} onConfirm={deactivate} onCancel={() => bot(L.cancelled)} />;
+            if (it.kind === 'notify') return <NotifyCard key={it.id} L={L} state={notifyState} onAllow={allowNotifications} onLater={() => bot(lang === 'hi' ? 'ठीक है। मेनू ⋮ → नोटिफ़िकेशन से कभी भी चालू करें।' : 'OK. Turn them on any time from the menu ⋮ → Notifications.')} />;
+            if (it.kind === 'help') return <CardShell key={it.id} title={L.helpH}><div className="text-[13.5px] text-[#0b2e2b]"><Text text={L.helpBody} /></div>
+              <a href="mailto:support@gaadipe.in" className="mt-2 inline-block rounded-full bg-[#0f766e] px-3 py-1.5 text-[12px] font-bold text-white">✉️ support@gaadipe.in</a></CardShell>;
             if (it.kind === 'profile') {
               return <ProfileCard key={it.id} user={it.user} L={L} onSignOut={doSignOut}
                 onPromo={async (agree) => { const out = await api.setPromoConsent(agree); setMe?.(out.user); return out.user; }} />;
@@ -512,12 +608,121 @@ export default function Chat() {
         </div>
       </footer>
 
+      {menuOpen && (
+        <Menu L={L} me={me} notifyState={notifyState} lang={lang} onClose={() => setMenuOpen(false)} items={me ? [
+          ['👤', L.profile, () => { setMenuOpen(false); showProfile(); }, 'profile'],
+          ['✉️', L.mEmail, () => showCard('email', L.mEmail), 'email'],
+          ['🚗', L.mHistory, () => { setMenuOpen(false); showList('vehicles'); }, 'vehicles'],
+          ['📄', L.myReports, () => { setMenuOpen(false); showList('reports'); }, 'reports'],
+          ['🧾', L.invoices, () => { setMenuOpen(false); showList('invoices'); }, 'invoices'],
+          ['🔔', `${L.mNotify}${notifyState === 'on' ? ' ✓' : ''}`, notificationsMenu, 'notify'],
+          ['🌐', L.mLang, () => { setMenuOpen(false); setLang(lang === 'hi' ? 'en' : 'hi'); }, 'lang'],
+          ['❓', L.mHelp, () => showCard('help', L.mHelp), 'help'],
+          ['📜', L.mTerms, () => { setMenuOpen(false); window.open('/terms', '_blank', 'noopener'); }, 'terms'],
+          ['↪', L.signOut, doSignOut, 'signout', 'warn'],
+          ['⛔', L.mDeactivate, () => showCard('deactivate', L.mDeactivate), 'deactivate', 'danger'],
+        ] : [
+          ['🔐', L.signIn, () => { setMenuOpen(false); startSignIn(); }, 'signin'],
+          ['❓', L.howWorks, () => { setMenuOpen(false); chip('howWorks'); }, 'how'],
+          ['🌐', L.mLang, () => { setMenuOpen(false); setLang(lang === 'hi' ? 'en' : 'hi'); }, 'lang'],
+          ['✉️', L.mHelp, () => showCard('help', L.mHelp), 'help'],
+          ['📜', L.mTerms, () => { setMenuOpen(false); window.open('/terms', '_blank', 'noopener'); }, 'terms'],
+        ]} />
+      )}
+
       {/* Paying: the declaration and checkout open over the chat (BuyDialog); the
           payment page returns to /chat?paid=REG, where the report opens. */}
       {buying && (
         <BuyDialog regNo={buying.reg} pricePaise={buying.price} onClose={() => setBuying(null)}
           onAlreadyBought={() => { setBuying(null); openVehicle(buying.reg); }} />
       )}
+    </div>
+  );
+}
+
+/** The ⋮ menu: a sheet under the header, closed by a tap outside. */
+function Menu({ items, onClose, me }) {
+  const m = String(me?.mobile || '').slice(-10);
+  return (
+    <div className="fixed inset-0 z-40" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/20" />
+      <div role="menu" onClick={(e) => e.stopPropagation()}
+        className="gp-pop absolute right-2 w-64 overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/5"
+        style={{ top: 'calc(env(safe-area-inset-top) + 64px)' }}>
+        {me && (
+          <div className="border-b border-black/5 bg-gradient-to-r from-[#0f766e] to-[#14a08f] px-4 py-3 text-white">
+            <div className="text-[14px] font-bold">{me.name || 'GaadiPe'}</div>
+            <div className="text-[12px] text-white/80">{m ? `${m.slice(0, 5)} ${m.slice(5)}` : ''}</div>
+          </div>
+        )}
+        {items.map(([icon, label, act, key, tone]) => (
+          <button key={key} type="button" role="menuitem" data-test={`menu-${key}`} onClick={act}
+            className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-[14px] active:bg-black/5 ${tone === 'danger' ? 'text-[#c62828]' : tone === 'warn' ? 'text-[#b26a00]' : 'text-[#0b2e2b]'}`}>
+            <span className="w-5 text-center">{icon}</span><span>{label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const CardShell = ({ title, children }) => (
+  <div className="gp-pop flex flex-col items-start">
+    <div className="w-[94%] max-w-md rounded-2xl rounded-bl-md bg-white p-3.5 shadow-md">
+      <div className="mb-2 text-[14px] font-bold text-[#0b2e2b]">{title}</div>
+      {children}
+    </div>
+  </div>
+);
+
+function EmailCard({ L, current, onSave }) {
+  const [email, setEmail] = useState(current || '');
+  const [busy, setBusy] = useState(false);
+  return (
+    <CardShell title={L.emailH}>
+      <form className="flex gap-2" onSubmit={async (e) => { e.preventDefault(); setBusy(true); await onSave(email); setBusy(false); }}>
+        <input type="email" inputMode="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={L.emailPh}
+          data-test="email-input" className="min-w-0 flex-1 rounded-xl border border-black/10 bg-[#f6f9f9] px-3 py-2 text-[14px] outline-none focus:border-[#0f766e]" />
+        <button type="submit" data-test="email-save" disabled={busy} className="rounded-xl bg-[#0f766e] px-4 text-[13px] font-bold text-white disabled:opacity-50">{L.save}</button>
+      </form>
+    </CardShell>
+  );
+}
+
+function DeactivateCard({ L, onConfirm, onCancel }) {
+  const [reason, setReason] = useState('');
+  const [done, setDone] = useState(false);
+  return (
+    <CardShell title={L.deactH}>
+      <p className="text-[13px] leading-relaxed text-black/70">{L.deactBody}</p>
+      <textarea value={reason} onChange={(e) => setReason(e.target.value)} placeholder={L.deactReason} rows={2} maxLength={500} disabled={done}
+        className="mt-2 w-full rounded-xl border border-black/10 bg-[#f6f9f9] px-3 py-2 text-[13px] outline-none focus:border-[#c62828]" />
+      <div className="mt-2 flex gap-2">
+        <button type="button" data-test="deactivate-confirm" disabled={done} onClick={() => { setDone(true); onConfirm(reason); }}
+          className="flex-1 rounded-xl bg-[#c62828] py-2.5 text-[13px] font-bold text-white disabled:opacity-50">⛔ {L.deactBtn}</button>
+        <button type="button" data-test="deactivate-cancel" disabled={done} onClick={() => { setDone(true); onCancel(); }}
+          className="flex-1 rounded-xl border border-black/10 py-2.5 text-[13px] font-bold text-[#0b2e2b] disabled:opacity-50">{L.cancel}</button>
+      </div>
+    </CardShell>
+  );
+}
+
+function NotifyCard({ L, state, onAllow, onLater }) {
+  const [done, setDone] = useState(false);
+  return (
+    <div className="gp-pop flex flex-col items-start">
+      <div className="w-[94%] max-w-md overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
+        <div className="flex items-start gap-3 p-3.5">
+          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#fff4cc] text-[22px]">🔔</div>
+          <div className="text-[13.5px] leading-snug text-[#0b2e2b]"><Text text={L.notifyAsk} /></div>
+        </div>
+        <div className="grid grid-cols-2 border-t border-black/5">
+          <button type="button" data-test="notify-allow" disabled={done || state === 'on'} onClick={() => { setDone(true); onAllow(); }}
+            className="gp-shine bg-[#ffd84d] py-3 text-[13.5px] font-black text-[#0a4f49] disabled:opacity-50">{L.allow}</button>
+          <button type="button" data-test="notify-later" disabled={done} onClick={() => { setDone(true); onLater(); }}
+            className="py-3 text-[13.5px] font-bold text-[#0f766e] disabled:opacity-50">{L.notNow}</button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -718,6 +923,21 @@ function Bubble({ item, onChip, chipLabel, faded = false }) {
     );
   }
   if (item.kind === 'note') return <div className="mx-auto text-[11px] text-black/40">{item.text}</div>;
+  /* A vehicle number they sent, drawn as an Indian number plate (2026-10-07):
+     white plate, black border and letters, the blue "IND" strip on the left. */
+  if (item.kind === 'plate') {
+    return (
+      <div className="gp-pop flex flex-col items-end">
+        <div className="flex items-stretch overflow-hidden rounded-lg border-[3px] border-[#111] bg-white shadow-md">
+          <span className="flex w-7 flex-col items-center justify-center bg-[#1d4ed8] text-[8px] font-black leading-none text-white">
+            <span className="mb-0.5 text-[10px]">✦</span>IND
+          </span>
+          <span className="px-3 py-1.5 font-mono text-[20px] font-black tracking-[3px] text-[#111]">{item.text}</span>
+        </div>
+        <div className="mt-0.5 pr-1 text-[10px] text-black/40">{time(item.at)}</div>
+      </div>
+    );
+  }
   const welcome = item.kind === 'welcome';
   return (
     <div className={`flex flex-col ${mine ? 'items-end' : 'items-start'} ${faded ? 'opacity-75' : 'gp-pop'}`}>

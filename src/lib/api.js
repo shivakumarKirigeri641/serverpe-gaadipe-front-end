@@ -197,6 +197,11 @@ export const api = {
   chatCheck: async (regNo) => call('/chat/check', { method: 'POST', auth: false, body: { reg_no: regNo, client: await clientInfo() } })
     .catch((e) => { if (e.body && [400, 403, 404, 429, 503].includes(e.status)) return e.body; throw e; }),
   chatSummary: () => call('/chat/summary'),
+  // Notifications on this phone (2026-10-07, back end src/site/push.js).
+  pushKey: () => call('/push/key'),
+  pushStatus: () => call('/push/status'),
+  pushSubscribe: (subscription) => call('/push/subscribe', { method: 'POST', body: { subscription, device: navigator.userAgent } }),
+  pushUnsubscribe: (endpoint) => call('/push/unsubscribe', { method: 'POST', body: { endpoint } }),
   chatHistory: (before) => call(`/chat/history${before ? `?before=${encodeURIComponent(before)}` : ''}`),
   // The language travels with the purchase, so the declaration on file is the
   // one the customer actually read.
