@@ -113,7 +113,7 @@ export const pageView = () => send('page_view', { utm: utmOf() });
  * (the heartbeat keeps going: it is how the site knows the visit is alive).
  */
 const URL_HB = `${BASE}/serverpe/platform/gaadipe/v1/public/users/hb`;
-const state = { step: null, section: null, monitor: true, scrollEl: null };
+const state = { step: null, section: null, monitor: true, scroll: true, scrollEl: null };
 const endedFns = new Set();
 const maskLabel = (s) => String(s || '').replace(/\s+/g, ' ').trim()
   .replace(/[^\s@]+@[^\s@]+\.[^\s@]+/g, '[email]').replace(/\d{6,}/g, (d) => `${'•'.repeat(Math.max(0, d.length - 2))}${d.slice(-2)}`).slice(0, 80);
@@ -146,10 +146,13 @@ async function beat() {
     const res = await fetch(URL_HB, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
       body: JSON.stringify({ visitor_id: visitorId(), session_id: sessionId(), page: location.pathname + location.search,
-        step: state.step, section: state.section, scroll: scrollPct(), visible: document.visibilityState === 'visible' }),
+        step: state.step, section: state.section, scroll: state.scroll ? scrollPct() : null, visible: document.visibilityState === 'visible',
+        // The sign-in's own device id: lets support end exactly this browser's sign-in, nothing else.
+        device_key: (() => { try { return localStorage.getItem('gaadipe.device') || undefined; } catch { return undefined; } })() }),
     });
     const out = await res.json().catch(() => ({}));
     state.monitor = out.m !== 'off';
+    state.scroll = out.s !== 0;
     if (out.end) endedFns.forEach((fn) => { try { fn(); } catch { /* the page's own problem */ } });
   } catch { /* offline: try again on the next beat */ }
 }
