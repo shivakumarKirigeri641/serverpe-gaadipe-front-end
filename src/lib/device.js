@@ -43,6 +43,9 @@ export async function clientInfo() {
   try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { /* old browser */ }
   return {
     device_id: deviceId(),
+    // The anonymous visit's id (lib/track.js), so a sign-in is joined to where
+    // the visitor first came from (2026-10-07).
+    visitor_id: (() => { try { return localStorage.getItem('gp.vid') || null; } catch { return null; } })(),
     screen: s.width ? `${s.width}x${s.height} @${window.devicePixelRatio || 1}x` : null,
     viewport: `${window.innerWidth}x${window.innerHeight}`,
     timezone: tz,
