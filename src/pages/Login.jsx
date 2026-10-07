@@ -34,6 +34,8 @@ export default function Login() {
   const [wait, setWait] = useState(0);
   // QuizPe may message me — OPTIONAL and never pre-ticked (DPDP); sign-in works either way.
   const [quizpe, setQuizpe] = useState(false);
+  // Tips and offers by SMS / WhatsApp / email — OPTIONAL, never pre-ticked (2026-10-07).
+  const [promo, setPromo] = useState(false);
 
   useEffect(() => { if (me) navigate(next, { replace: true }); }, [me, next, navigate]);
 
@@ -67,7 +69,7 @@ export default function Login() {
     e.preventDefault();
     setBusy(true); setError(null);
     try {
-      const out = await api.verifyCode(mobile.replace(/\D/g, '').slice(-10), code, quizpe);
+      const out = await api.verifyCode(mobile.replace(/\D/g, '').slice(-10), code, quizpe, promo);
       if (!out.ok) { setError(out.message); return; }
       await signIn(out.token, out.user);
       /*
@@ -116,6 +118,13 @@ export default function Login() {
                   maxLength={6} placeholder="••••••" value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} />
               </Field>
+              <label className="flex cursor-pointer gap-3 rounded-lg border border-line bg-shell/60 p-3">
+                <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-brand" checked={promo}
+                  onChange={(e) => setPromo(e.target.checked)} />
+                <span className="text-2xs leading-relaxed text-body">
+                  <b className="text-ink">{t('login.promo.h')}</b> {t('login.promo.b')}
+                </span>
+              </label>
               {QUIZPE_ENABLED && (
                 <label className="flex cursor-pointer gap-3 rounded-lg border border-line bg-shell/60 p-3">
                   <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-brand" checked={quizpe}

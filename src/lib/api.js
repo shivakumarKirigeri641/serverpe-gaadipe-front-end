@@ -145,7 +145,7 @@ export const api = {
   /* Each sign-in step carries what the browser says about itself (lib/device.js). */
   requestCode: async (mobile) => call('/session/otp', { method: 'POST', auth: false, body: { mobile, client: await clientInfo() } })
     .catch((e) => { if (e.body && (e.status === 429 || e.status === 400)) return e.body; throw e; }),
-  verifyCode: async (mobile, code, quizpeConsent = false) => call('/session/verify', { method: 'POST', auth: false, body: { mobile, code, quizpe_consent: quizpeConsent === true, client: await clientInfo() } })
+  verifyCode: async (mobile, code, quizpeConsent = false, promoConsent = false) => call('/session/verify', { method: 'POST', auth: false, body: { mobile, code, quizpe_consent: quizpeConsent === true, promo_consent: promoConsent === true, client: await clientInfo() } })
     .catch((e) => { if (e.body && e.status === 401) return e.body; throw e; }),
   // Public: anyone may write, signed in or not; a token, if present, ties it to the account.
   contact: (message) => call('/contact', { method: 'POST', body: message }),
@@ -158,6 +158,8 @@ export const api = {
   deactivate: (reason) => call('/me/deactivate', { method: 'POST', body: { reason } }),
   resendEmail: () => call('/me/email/resend', { method: 'POST', body: {} }),
   setQuizpeConsent: (agree) => call('/me/consents', { method: 'PUT', body: { quizpe: agree === true } }),
+  // Tips and offers on any channel — optional, its own switch (2026-10-07).
+  setPromoConsent: (agree) => call('/me/promo-consent', { method: 'PUT', body: { agree: agree === true } }),
 
   /* Support, opened from a WhatsApp link. Public: the token is the identity. */
   supportWho: (token) => fetch(`${PUBLIC}/support/${encodeURIComponent(token)}`)

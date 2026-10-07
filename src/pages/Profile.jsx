@@ -118,6 +118,8 @@ export default function Profile() {
               </dl>
             </div>
 
+            <PromoConsent user={data.user} onChange={(u) => setData((d) => ({ ...d, user: u }))} />
+
             <QuizpeConsent user={data.user} onChange={(u) => setData((d) => ({ ...d, user: u }))} />
 
             <div className="card p-5">
@@ -181,6 +183,35 @@ function EmailStatus({ user, typed }) {
         : <button type="button" className="font-semibold underline" onClick={resend}>{t('email.resend')}</button>}
       {state && state !== 'sent' && <span className="block text-wrong-700">{state}</span>}
     </span>
+  );
+}
+
+/*
+ * TIPS AND OFFERS — optional, never pre-ticked, withdrawn by unticking
+ * (user, 2026-10-07; DPDP). Service messages (codes, reports, alerts asked for)
+ * do not depend on it. The server records the exact words and the time.
+ */
+function PromoConsent({ user, onChange }) {
+  const { t } = useLang();
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState(null);
+  const [checked, setChecked] = useState(Boolean(user?.promo_consent));
+  const toggle = async (e) => {
+    const agree = e.target.checked;
+    setChecked(agree); setBusy(true); setMsg(null);
+    try { const out = await api.setPromoConsent(agree); onChange(out.user); setMsg(t('prof.promo.saved')); }
+    catch (err) { setChecked(!agree); setMsg(err.message); } finally { setBusy(false); }
+  };
+  return (
+    <div className="card p-5">
+      <div className="text-2xs font-semibold uppercase tracking-wider text-muted">{t('prof.promo.h')}</div>
+      <label className="mt-3 flex cursor-pointer gap-3">
+        <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-brand"
+          checked={checked} onChange={toggle} disabled={busy} />
+        <span className="text-sm leading-relaxed text-body">{t('prof.promo.label')}</span>
+      </label>
+      {msg && <p className="mt-2 text-2xs text-muted">{msg}</p>}
+    </div>
   );
 }
 
