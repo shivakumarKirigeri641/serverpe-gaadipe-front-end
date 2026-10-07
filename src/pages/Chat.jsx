@@ -635,6 +635,18 @@ export default function Chat() {
       if (out.error || !out.vehicle) { bot(`⚠️ ${out.message || 'Could not open that vehicle.'}`); return; }
       push({ from: 'bot', kind: 'vehicle', vehicle: out.vehicle, paid: Boolean(out.vehicle.paid), report: out.report || null,
              price: out.price_paise, signedIn: true });
+      /* THE GST INVOICE TOO, right after paying (2026-10-07): this vehicle's newest
+         invoice with its download button, waited for briefly while its PDF is made. */
+      if (afterPayment) {
+        let inv = null;
+        for (let i = 0; i < 8; i += 1) {
+          const list = await api.invoices().catch(() => null);
+          inv = (list?.rows || []).find((x) => cleanPlate(x.reg_no || '') === cleanPlate(reg)) || null;
+          if (inv?.downloadable) break;
+          await new Promise((r) => setTimeout(r, 2500));
+        }
+        if (inv) push({ from: 'bot', kind: 'invoices', rows: [inv] });
+      }
     } catch (e) { bot(`⚠️ ${e.message}`); } finally { setBusy(false); }
   }
 
