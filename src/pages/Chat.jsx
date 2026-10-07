@@ -421,6 +421,8 @@ export default function Chat() {
       }
       const paidCard = Boolean(out.report || out.vehicle.paid);
       journey({ step: 'viewing', section: paidCard ? `full report · ${reg}` : `vehicle card · ${reg}` });
+      // The funnel's "search completed" (web admin, phase 4).
+      interaction('view', `Saw ${paidCard ? 'the full report of' : 'the details of'} ${reg}`, { reg_no: reg });
       push({ from: 'bot', kind: 'vehicle', vehicle: out.vehicle, paid: paidCard, report: out.report || null,
              price: out.price_paise, signedIn: Boolean(me), left: out.left_today });
     } catch (e) {
