@@ -330,7 +330,7 @@ export const STRINGS = {
     'login.resendIn': 'Resend in {s}s',
     'login.resend': 'Resend code',
     'login.bad': 'Please enter your ten-digit mobile number.',
-    'login.accept': 'By signing in you accept our {terms}, {privacy} and {refund}.',
+    'login.accept': 'By signing in you accept our {terms}, {privacy} and {refund}, and agree to receive messages about your account, checks and reports on WhatsApp, SMS or email. Reply STOP anytime to stop promotional messages.',
 
     'dash.h': 'My vehicles',
     'dash.sub': 'Everything you have checked, and what needs attention.',
@@ -843,7 +843,7 @@ export const STRINGS = {
     'login.resendIn': '{s} सेकंड में दोबारा भेजें',
     'login.resend': 'कोड दोबारा भेजें',
     'login.bad': 'कृपया अपना दस अंकों का मोबाइल नंबर डालें।',
-    'login.accept': 'साइन इन करके आप हमारी {terms}, {privacy} और {refund} स्वीकार करते हैं।',
+    'login.accept': 'साइन इन करके आप हमारी {terms}, {privacy} और {refund} स्वीकार करते हैं, और अपने खाते, जाँच और रिपोर्ट से जुड़े संदेश WhatsApp, SMS या ईमेल पर पाने के लिए सहमत होते हैं। प्रचार संदेश रोकने के लिए कभी भी STOP लिखें।',
 
     'dash.h': 'मेरे वाहन',
     'dash.sub': 'आपने जो भी चेक किया, और किस पर ध्यान देना ज़रूरी है।',
