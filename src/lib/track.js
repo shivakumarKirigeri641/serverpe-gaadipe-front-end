@@ -130,6 +130,31 @@ export function interaction(kind, label, extra = {}) {
   if (!state.monitor) return;
   send('interaction', { kind, label: maskLabel(label), step: state.step, section: state.section, ...extra });
 }
+/*
+ * THE LIVE REPLICA (user, 2026-10-08): the chat's conversation as it is on
+ * screen, for the admin's visit view — sent after a change, at most every
+ * 1.5 s. Only what is already on screen; never what is being typed. Stops with
+ * the rest of the optional telemetry when monitoring is off for this visit.
+ */
+const URL_MR = `${BASE}/serverpe/platform/gaadipe/v1/public/users/mirror`;
+let mirrorTimer = null; let mirrorNext = null; let mirrorLast = 0;
+export function mirror(snapshot) {
+  if (!state.monitor) return;
+  mirrorNext = snapshot;
+  if (mirrorTimer) return;
+  const wait = Math.max(300, 1500 - (Date.now() - mirrorLast));
+  mirrorTimer = setTimeout(async () => {
+    mirrorTimer = null; mirrorLast = Date.now();
+    const s = mirrorNext; mirrorNext = null;
+    if (!s || !state.monitor) return;
+    try {
+      const res = await fetch(URL_MR, { method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+        body: JSON.stringify({ visitor_id: visitorId(), session_id: sessionId(), page: location.pathname, ...s }) });
+      const out = await res.json().catch(() => ({}));
+      if (out.m === 'off') state.monitor = false;
+    } catch { /* offline: the next change sends it again */ }
+  }, wait);
+}
 /** Called when an admin ends this visit (the heartbeat says so): sign out. */
 export const onEnded = (fn) => { endedFns.add(fn); return () => endedFns.delete(fn); };
 
