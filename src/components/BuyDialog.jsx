@@ -27,6 +27,7 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
   const { me, setMe } = useSession();
   const [text, setText] = useState('');
   const [agreed, setAgreed] = useState(false);
+  const [termsAgreed, setTermsAgreed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   /* WHO IS BUYING, FOR THE INVOICE (user, 2026-09-18): the name under "Billed
@@ -40,7 +41,7 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
      Pay waits until the address has been confirmed with its code. */
   const verified = me?.email_verified ? me.email : null;
   const emailOk = Boolean(verified) && email.trim().toLowerCase() === String(verified).toLowerCase();
-  const ready = agreed && text && name.trim().length >= 2 && stateCode && emailOk;
+  const ready = agreed && termsAgreed && text && name.trim().length >= 2 && stateCode && emailOk;
 
   /* Opening the dialog, and leaving it, are part of the trail the Live screen shows. */
   useEffect(() => {
@@ -55,7 +56,7 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
   const pay = async () => {
     setBusy(true); setError(null);
     try {
-      const out = await api.buy(regNo, true, lang, { name: name.trim(), state_code: stateCode, email: email.trim() });
+      const out = await api.buy(regNo, true, lang, { name: name.trim(), state_code: stateCode, email: email.trim(), terms_accepted: termsAgreed });
       if (out.pay_path || out.pay_url) {
         // Same tab: a payment page opened in a new tab that the browser blocks
         // is a payment that never happens. Opened through the site's own API
@@ -124,13 +125,17 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
         <li>· {t('buy.l3')}</li>
       </ul>
 
-      <p className="text-2xs text-muted">
-        <Linked text={t('buy.accept', {
-          terms: link('/terms', t('footer.terms')),
-          refund: link('/refund', t('footer.refund')),
-          privacy: link('/privacy', t('footer.privacy')),
-        })} />
-      </p>
+      {/* THE POLICIES, TICKED (user, 2026-10-08): never pre-ticked, required to pay. */}
+      <label className={`flex cursor-pointer gap-3 rounded-lg border p-3 transition ${
+        termsAgreed ? 'border-brand/40 bg-brand/5' : 'border-line bg-white'}`}>
+        <input type="checkbox" data-test="buy-terms" className="mt-0.5 h-5 w-5 shrink-0 accent-brand"
+          checked={termsAgreed} onChange={(e) => setTermsAgreed(e.target.checked)} />
+        <span className="text-sm leading-relaxed text-body">
+          <Linked text={lang === 'hi'
+            ? `मैंने ${link('/terms', t('footer.terms'))}, ${link('/refund', t('footer.refund'))} और ${link('/privacy', t('footer.privacy'))} पढ़ ली हैं और मैं उनसे सहमत हूँ।`
+            : `I have read and agree to the ${link('/terms', t('footer.terms'))}, ${link('/refund', t('footer.refund'))} and ${link('/privacy', t('footer.privacy'))}.`} />
+        </span>
+      </label>
 
       {error && <Banner tone="wrong">{error}</Banner>}
     </Modal>

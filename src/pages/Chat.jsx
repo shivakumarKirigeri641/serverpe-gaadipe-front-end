@@ -35,6 +35,9 @@ const T = {
     placeholderPlate: 'Type a vehicle number…',
     placeholderMobile: 'Your 10-digit mobile number',
     placeholderCode: '6-digit code from SMS',
+    termsH: '📜 Before you sign in',
+    termsAgree: ['I have read and agree to the', 'Terms of use', 'Privacy policy', 'and the', 'Refund policy'],
+    agreeFirst: 'Please tick *I agree* to the Terms of use, Privacy policy and Refund policy first, then send your mobile number again.',
     askMobile: 'Sure! Your *mobile number*, please — I’ll send a one-time code by SMS. No password, no app.',
     badMobile: 'That doesn’t look like a 10-digit mobile number. Please try again.',
     codeSent: (m) => `✓ Code sent by SMS to *${m}*. Type it here.\n\n_Used GaadiPe on WhatsApp before? Your chat and reports will be here right after you verify._`,
@@ -133,6 +136,9 @@ const T = {
     placeholderPlate: 'गाड़ी नंबर लिखें…',
     placeholderMobile: 'अपना 10 अंकों का मोबाइल नंबर',
     placeholderCode: 'SMS का 6 अंकों का कोड',
+    termsH: '📜 साइन इन से पहले',
+    termsAgree: ['मैंने पढ़ लिया है और मैं सहमत हूँ —', 'उपयोग की शर्तें', 'गोपनीयता नीति', 'और', 'रिफ़ंड नीति'],
+    agreeFirst: 'कृपया पहले उपयोग की शर्तें, गोपनीयता नीति और रिफ़ंड नीति पर *सहमत* का निशान लगाएँ, फिर अपना मोबाइल नंबर दोबारा भेजें।',
     askMobile: 'ज़रूर! अपना *मोबाइल नंबर* भेजें — मैं SMS से एक कोड भेजूँगा। कोई पासवर्ड नहीं, कोई ऐप नहीं।',
     badMobile: 'यह 10 अंकों का मोबाइल नंबर नहीं लगता। फिर से कोशिश करें।',
     codeSent: (m) => `✓ *${m}* पर SMS से कोड भेजा गया। उसे यहाँ लिखें।\n\n_पहले WhatsApp पर GaadiPe इस्तेमाल किया है? वेरिफ़ाई करते ही आपकी चैट और रिपोर्ट यहाँ होंगी।_`,
@@ -292,6 +298,8 @@ export default function Chat() {
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [pendingReg, setPendingReg] = useState(null);
+  // Agreed to the Terms, Privacy and Refund policies in this visit (TermsCard, 2026-10-08).
+  const [termsOk, setTermsOk] = useState(false);
   const [buying, setBuying] = useState(null);       // { reg, price } — the payment window over the chat
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifyState, setNotifyState] = useState('unknown');
@@ -311,7 +319,7 @@ export default function Chat() {
     if (!me?.id || loadedFor.current !== me.id) return;   // a visitor's conversation is never kept
     const keep = items.filter((x) => x.kind !== 'typing').map((x) => {
       if (x.kind === 'vehicle' && x.paid) return { ...x, kind: 'text', from: 'bot', text: `📄 *${x.vehicle?.pretty || x.vehicle?.reg_no}* — full report`, chips: [`open:${x.vehicle?.reg_no}`], vehicle: undefined };
-      if (['profile', 'reports', 'invoices', 'vehicles', 'email', 'deactivate', 'notify', 'help', 'welcome'].includes(x.kind)) return null;
+      if (['profile', 'reports', 'invoices', 'vehicles', 'email', 'deactivate', 'notify', 'help', 'welcome', 'terms'].includes(x.kind)) return null;
       return x;
     }).filter(Boolean);
     try { localStorage.setItem(`${STORE}${me.id}`, JSON.stringify(keep.slice(-60))); } catch { /* private mode */ }
@@ -520,12 +528,15 @@ export default function Chat() {
     if (reg) setPendingReg(reg);
     setMode('mobile');
     bot(L.askMobile);
+    // The policies to agree to, ticked before the number is accepted (2026-10-08).
+    if (!termsOk) push({ from: 'bot', kind: 'terms' });
     setTimeout(() => inputRef.current?.focus(), 50);
   }
 
   async function sendMobile(text) {
     const m = ten(text);
     push({ from: 'me', kind: 'text', text: m.length === 10 ? `${m.slice(0, 5)} ${m.slice(5)}` : text });
+    if (!termsOk) { interaction('error', 'Tried to sign in without agreeing to the terms'); bot(L.agreeFirst); push({ from: 'bot', kind: 'terms' }); return; }
     if (!/^[6-9]\d{9}$/.test(m)) { interaction('error', 'Mobile number did not look right'); bot(L.badMobile); return; }
     setBusy(true); typing();
     try {
@@ -542,7 +553,7 @@ export default function Chat() {
     if (code.length < 4) { interaction('error', 'Sign-in code too short'); bot(L.badCode); return; }
     setBusy(true); typing();
     try {
-      const out = await api.verifyCode(mobile, code, false, false);
+      const out = await api.verifyCode(mobile, code, false, false, termsOk);
       if (!out.ok) { bot(`⚠️ ${out.message}`); return; }
       await signIn(out.token, out.user);
       // Their earlier conversation (saved on this device) first, then this visit's messages.
@@ -839,6 +850,7 @@ export default function Chat() {
             if (it.kind === 'email') return <EmailCard key={it.id} L={L} current={me?.email} onSave={saveEmail} />;
             if (it.kind === 'deactivate') return <DeactivateCard key={it.id} L={L} onConfirm={deactivate} onCancel={() => bot(L.cancelled)} />;
             if (it.kind === 'signout') return <SignOutCard key={it.id} L={L} onConfirm={doSignOut} onCancel={() => bot(L.cancelled)} />;
+            if (it.kind === 'terms') return <TermsCard key={it.id} L={L} agreed={termsOk} onChange={setTermsOk} />;
             if (it.kind === 'notify') return <NotifyCard key={it.id} L={L} state={notifyState} onAllow={allowNotifications} onLater={() => bot(lang === 'hi' ? 'ठीक है। मेनू ⋮ → नोटिफ़िकेशन से कभी भी चालू करें।' : 'OK. Turn them on any time from the menu ⋮ → Notifications.')} />;
             if (it.kind === 'help') return <CardShell key={it.id} title={L.helpH}><div className="text-[13.5px] text-[#0b2e2b]"><Text text={L.helpBody} /></div>
               <a href="mailto:support@gaadipe.in" className="mt-2 inline-block rounded-full bg-[#0f766e] px-3 py-1.5 text-[12px] font-bold text-white">✉️ support@gaadipe.in</a></CardShell>;
@@ -970,6 +982,21 @@ function EmailCard({ L, current, onSave }) {
 }
 
 /* SIGN OUT, ASKED FIRST (user, 2026-10-07: "a warning when tapping Sign out"). */
+/* AGREE BEFORE SIGNING IN (user, 2026-10-08): the Terms, Privacy and Refund
+   policies, ticked — never pre-ticked — before the mobile number is accepted. */
+function TermsCard({ L, agreed, onChange }) {
+  const link = (href, label) => <a href={href} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#0f766e] underline">{label}</a>;
+  return (
+    <CardShell title={L.termsH}>
+      <label className="flex cursor-pointer items-start gap-2.5 text-[13px] leading-relaxed text-black/75">
+        <input type="checkbox" data-test="terms-agree" className="mt-0.5 h-5 w-5 shrink-0 accent-[#0f766e]" checked={agreed}
+          onChange={(e) => onChange(e.target.checked)} />
+        <span>{L.termsAgree[0]} {link('/terms', L.termsAgree[1])}, {link('/privacy', L.termsAgree[2])} {L.termsAgree[3]} {link('/refund', L.termsAgree[4])}.</span>
+      </label>
+    </CardShell>
+  );
+}
+
 function SignOutCard({ L, onConfirm, onCancel }) {
   const [done, setDone] = useState(false);
   return (
