@@ -45,6 +45,7 @@ const T = {
     signedIn: '✅ You’re signed in.',
     welcomeBack: (n) => `🎉 Welcome back${n ? `, *${n}*` : ''}!`,
     welcomeNew: '👋 Welcome to GaadiPe! Send any vehicle number to begin.',
+    askVehicle: '🔍 Type a vehicle number below to check it now — like *KA01AB1234*.',
     found: 'We found your GaadiPe history:',
     vehicles: (n) => `${n} vehicle${n === 1 ? '' : 's'} checked`,
     reports: (n) => `${n} full report${n === 1 ? '' : 's'}`,
@@ -146,6 +147,7 @@ const T = {
     signedIn: '✅ आप साइन इन हो गए हैं।',
     welcomeBack: (n) => `🎉 वापसी पर स्वागत है${n ? `, *${n}*` : ''}!`,
     welcomeNew: '👋 GaadiPe में स्वागत है! शुरू करने के लिए कोई भी गाड़ी नंबर भेजें।',
+    askVehicle: '🔍 जाँच के लिए नीचे कोई भी गाड़ी नंबर लिखें — जैसे *KA01AB1234*।',
     found: 'आपका GaadiPe इतिहास:',
     vehicles: (n) => `${n} गाड़ियाँ जाँचीं`,
     reports: (n) => `${n} पूरी रिपोर्ट`,
@@ -451,7 +453,9 @@ export default function Chat() {
       const lines = any
         ? [L.welcomeBack(s.name ? String(s.name).split(/\s+/)[0] : ''), '', L.found,
           s.vehicles ? `• ${L.vehicles(s.vehicles)}` : null,
-          s.reports ? `• ${L.reports(s.reports)}` : null].filter((x) => x !== null).join('\n')
+          s.reports ? `• ${L.reports(s.reports)}` : null,
+          // Once signed in, ask for the next number (2026-10-08).
+          '', L.askVehicle].filter((x) => x !== null).join('\n')
         : L.welcomeNew;
       if (justSignedIn || !items.some((x) => x.kind === 'welcome')) {
         push({ from: 'bot', kind: 'welcome', text: lines, last: s.last_vehicle, chips: ['another', 'myVehicles', 'myReports'] });
@@ -763,7 +767,7 @@ export default function Chat() {
   /* ────────────────────────────── chips and buttons ── */
 
   function chip(key) {
-    if (key === 'howWorks') { push({ from: 'me', kind: 'text', text: L.howWorks }); bot(L.howAnswer, { chips: ['another'] }); return; }
+    if (key === 'howWorks') { push({ from: 'me', kind: 'text', text: L.howWorks }); bot(L.howAnswer, { chips: me ? ['another'] : ['signIn'] }); return; }   // signed out: Sign in first (2026-10-08)
     if (key === 'another') { setMode('plate'); inputRef.current?.focus(); return; }
     if (key === 'signIn') { startSignIn(); return; }
     if (key === 'myVehicles') { showList('vehicles'); return; }
