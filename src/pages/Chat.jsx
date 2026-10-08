@@ -31,7 +31,11 @@ const T = {
     // When every check needs a sign-in (check_sign_in_required, 2026-10-08).
     // Sign in first, then the vehicle (user, 2026-10-08: asking for a number and
     // then for a mobile "may be a bit weird") — the greeting asks for the mobile.
-    helloSignIn: 'Namaste! 🙏 Welcome to *GaadiPe*.\n\nTo check any vehicle, first sign in with your *mobile number* — we send a one-time code by SMS. No password, no app.\n\nTick *I agree* below, then type your mobile number.',
+    /* A WELCOME, NOT A FORM (user, 2026-10-08: people read the opening, saw a
+       box to tick and left). What GaadiPe is, then one step: sign in. Agreement
+       is by signing in, said in one small line under it — no tick. */
+    helloSignIn: 'Namaste! 🙏 Welcome to *GaadiPe* — the complete record of any vehicle registered in India.\n\nInsurance, PUC, road tax and fitness validity, pending challans, loan (hypothecation), blacklist status and number of owners — from Government VAHAN and e-Challan records, in seconds, with a downloadable PDF report.\n\n*Sign in with your mobile number to continue* — we send a one-time code by SMS. No password, no app.',
+    termsByUse: ['By signing in, you agree to GaadiPe’s', 'Terms of use', 'Privacy policy', 'and', 'Refund policy'],
     signInToCheck: (r) => `🔐 Please sign in to check *${r}* — enter your mobile number below. We will check it straight after.`,
     plateNoted: (r) => `👍 Noted *${r}* — I’ll check it right after you sign in. Your *mobile number*, please.`,
     checking: (r) => `Checking *${r}* …`,
@@ -134,7 +138,8 @@ const T = {
   },
   hi: {
     hello: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है।\n\nकोई भी गाड़ी नंबर लिखें — जैसे *KA01AB1234* — और उसकी बेसिक जानकारी *मुफ़्त* देखें, साइन इन की ज़रूरत नहीं।\n\nफिर पूरी रिपोर्ट, अपनी गाड़ियों, रिपोर्ट और अलर्ट के लिए मोबाइल नंबर से साइन इन करें।',
-    helloSignIn: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है।\n\nकिसी भी गाड़ी की जाँच के लिए पहले अपने *मोबाइल नंबर* से साइन इन करें — हम SMS से एक बार का कोड भेजते हैं। कोई पासवर्ड नहीं, कोई ऐप नहीं।\n\nनीचे *मैं सहमत हूँ* पर टिक करें, फिर अपना मोबाइल नंबर लिखें।',
+    helloSignIn: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है — भारत में रजिस्टर्ड किसी भी गाड़ी का पूरा रिकॉर्ड।\n\nइंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, बाकी चालान, लोन (हाइपोथिकेशन), ब्लैकलिस्ट स्थिति और कितने मालिक — सरकारी VAHAN और e-Challan रिकॉर्ड से, कुछ ही सेकंड में, PDF रिपोर्ट के साथ।\n\n*आगे बढ़ने के लिए अपने मोबाइल नंबर से साइन इन करें* — हम SMS से एक बार का कोड भेजते हैं। कोई पासवर्ड नहीं, कोई ऐप नहीं।',
+    termsByUse: ['साइन इन करके आप GaadiPe की', 'उपयोग की शर्तें', 'गोपनीयता नीति', 'और', 'रिफ़ंड नीति से सहमत होते हैं'],
     signInToCheck: (r) => `🔐 *${r}* की जाँच के लिए कृपया साइन इन करें — नीचे अपना मोबाइल नंबर लिखें। साइन इन होते ही हम इसे जाँच देंगे।`,
     plateNoted: (r) => `👍 *${r}* नोट कर लिया — साइन इन होते ही इसकी जाँच करूँगा। कृपया अपना *मोबाइल नंबर* लिखें।`,
     checking: (r) => `*${r}* की जाँच हो रही है…`,
@@ -304,8 +309,10 @@ export default function Chat() {
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [pendingReg, setPendingReg] = useState(null);
-  // Agreed to the Terms, Privacy and Refund policies in this visit (TermsCard, 2026-10-08).
-  const [termsOk, setTermsOk] = useState(false);
+  /* AGREED BY SIGNING IN (user, 2026-10-08: "no need to tick & go"). The line
+     under the welcome says so; signing in is the agreement, recorded on the
+     server at every sign-in as before (consent_accepted, method sign_in). */
+  const termsOk = true;
   const [buying, setBuying] = useState(null);       // { reg, price } — the payment window over the chat
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifyState, setNotifyState] = useState('unknown');
@@ -394,7 +401,7 @@ export default function Chat() {
       } else if (['vehicles', 'reports', 'invoices'].includes(it.kind)) {
         const rows = it.rows || [];
         base.card = { count: String(rows.length), items: rows.slice(0, 6).map((r) => r.pretty || r.reg_no || r.report_number || r.invoice_number || '') };
-      } else if (it.kind === 'terms') base.card = { agreed: termsOk ? 'yes' : 'no' };
+      } else if (it.kind === 'terms') base.card = { agreed: 'by_signing_in' };
       else if (it.kind === 'profile') base.card = { name: it.user?.name || '' };
       return base;
     };
@@ -579,15 +586,15 @@ export default function Chat() {
     if (reg) setPendingReg(reg);
     setMode('mobile');
     if (!quiet) bot(L.askMobile);   // quiet: the greeting already asked for it
-    // The policies to agree to, ticked before the number is accepted (2026-10-08).
-    if (!termsOk) push({ from: 'bot', kind: 'terms' });
+    // "By signing in, you agree to…" — one small line, shown once (no tick, 2026-10-08).
+    setItems((cur) => (cur.some((x) => x.kind === 'terms') ? cur
+      : [...cur.filter((x) => x.kind !== 'typing'), { id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'terms' }]));
     setTimeout(() => inputRef.current?.focus(), 50);
   }
 
   async function sendMobile(text) {
     const m = ten(text);
     push({ from: 'me', kind: 'text', text: m.length === 10 ? `${m.slice(0, 5)} ${m.slice(5)}` : text });
-    if (!termsOk) { interaction('error', 'Tried to sign in without agreeing to the terms'); bot(L.agreeFirst); push({ from: 'bot', kind: 'terms' }); return; }
     if (!/^[6-9]\d{9}$/.test(m)) { interaction('error', 'Mobile number did not look right'); bot(L.badMobile); return; }
     setBusy(true); typing();
     try {
@@ -901,7 +908,7 @@ export default function Chat() {
             if (it.kind === 'email') return <EmailCard key={it.id} L={L} current={me?.email} onSave={saveEmail} />;
             if (it.kind === 'deactivate') return <DeactivateCard key={it.id} L={L} onConfirm={deactivate} onCancel={() => bot(L.cancelled)} />;
             if (it.kind === 'signout') return <SignOutCard key={it.id} L={L} onConfirm={doSignOut} onCancel={() => bot(L.cancelled)} />;
-            if (it.kind === 'terms') return <TermsCard key={it.id} L={L} agreed={termsOk} onChange={setTermsOk} />;
+            if (it.kind === 'terms') return <TermsLine key={it.id} L={L} />;
             if (it.kind === 'notify') return <NotifyCard key={it.id} L={L} state={notifyState} onAllow={allowNotifications} onLater={() => bot(lang === 'hi' ? 'ठीक है। मेनू ⋮ → नोटिफ़िकेशन से कभी भी चालू करें।' : 'OK. Turn them on any time from the menu ⋮ → Notifications.')} />;
             if (it.kind === 'help') return <CardShell key={it.id} title={L.helpH}><div className="text-[13.5px] text-[#0b2e2b]"><Text text={L.helpBody} /></div>
               <a href="mailto:support@gaadipe.in" className="mt-2 inline-block rounded-full bg-[#0f766e] px-3 py-1.5 text-[12px] font-bold text-white">✉️ support@gaadipe.in</a></CardShell>;
@@ -1033,18 +1040,19 @@ function EmailCard({ L, current, onSave }) {
 }
 
 /* SIGN OUT, ASKED FIRST (user, 2026-10-07: "a warning when tapping Sign out"). */
-/* AGREE BEFORE SIGNING IN (user, 2026-10-08): the Terms, Privacy and Refund
-   policies, ticked — never pre-ticked — before the mobile number is accepted. */
-function TermsCard({ L, agreed, onChange }) {
+/* AGREED BY SIGNING IN (user, 2026-10-08: people read the opening, saw a box to
+   tick and left — "no need to tick & go"). One small line under the welcome,
+   with the three policies a tap away. Signing in is the agreement; the server
+   records it at every sign-in (consent_accepted, method sign_in). */
+function TermsLine({ L }) {
   const link = (href, label) => <a href={href} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#0f766e] underline">{label}</a>;
+  const t = L.termsByUse;
   return (
-    <CardShell title={L.termsH}>
-      <label className="flex cursor-pointer items-start gap-2.5 text-[13px] leading-relaxed text-black/75">
-        <input type="checkbox" data-test="terms-agree" className="mt-0.5 h-5 w-5 shrink-0 accent-[#0f766e]" checked={agreed}
-          onChange={(e) => onChange(e.target.checked)} />
-        <span>{L.termsAgree[0]} {link('/terms', L.termsAgree[1])}, {link('/privacy', L.termsAgree[2])} {L.termsAgree[3]} {link('/refund', L.termsAgree[4])}.</span>
-      </label>
-    </CardShell>
+    <div className="anim-up flex">
+      <p data-test="terms-notice" className="ml-1 max-w-[88%] px-1 text-[11.5px] leading-relaxed text-black/55">
+        🔒 {t[0]} {link('/terms', t[1])}, {link('/privacy', t[2])} {t[3]} {link('/refund', t[4])}{/[.।]$/.test(t[4]) ? '' : '.'}
+      </p>
+    </div>
   );
 }
 
