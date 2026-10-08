@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useSession } from '../lib/session';
@@ -88,7 +89,7 @@ const T = {
     locked: 'In the full report',
     youHave: '📄 You have the full report for this vehicle.',
     open: 'Open report',
-    trust: '🔒 VAHAN records via ULIP · Secure payments · Owner details masked',
+    trust: '🔒 Official Government records · Secure payments · Data protected',
     online: 'online',
     leftToday: (n) => `${n} free check${n === 1 ? '' : 's'} left today without signing in.`,
     invoices: 'Invoices',
@@ -110,6 +111,9 @@ const T = {
     offers: 'Tips & offers by SMS / email', signOut: 'Sign out', signedOut: 'You are signed out. Send any vehicle number for a free check.',
     vehicleBtn: 'Open',
     tapPlate: 'Tap a number to see its vehicle summary.',
+    rm: { q: (r) => `Remove ${r} from My vehicles?`, body: 'It will no longer appear in your list. You can check it again any time — it comes back as a new entry.',
+      report: 'Your report and invoice stay in My reports and Invoices.', alerts: 'Alerts for this vehicle will stop.',
+      yes: '🗑 Remove', no: 'Cancel', done: (r) => `🗑 ${r} removed from My vehicles.`, label: (r) => `Remove ${r}`, empty: 'No vehicles left in your list. Send any vehicle number to check it.' },
     // Never "Registration Certificate" (user, 2026-10-08): this is GaadiPe's summary, not an RC.
     rc: { title: 'Vehicle Summary', sub: 'By GaadiPe from VAHAN records · not an RC or official document', flip: '↔ Swipe or tap Flip for more',
       flipBtn: 'Flip', back: 'My vehicles', prev: 'Previous', next: 'Next', report: 'Report', invoice: 'Invoice',
@@ -119,6 +123,7 @@ const T = {
       checks: (n) => `Checked ${n} time${n === 1 ? '' : 's'}`, docs: 'Documents', challans: 'Challans', loan: 'Loan', fastag: 'FASTag',
       lockedH: 'Dates, challans, loan & owners', lockedP: 'are in the full report — with a PDF and GST invoice.',
       unlock: (p) => `🔓 Full report ${p}`, fresh: (d) => `Saved record · ${d}`, attention: (n) => (n ? `⚠️ ${n} need attention` : '✅ Nothing flagged in the free check') },
+    menuHint: 'Your vehicles, reports, invoices, profile and settings are all here.', gotIt: 'Got it',
     menu: 'Menu', mEmail: 'Email for reports', mNotify: 'Notifications', mLang: 'हिंदी में देखें', mHelp: 'Help & support',
     mTerms: 'Terms & privacy', mDeactivate: 'Deactivate my account', mHistory: 'Vehicle history',
     emailH: '✉️ Email for your reports and invoices', emailPh: 'you@example.com', save: 'Save',
@@ -206,7 +211,7 @@ const T = {
     locked: 'पूरी रिपोर्ट में',
     youHave: '📄 इस गाड़ी की पूरी रिपोर्ट आपके पास है।',
     open: 'रिपोर्ट खोलें',
-    trust: '🔒 ULIP से VAHAN रिकॉर्ड · सुरक्षित भुगतान · मालिक की जानकारी छिपी',
+    trust: '🔒 आधिकारिक सरकारी रिकॉर्ड · सुरक्षित भुगतान · डेटा सुरक्षित',
     online: 'ऑनलाइन',
     leftToday: (n) => `बिना साइन इन आज ${n} मुफ़्त जाँच बाकी।`,
     invoices: 'बिल',
@@ -228,6 +233,9 @@ const T = {
     offers: 'SMS / ईमेल पर टिप्स और ऑफ़र', signOut: 'साइन आउट', signedOut: 'आप साइन आउट हो गए। मुफ़्त जाँच के लिए कोई भी गाड़ी नंबर भेजें।',
     vehicleBtn: 'खोलें',
     tapPlate: 'गाड़ी का सारांश देखने के लिए नंबर पर टैप करें।',
+    rm: { q: (r) => `${r} को मेरी गाड़ियों से हटाएँ?`, body: 'यह आपकी सूची में नहीं दिखेगी। आप इसे कभी भी फिर से जाँच सकते हैं — यह नई एंट्री की तरह वापस आएगी।',
+      report: 'आपकी रिपोर्ट और बिल "मेरी रिपोर्ट" और "बिल" में बने रहेंगे।', alerts: 'इस गाड़ी के अलर्ट बंद हो जाएँगे।',
+      yes: '🗑 हटाएँ', no: 'रद्द करें', done: (r) => `🗑 ${r} मेरी गाड़ियों से हटा दी गई।`, label: (r) => `${r} हटाएँ`, empty: 'आपकी सूची में कोई गाड़ी नहीं बची। जाँच के लिए कोई भी गाड़ी नंबर भेजें।' },
     rc: { title: 'गाड़ी का सारांश', sub: 'GaadiPe द्वारा VAHAN रिकॉर्ड से · यह RC या सरकारी दस्तावेज़ नहीं है', flip: '↔ और देखने के लिए स्वाइप करें या पलटें',
       flipBtn: 'पलटें', back: 'मेरी गाड़ियाँ', prev: 'पिछली', next: 'अगली', report: 'रिपोर्ट', invoice: 'बिल',
       loading: 'कार्ड खुल रहा है…', noRecord: 'अभी कोई सहेजा रिकॉर्ड नहीं।', recheck: 'फिर से जाँचें',
@@ -236,6 +244,7 @@ const T = {
       checks: (n) => `${n} बार जाँची गई`, docs: 'दस्तावेज़', challans: 'चालान', loan: 'लोन', fastag: 'FASTag',
       lockedH: 'तारीखें, चालान, लोन और मालिक', lockedP: 'पूरी रिपोर्ट में हैं — PDF और GST बिल के साथ।',
       unlock: (p) => `🔓 पूरी रिपोर्ट ${p}`, fresh: (d) => `सहेजा रिकॉर्ड · ${d}`, attention: (n) => (n ? `⚠️ ${n} चीज़ों पर ध्यान चाहिए` : '✅ मुफ़्त जाँच में कुछ नहीं मिला') },
+    menuHint: 'आपकी गाड़ियाँ, रिपोर्ट, बिल, प्रोफ़ाइल और सेटिंग्स — सब यहाँ हैं।', gotIt: 'ठीक है',
     menu: 'मेनू', mEmail: 'रिपोर्ट के लिए ईमेल', mNotify: 'नोटिफ़िकेशन', mLang: 'View in English', mHelp: 'मदद और सहायता',
     mTerms: 'नियम और गोपनीयता', mDeactivate: 'मेरा खाता बंद करें', mHistory: 'गाड़ियों का इतिहास',
     emailH: '✉️ आपकी रिपोर्ट और बिल के लिए ईमेल', emailPh: 'you@example.com', save: 'सहेजें',
@@ -358,6 +367,20 @@ export default function Chat() {
   const [buying, setBuying] = useState(null);       // { reg, price } — the payment window over the chat
   const [rcAt, setRcAt] = useState(null);           // { rows, index } — the RC card over the chat
   const [menuOpen, setMenuOpen] = useState(false);
+  /* WHERE THE MENU IS (user, 2026-10-08: "the 3 dots, users may not recognise").
+     The button says "Menu" in words, and the first time someone is signed in a
+     small note points at it, with a soft pulse, until they tap it or "Got it". */
+  const [menuHint, setMenuHint] = useState(false);
+  const HINT_KEY = 'gp.menuHint.seen';
+  const hideMenuHint = () => { setMenuHint(false); try { localStorage.setItem(HINT_KEY, '1'); } catch { /* private mode */ } };
+  useEffect(() => {
+    if (!me) { setMenuHint(false); return undefined; }
+    let seen = false;
+    try { seen = localStorage.getItem(HINT_KEY) === '1'; } catch { /* private mode */ }
+    if (seen) return undefined;
+    const t = setTimeout(() => setMenuHint(true), 2500);
+    return () => clearTimeout(t);
+  }, [me]);
   const [notifyState, setNotifyState] = useState('unknown');
   useEffect(() => { notify.state().then(setNotifyState).catch(() => setNotifyState('unsupported')); }, [me]);
   const listRef = useRef(null);
@@ -940,13 +963,36 @@ export default function Chat() {
             </div>
             <div className="text-[11px] text-white/80">{busy || items.some((x) => x.kind === 'typing') ?(lang === 'hi' ? 'लिख रहा है…' : 'typing…') : L.online}</div>
           </div>
-          <Link to="/?home=1" className="rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold hover:bg-white/25">{L.home} ↗</Link>
-          {/* The ⋮ menu, as on WhatsApp (2026-10-07): every account option, in the conversation. */}
-          <button type="button" data-test="menu" aria-label={L.menu} aria-expanded={menuOpen} onClick={() => setMenuOpen((v) => !v)}
-            className="grid h-9 w-9 place-items-center rounded-full hover:bg-white/15 active:scale-90">
-            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><circle cx="12" cy="5" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="12" cy="19" r="2" /></svg>
+          {/* Hindi / English in one tap (user, 2026-10-08: "I don't see the Hindi toggle") — it
+              was only inside the menu. Shows the language it switches TO. */}
+          <button type="button" data-test="lang-toggle" onClick={() => setLang(lang === 'hi' ? 'en' : 'hi')}
+            aria-label={lang === 'hi' ? 'Switch to English' : 'हिंदी में बदलें'}
+            className="flex items-center gap-1 rounded-full border border-white/40 bg-white/10 px-2.5 py-1 text-[12px] font-bold hover:bg-white/25 active:scale-95">
+            <span aria-hidden="true">🌐</span>{lang === 'hi' ? 'EN' : 'हिंदी'}
+          </button>
+          {/* On a phone just the house, so the name, language and Menu all fit. */}
+          <Link to="/?home=1" aria-label={L.home} className="rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold hover:bg-white/25">
+            <span className="sm:hidden" aria-hidden="true">🏠</span><span className="hidden sm:inline">{L.home} ↗</span>
+          </Link>
+          {/* The menu: every account option, in the conversation — labelled in words, not just ⋮ (2026-10-08). */}
+          <button type="button" data-test="menu" aria-label={L.menu} aria-expanded={menuOpen} onClick={() => { hideMenuHint(); setMenuOpen((v) => !v); }}
+            className={`flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[12.5px] font-bold text-[#0a4f49] shadow active:scale-95 ${menuHint ? 'gp-menu-pulse' : ''}`}>
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+            {L.menu}
           </button>
         </div>
+        {menuHint && !menuOpen ? (
+          <div className="relative mx-auto max-w-2xl">
+            <div className="gp-pop absolute right-3 top-1 z-30 w-[min(17rem,80vw)] rounded-2xl bg-[#ffd84d] p-3 text-[13px] text-[#0a4f49] shadow-xl" style={{ transformOrigin: '90% 0' }} role="status">
+              <span className="absolute -top-1.5 right-7 h-3 w-3 rotate-45 bg-[#ffd84d]" />
+              <div className="font-semibold leading-snug">👆 {L.menuHint}</div>
+              <div className="mt-2 flex justify-end gap-2">
+                <button type="button" onClick={hideMenuHint} className="rounded-full px-3 py-1 text-[12px] font-bold text-[#0a4f49]/70">{L.gotIt}</button>
+                <button type="button" onClick={() => { hideMenuHint(); setMenuOpen(true); }} className="rounded-full bg-[#0a4f49] px-3 py-1 text-[12px] font-bold text-white">☰ {L.menu}</button>
+              </div>
+            </div>
+          </div>
+        ) : null}
         <div className="bg-black/15 px-3 py-1 text-center text-[10.5px] text-white/90">{L.trust}</div>
       </header>
 
@@ -972,7 +1018,19 @@ export default function Chat() {
             if (it.kind === 'vehicle') {
               return <VehicleCard key={it.id} it={it} L={L} onFull={() => (it.paid ? openVehicle(it.vehicle.reg_no) : fullReport(it.vehicle.reg_no, it.price))} onAnother={() => chip('another')} />;
             }
-            if (it.kind === 'vehicles') return <VehiclesList key={it.id} rows={it.rows} L={L} onOpen={(index) => setRcAt({ rows: it.rows, index })} />;
+            if (it.kind === 'vehicles') {
+              return <VehiclesList key={it.id} rows={it.rows} L={L} onOpen={(index) => setRcAt({ rows: it.rows, index })}
+                onRemove={async (reg) => {
+                  await api.removeVehicle(reg);
+                  journey({ step: 'reports', section: `removed ${reg}` });
+                  return true;
+                }}
+                onRemoved={(reg) => {
+                  // Gone from every list on screen (and from the saved conversation).
+                  setItems((cur) => cur.map((x) => (x.kind === 'vehicles' ? { ...x, rows: x.rows.filter((r) => r.reg_no !== reg) } : x)));
+                  bot(L.rm.done(prettyPlate(reg)), { pace: 300 });
+                }} />;
+            }
             if (it.kind === 'reports' || it.kind === 'invoices') {
               return <DocsList key={it.id} kind={it.kind} rows={it.rows} L={L} onDownload={(row) => download(it.kind === 'invoices' ? 'invoice' : 'report', row)} />;
             }
@@ -1322,30 +1380,78 @@ const Row = ({ k, v, tone }) => (
  * what it is underneath; a tap opens its RC card (RcViewer). Paid ones wear a
  * small gold "REPORT" tag.
  */
-function VehiclesList({ rows, L, onOpen }) {
+function VehiclesList({ rows, L, onOpen, onRemove, onRemoved }) {
+  const [asking, setAsking] = useState(null);     // the row whose bin was tapped
+  const [leaving, setLeaving] = useState(null);   // reg_no sliding out
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState(null);
+  /* THE BIN (user, 2026-10-08): a warning first, then the plate slides away. For
+     the customer it is deleted; the server only hides it (see siteApi DELETE). */
+  const confirm = async () => {
+    const reg = asking.reg_no;
+    setBusy(true); setErr(null);
+    try {
+      await onRemove(reg);
+      setAsking(null); setLeaving(reg);
+      setTimeout(() => { setLeaving(null); onRemoved(reg); }, 420);
+    } catch (e) { setErr(e.message); } finally { setBusy(false); }
+  };
   return (
     <div className="anim-up flex flex-col items-start">
       <div className="w-[94%] max-w-md overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
         <div className="px-3.5 pt-3 text-[14px] font-bold text-[#0b2e2b]">{L.yourVehicles(rows.length)}</div>
-        <div className="px-3.5 text-[11.5px] text-black/50">{L.tapPlate}</div>
+        <div className="px-3.5 text-[11.5px] text-black/50">{rows.length ? L.tapPlate : L.rm.empty}</div>
         <div className="grid grid-cols-1 gap-2 p-3 sm:grid-cols-2">
           {rows.map((r, i) => (
-            <button key={r.reg_no} type="button" data-test={`open-${r.reg_no}`} onClick={() => onOpen(i)} style={{ animationDelay: `${0.08 + i * 0.06}s` }}
-              className="gp-pop gp-from-l group flex min-w-0 flex-col items-start gap-1 rounded-xl border border-black/5 bg-gradient-to-br from-white to-[#f1f8f7] p-2.5 text-left shadow-sm transition hover:shadow-md active:scale-[.97]">
-              <span className="flex w-full items-center justify-between gap-2">
-                <span className="flex items-stretch overflow-hidden rounded-md border-2 border-[#111] bg-white shadow-sm">
-                  <span className="flex w-4 items-center justify-center bg-[#1d4ed8] text-[6px] font-black text-white [writing-mode:vertical-rl]">IND</span>
-                  <span className="px-1.5 py-0.5 font-mono text-[14px] font-black tracking-[1.5px] text-[#111]">{prettyPlate(r.reg_no)}</span>
+            <div key={r.reg_no} style={{ animationDelay: `${0.08 + i * 0.06}s` }}
+              className={`gp-pop gp-from-l group relative flex min-w-0 items-stretch rounded-xl border border-black/5 bg-gradient-to-br from-white to-[#f1f8f7] shadow-sm transition hover:shadow-md ${leaving === r.reg_no ? 'gp-leave' : ''}`}>
+              <button type="button" data-test={`open-${r.reg_no}`} onClick={() => onOpen(i)}
+                className="flex min-w-0 flex-1 flex-col items-start gap-1 p-2.5 text-left active:scale-[.98]">
+                <span className="flex w-full items-center gap-2">
+                  <span className="flex items-stretch overflow-hidden rounded-md border-2 border-[#111] bg-white shadow-sm">
+                    <span className="flex w-4 items-center justify-center bg-[#1d4ed8] text-[6px] font-black text-white [writing-mode:vertical-rl]">IND</span>
+                    <span className="px-1.5 py-0.5 font-mono text-[14px] font-black tracking-[1.5px] text-[#111]">{prettyPlate(r.reg_no)}</span>
+                  </span>
+                  {r.report_id ? <span className="rounded-full bg-[#ffd84d] px-1.5 py-0.5 text-[9px] font-black text-[#0a4f49]">REPORT</span> : null}
                 </span>
-                {r.report_id
-                  ? <span className="rounded-full bg-[#ffd84d] px-1.5 py-0.5 text-[9px] font-black text-[#0a4f49]">REPORT</span>
-                  : <span className="text-[16px] text-[#0f766e] transition group-hover:translate-x-0.5">›</span>}
-              </span>
-              <span className="w-full truncate text-[12.5px] font-semibold text-[#0b2e2b]">{[r.maker, r.model].filter(Boolean).join(' ') || '—'}</span>
-            </button>
+                <span className="w-full truncate text-[12.5px] font-semibold text-[#0b2e2b]">{[r.maker, r.model].filter(Boolean).join(' ') || '—'}</span>
+              </button>
+              <button type="button" data-test={`remove-${r.reg_no}`} aria-label={L.rm.label(prettyPlate(r.reg_no))} onClick={() => { setErr(null); setAsking(r); }}
+                className="grid w-11 shrink-0 place-items-center rounded-r-xl border-l border-black/5 text-black/35 transition hover:bg-[#fdecea] hover:text-[#c62828] active:scale-90">
+                <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3" />
+                </svg>
+              </button>
+            </div>
           ))}
         </div>
       </div>
+
+      {/* On the page itself: inside the animated bubble a "fixed" box is held to the bubble. */}
+      {asking ? createPortal(
+        <div className="rc-back-drop fixed inset-0 z-50 flex items-end justify-center bg-black/45 p-3 sm:items-center" role="dialog" aria-modal="true"
+          onClick={(e) => { if (e.target === e.currentTarget && !busy) setAsking(null); }}>
+          <div className="rc-in w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-2xl" style={{ marginBottom: 'env(safe-area-inset-bottom)' }}>
+            <div className="flex items-center gap-3 bg-[#fdecea] px-4 py-3">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#c62828] text-[18px] text-white">🗑</div>
+              <div className="text-[15px] font-black text-[#7a1a12]">{L.rm.q(prettyPlate(asking.reg_no))}</div>
+            </div>
+            <div className="space-y-2 px-4 py-3 text-[13.5px] text-[#0b2e2b]">
+              <div>{L.rm.body}</div>
+              {asking.report_id ? <div className="flex gap-2 rounded-lg bg-[#e7f6ec] px-3 py-2 text-[12.5px] text-[#0a6c34]"><span>📄</span><span>{L.rm.report}</span></div> : null}
+              {asking.watched ? <div className="flex gap-2 rounded-lg bg-[#fff4e0] px-3 py-2 text-[12.5px] text-[#8f5600]"><span>🔕</span><span>{L.rm.alerts}</span></div> : null}
+              {err ? <div className="rounded-lg bg-[#fdecec] px-3 py-2 text-[12.5px] text-[#912018]">⚠️ {err}</div> : null}
+            </div>
+            <div className="grid grid-cols-2 gap-2 px-4 pb-4">
+              <button type="button" data-test="remove-cancel" disabled={busy} onClick={() => setAsking(null)}
+                className="rounded-xl border border-black/10 py-2.5 text-[14px] font-bold text-[#0b2e2b] active:scale-95">{L.rm.no}</button>
+              <button type="button" data-test="remove-confirm" disabled={busy} onClick={confirm}
+                className="rounded-xl bg-[#c62828] py-2.5 text-[14px] font-black text-white shadow active:scale-95 disabled:opacity-60">{busy ? '…' : L.rm.yes}</button>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      ) : null}
     </div>
   );
 }

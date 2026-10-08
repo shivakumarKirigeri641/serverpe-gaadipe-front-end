@@ -179,6 +179,11 @@
 .gp-from-r { transform-origin: 100% 100%; }
 @keyframes gp-dot { 0%, 60%, 100% { transform: translateY(0); opacity: .35; } 30% { transform: translateY(-5px); opacity: 1; } }
 .gp-dot { animation: gp-dot 1.15s ease-in-out infinite; }
+@keyframes gp-menu-pulse { 0% { box-shadow: 0 0 0 0 rgba(255,216,77,.9); } 70% { box-shadow: 0 0 0 12px rgba(255,216,77,0); } 100% { box-shadow: 0 0 0 0 rgba(255,216,77,0); } }
+.gp-menu-pulse { animation: gp-menu-pulse 1.6s ease-out infinite; }
+/* A removed plate slides away and its space closes up (2026-10-08). */
+@keyframes gp-leave { to { opacity: 0; transform: translateX(-40px) scale(.92); } }
+.gp-leave { animation: gp-leave .4s cubic-bezier(.4,0,.6,1) both; pointer-events: none; }
 .gp-chips > * { animation: gp-pop .4s cubic-bezier(.2,.8,.3,1.2) both; animation-delay: calc(.22s + var(--i, 0) * .07s); }
 
 /* THE RC CARD (2026-10-08): a card that flips in 3D, both faces drawn, the back
@@ -199,7 +204,7 @@
   animation: rc-holo 5s linear infinite; mix-blend-mode: overlay; }
 
 @media (prefers-reduced-motion: reduce) {
-  .gp-chat-bg, .gp-glows span, .gp-glows .road, .gp-pop, .gp-shine::after, .gp-dot, .gp-chips > *,
+  .gp-chat-bg, .gp-glows span, .gp-glows .road, .gp-pop, .gp-shine::after, .gp-dot, .gp-chips > *, .gp-menu-pulse,
   .rc-in, .rc-next, .rc-prev, .rc-holo, .rc-back-drop { animation: none !important; }
   .rc-turn { transition: none; }
 }
