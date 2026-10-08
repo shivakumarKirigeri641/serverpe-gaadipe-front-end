@@ -396,7 +396,8 @@ export default function Chat() {
       setHistory({ items: [], more: false, before: null, loaded: false });
       setMode(signInRequired ? 'mobile' : 'plate');
       const note = resetNote.current; resetNote.current = null;
-      setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note ? `${note}\n\n${signInRequired ? L.helloSignIn : L.hello}` : (signInRequired ? L.helloSignIn : L.hello), chips: ['howWorks'] },
+      setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note ? `${note}\n\n${signInRequired ? L.helloSignIn : L.hello}` : (signInRequired ? L.helloSignIn : L.hello) },
+        ...(signInRequired ? [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: T[lang === 'hi' ? 'en' : 'hi'].helloSignIn }] : []),
         // Signed out with sign-in required: straight back to the mobile number, policies first (2026-10-08).
         ...(signInRequired ? [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'terms' }] : [])]);
     } else if (prevMe.current && me && String(prevMe.current.id) !== String(me.id)) {
@@ -433,7 +434,7 @@ export default function Chat() {
   /* THE WELCOME IS READ FROM ITS FIRST LINE (2026-10-08): while the visitor has
      said nothing yet, the conversation stays at the top, so the long opening
      (what GaadiPe is, free check, the ₹19 report) is not scrolled past its title. */
-  const onlyWelcome = items.length > 0 && items.every((x) => x.from !== 'me') && items.length <= 3;
+  const onlyWelcome = items.length > 0 && items.every((x) => x.from !== 'me') && items.length <= 4;
   useEffect(() => {
     if (onlyWelcome) { requestAnimationFrame(() => { const el = listRef.current; if (el) el.scrollTop = 0; }); return; }
     scrollDown();
@@ -515,10 +516,13 @@ export default function Chat() {
       // Sign in first (2026-10-08): the greeting asks for the mobile, with the
       // policies to agree to right below — unless a number came with the link,
       // whose check asks for the sign-in itself.
-      bot(L.helloSignIn, { chips: ['howWorks'], pace: 650 });
+      // In both languages (user, 2026-10-08: "people prefer Hindi as well") —
+      // the chosen one first, the other right after.
+      bot(L.helloSignIn, { pace: 650 });
+      bot(T[lang === 'hi' ? 'en' : 'hi'].helloSignIn, { pace: 900 });
       // (/login and ?signin=1 land here too: the same opening, asked once.)
       if (!(reg && looksLikePlate(reg))) startSignIn(null, { quiet: true });
-    } else if (!me) bot(L.hello, { chips: ['howWorks', 'signIn'] });
+    } else if (!me) bot(L.hello, { chips: ['signIn'] });
     /* LOCAL DEVELOPMENT ONLY (?demo=full): the full-report card with sample data,
        to try its buttons without a live lookup. Never in a production build. */
     // ?demo=basic — a free-check card, to try "Full report ₹19" while the records server is down.
@@ -571,7 +575,7 @@ export default function Chat() {
           '', L.askVehicle].filter((x) => x !== null).join('\n')
         : L.welcomeNew;
       if (justSignedIn || !items.some((x) => x.kind === 'welcome')) {
-        push({ from: 'bot', kind: 'welcome', text: lines, last: s.last_vehicle, chips: ['another', 'myVehicles', 'myReports'] });
+        push({ from: 'bot', kind: 'welcome', text: lines, last: s.last_vehicle, chips: ['another', 'myVehicles', 'myReports', 'howWorks'] });
       }
     } catch { /* the chat still works without it */ }
   }
@@ -610,7 +614,7 @@ export default function Chat() {
     push({ from: 'me', kind: 'text', text });
     bot(lang === 'hi'
       ? 'मैं गाड़ी नंबर समझता हूँ — जैसे *KA01AB1234*। या नीचे से कोई विकल्प चुनें।'
-      : 'I understand vehicle numbers — like *KA01AB1234*. Or pick an option below.', { chips: ['howWorks'] });
+      : 'I understand vehicle numbers — like *KA01AB1234*. Or pick an option below.', { chips: me ? ['howWorks'] : ['signIn'] });
   }
 
   async function check(raw, { signedIn = false } = {}) {
@@ -654,8 +658,9 @@ export default function Chat() {
     setMode('mobile');
     if (!quiet) bot(L.askMobile);   // quiet: the greeting already asked for it
     // "By signing in, you agree to…" — one small line, shown once (no tick, 2026-10-08).
-    setItems((cur) => (cur.some((x) => x.kind === 'terms') ? cur
-      : [...cur.filter((x) => x.kind !== 'typing'), { id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'terms' }]));
+    // In the message queue, so it sits under the greeting rather than above it.
+    queue.current = queue.current.then(() => setItems((cur) => (cur.some((x) => x.kind === 'terms') ? cur
+      : [...cur.filter((x) => x.kind !== 'typing'), { id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'terms' }])));
     setTimeout(() => inputRef.current?.focus(), 50);
   }
 
@@ -888,7 +893,8 @@ export default function Chat() {
   /* ────────────────────────────── chips and buttons ── */
 
   function chip(key) {
-    if (key === 'howWorks') { push({ from: 'me', kind: 'text', text: L.howWorks }); bot(L.howAnswer, { chips: me ? ['another'] : ['signIn'] }); return; }   // signed out: Sign in first (2026-10-08)
+    // "What do I get?" lives with the signed-in options now (user, 2026-10-08: the welcome already says it all).
+    if (key === 'howWorks') { push({ from: 'me', kind: 'text', text: L.howWorks }); bot(L.howAnswer, { chips: me ? ['another'] : ['signIn'] }); return; }
     if (key === 'another') { setMode('plate'); inputRef.current?.focus(); return; }
     if (key === 'signIn') { startSignIn(); return; }
     if (key === 'myVehicles') { showList('vehicles'); return; }
@@ -916,7 +922,7 @@ export default function Chat() {
 
   // Nothing until the saved sign-in is known — "Sign in" must never flash for someone signed in.
   const quick = !ready ? [] : me
-    ? [...(me.email_verified ? [] : ['addEmail']), 'another', 'myVehicles', 'myReports', 'invoices', 'profile'] : ['howWorks', 'signIn'];
+    ? [...(me.email_verified ? [] : ['addEmail']), 'another', 'myVehicles', 'myReports', 'invoices', 'howWorks', 'profile'] : ['signIn'];
   const placeholder = { mobile: L.placeholderMobile, code: L.placeholderCode, ecode: L.placeholderCode, name: L.placeholderName, email: L.placeholderEmail }[mode] || L.placeholderPlate;
   const typed = mode === 'name' || mode === 'email';   // free text: no capitals forced, no digit spacing
   const plateHint = mode === 'plate' && looksLikePlate(input);
@@ -1034,13 +1040,13 @@ export default function Chat() {
           ['🧾', L.invoices, () => { setMenuOpen(false); showList('invoices'); }, 'invoices'],
           ['🔔', `${L.mNotify}${notifyState === 'on' ? ' ✓' : ''}`, notificationsMenu, 'notify'],
           ['🌐', L.mLang, () => { setMenuOpen(false); setLang(lang === 'hi' ? 'en' : 'hi'); }, 'lang'],
+          ['💡', L.howWorks, () => { setMenuOpen(false); chip('howWorks'); }, 'how'],
           ['❓', L.mHelp, () => showCard('help', L.mHelp), 'help'],
           ['📜', L.mTerms, () => { setMenuOpen(false); window.open('/terms', '_blank', 'noopener'); }, 'terms'],
           ['↪', L.signOut, () => showCard('signout', L.signOut), 'signout', 'warn'],
           ['⛔', L.mDeactivate, () => showCard('deactivate', L.mDeactivate), 'deactivate', 'danger'],
         ] : [
           ['🔐', L.signIn, () => { setMenuOpen(false); startSignIn(); }, 'signin'],
-          ['❓', L.howWorks, () => { setMenuOpen(false); chip('howWorks'); }, 'how'],
           ['🌐', L.mLang, () => { setMenuOpen(false); setLang(lang === 'hi' ? 'en' : 'hi'); }, 'lang'],
           ['✉️', L.mHelp, () => showCard('help', L.mHelp), 'help'],
           ['📜', L.mTerms, () => { setMenuOpen(false); window.open('/terms', '_blank', 'noopener'); }, 'terms'],
