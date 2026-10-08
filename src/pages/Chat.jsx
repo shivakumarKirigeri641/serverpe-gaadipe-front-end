@@ -28,6 +28,9 @@ import { saveBlob } from '../components/ui.jsx';
 const T = {
   en: {
     hello: 'Namaste! 🙏 Welcome to *GaadiPe*.\n\nType any vehicle number — like *KA01AB1234* — to see its basic details *free*, no sign-in needed.\n\nThen sign in with your mobile number for the full report, your vehicles, reports and alerts.',
+    // When every check needs a sign-in (check_sign_in_required, 2026-10-08).
+    helloSignIn: 'Namaste! 🙏 Welcome to *GaadiPe*.\n\nType any vehicle number — like *KA01AB1234* — and sign in with your mobile number to see its details. It takes a few seconds.\n\nYour checks, full reports and alerts stay in your account.',
+    signInToCheck: (r) => `🔐 Please sign in to check *${r}* — enter your mobile number below. We will check it straight after.`,
     checking: (r) => `Checking *${r}* …`,
     placeholderPlate: 'Type a vehicle number…',
     placeholderMobile: 'Your 10-digit mobile number',
@@ -124,6 +127,8 @@ const T = {
   },
   hi: {
     hello: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है।\n\nकोई भी गाड़ी नंबर लिखें — जैसे *KA01AB1234* — और उसकी बेसिक जानकारी *मुफ़्त* देखें, साइन इन की ज़रूरत नहीं।\n\nफिर पूरी रिपोर्ट, अपनी गाड़ियों, रिपोर्ट और अलर्ट के लिए मोबाइल नंबर से साइन इन करें।',
+    helloSignIn: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है।\n\nकोई भी गाड़ी नंबर लिखें — जैसे *KA01AB1234* — और उसकी जानकारी देखने के लिए मोबाइल नंबर से साइन इन करें। इसमें कुछ ही सेकंड लगते हैं।\n\nआपकी जाँच, पूरी रिपोर्ट और अलर्ट आपके खाते में रहते हैं।',
+    signInToCheck: (r) => `🔐 *${r}* की जाँच के लिए कृपया साइन इन करें — नीचे अपना मोबाइल नंबर लिखें। साइन इन होते ही हम इसे जाँच देंगे।`,
     checking: (r) => `*${r}* की जाँच हो रही है…`,
     placeholderPlate: 'गाड़ी नंबर लिखें…',
     placeholderMobile: 'अपना 10 अंकों का मोबाइल नंबर',
@@ -279,7 +284,9 @@ export default function Chat() {
      Configuration (check_notice_mode). Said before the first check, and when one fails. */
   const [checkNotice, setCheckNotice] = useState(null);
   const noticeSaid = useRef(false);
-  useEffect(() => { api.notice().then((n) => setCheckNotice(n?.check || null)).catch(() => {}); }, []);
+  // Sign in for every check (2026-10-08; check_sign_in_required) — known before the first number is typed.
+  const [signInRequired, setSignInRequired] = useState(true);   // the default on the server too
+  useEffect(() => { api.notice().then((n) => { setCheckNotice(n?.check || null); setSignInRequired(Boolean(n?.sign_in_required)); }).catch(() => {}); }, []);
   const noticeText = checkNotice ? (lang === 'hi' ? checkNotice.hi : checkNotice.en) : '';
   const [mobile, setMobile] = useState('');
   const [input, setInput] = useState('');
@@ -323,7 +330,7 @@ export default function Chat() {
       setHistory({ items: [], more: false, before: null, loaded: false });
       setMode('plate');
       const note = resetNote.current; resetNote.current = null;
-      setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note ? `${note}\n\n${L.hello}` : L.hello, chips: ['howWorks'] }]);
+      setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note ? `${note}\n\n${signInRequired ? L.helloSignIn : L.hello}` : (signInRequired ? L.helloSignIn : L.hello), chips: signInRequired ? ['howWorks', 'signIn'] : ['howWorks'] }]);
     } else if (prevMe.current && me && String(prevMe.current.id) !== String(me.id)) {
       // Another account on this phone (a new mobile number): its own conversation, nothing of the old one.
       loadedFor.current = me.id;
@@ -387,7 +394,7 @@ export default function Chat() {
       // No confirmed email yet: the recommendation again, once a day.
       if (!me.email_verified && nudgeDue(me.id)) { setTimeout(emailNudge, 900); markNudged(me.id); }
     }
-    else bot(L.hello, { chips: ['howWorks'] });
+    else bot(signInRequired ? L.helloSignIn : L.hello, { chips: ['howWorks', 'signIn'] });
     // A number brought from the home page (?reg=) is checked at once, then dropped from the address.
     const reg = cleanPlate(params.get('reg'));
     /* LOCAL DEVELOPMENT ONLY (?demo=full): the full-report card with sample data,
@@ -473,10 +480,17 @@ export default function Chat() {
       : 'I understand vehicle numbers — like *KA01AB1234*. Or pick an option below.', { chips: ['howWorks'] });
   }
 
-  async function check(raw) {
+  async function check(raw, { signedIn = false } = {}) {
     const reg = cleanPlate(raw);
     // Shown as a number plate, not a plain bubble (2026-10-07).
     push({ from: 'me', kind: 'plate', text: prettyPlate(reg) });
+    // Sign in first (2026-10-08): the number is kept and checked straight after signing in.
+    if (!me && !signedIn && signInRequired) {
+      interaction('search', `Searched ${reg} — asked to sign in first`, { reg_no: reg });
+      bot(L.signInToCheck(prettyPlate(reg)));
+      setPendingReg(reg); startSignIn();
+      return;
+    }
     // Said before the first check; after that, only alongside a failure (never twice in a row).
     const again = noticeText && noticeSaid.current ? `\n\n${noticeText}` : '';
     if (noticeText && !noticeSaid.current) { noticeSaid.current = true; bot(`⚠️ ${noticeText}`); }
@@ -484,7 +498,7 @@ export default function Chat() {
     journey({ step: 'checking' });
     interaction('search', `Searched ${reg}`, { reg_no: reg });
     try {
-      const out = me ? await api.check(reg) : await api.chatCheck(reg);
+      const out = (me || signedIn) ? await api.check(reg) : await api.chatCheck(reg);
       if (out.error === 'sign_in_needed') { interaction('error', 'Free checks used up — asked to sign in'); bot(out.message); setPendingReg(reg); startSignIn(); return; }
       if (out.error || !out.vehicle) {
         interaction('error', `Check of ${reg} failed: ${String(out.message || out.error || '').slice(0, 60)}`, { reg_no: reg });
@@ -551,9 +565,10 @@ export default function Chat() {
       setNotifyState(ns);
       if (ns === 'off') push({ from: 'bot', kind: 'notify' });
       if (pendingReg) {
-        push({ from: 'bot', kind: 'text', text: lang === 'hi' ? `*${prettyPlate(pendingReg)}* — आगे बढ़ें?` : `Continue with *${prettyPlate(pendingReg)}*?`,
-               chips: [`open:${pendingReg}`, 'another'] });
+        // The number typed before signing in is checked now, without asking again (2026-10-08).
+        const reg = pendingReg;
         setPendingReg(null);
+        setTimeout(() => check(reg, { signedIn: true }), 400);
       }
     } catch (e) { bot(`⚠️ ${e.message}`); } finally { setBusy(false); }
   }
