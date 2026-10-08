@@ -27,14 +27,24 @@ import { saveBlob } from '../components/ui.jsx';
 
 const T = {
   en: {
-    hello: 'Namaste! 🙏 Welcome to *GaadiPe*.\n\nType any vehicle number — like *KA01AB1234* — to see its basic details *free*, no sign-in needed.\n\nThen sign in with your mobile number for the full report, your vehicles, reports and alerts.',
+    /* ONE FREE LOOK FIRST (user, 2026-10-08: visitors came to type a vehicle
+       number and left when asked for their phone). The first check needs no
+       sign-in and shows make and model; the rest, and a second check, after it. */
+    hello: 'Namaste! 🙏 Welcome to *GaadiPe* — the complete record of any vehicle registered in India.\n\nInsurance, PUC, road tax and fitness validity, pending challans, loan (hypothecation), blacklist status and number of owners — from Government VAHAN and e-Challan records, with a downloadable PDF report.\n\n*Type a vehicle number to start* — like *KA01AB1234*. Your first check is free, no sign-in needed.',
     // When every check needs a sign-in (check_sign_in_required, 2026-10-08).
     // Sign in first, then the vehicle (user, 2026-10-08: asking for a number and
     // then for a mobile "may be a bit weird") — the greeting asks for the mobile.
     /* A WELCOME, NOT A FORM (user, 2026-10-08: people read the opening, saw a
        box to tick and left). What GaadiPe is, then one step: sign in. Agreement
        is by signing in, said in one small line under it — no tick. */
-    helloSignIn: 'Namaste! 🙏 Welcome to *GaadiPe* — the complete record of any vehicle registered in India.\n\nInsurance, PUC, road tax and fitness validity, pending challans, loan (hypothecation), blacklist status and number of owners — from Government VAHAN and e-Challan records, in seconds, with a downloadable PDF report.\n\n*Sign in with your mobile number to continue* — we send a one-time code by SMS. No password, no app.',
+    /* THE WHOLE OFFER, BEFORE ANYTHING IS ASKED (user, 2026-10-08: "first
+       conversation: what GaadiPe is, the basic details we show, what ₹19 shows —
+       fully described — then 'start checking vehicles by signing in'; then it is
+       up to the user"). No vehicle details at all without signing in. */
+    helloSignIn: 'Namaste! 🙏 Welcome to *GaadiPe* — the complete record of any vehicle registered in India, from the Government’s VAHAN and e-Challan records.\n\n'
+      + '*Free check* — after you sign in\n• Make, model and variant\n• Fuel and vehicle type\n• How many things need attention — expired or expiring documents and pending challans\n\n'
+      + '*Full report — ₹19* · PDF with a GST invoice\n• Insurance (insurer and policy), PUC and road tax — and fitness and permit for commercial vehicles — each with its valid-until date\n• Every pending challan, with offence, place and amount\n• Loan / hypothecation, blacklist and NOC status\n• Number of owners, registration date and RTO\n• Owner name, chassis and engine number — masked, as on Parivahan\n• Alerts before documents expire, for 28 days\n\n'
+      + '*Start checking vehicles by signing in* with your mobile number — a one-time code by SMS. No password, no app.',
     termsByUse: ['By signing in, you agree to GaadiPe’s', 'Terms of use', 'Privacy policy', 'and', 'Refund policy'],
     signInToCheck: (r) => `🔐 Please sign in to check *${r}* — enter your mobile number below. We will check it straight after.`,
     plateNoted: (r) => `👍 Noted *${r}* — I’ll check it right after you sign in. Your *mobile number*, please.`,
@@ -59,7 +69,7 @@ const T = {
     waDivider: 'Your WhatsApp chat with GaadiPe',
     nowHere: 'Now on gaadipe.in',
     loadEarlier: 'Load earlier messages',
-    signInMore: 'Sign in for the full report, your history and alerts — it takes a few seconds.',
+    signInMore: 'Sign in free to save your checks and check more vehicles — it takes a few seconds.',
     fullReport: (p) => `Full report ${p}`,
     another: 'Check another',
     signIn: 'Sign in',
@@ -70,6 +80,10 @@ const T = {
     howWorks: 'What do I get?',
     howAnswer: 'The *free check* shows the vehicle’s make, model and fuel, and how many things need attention.\n\nThe *full report* (₹19, GST invoice) shows insurance, PUC, road tax, fitness and permit dates, every challan with place and amount, loan (hypothecation), blacklist status and number of owners — as a PDF you can download.',
     attention: (n) => (n ? `⚠️ *${n} thing${n === 1 ? '' : 's'} need attention*` : '✅ *Nothing needs attention*'),
+    /* Honest about what signing in gives (user, 2026-10-08: "this fools the
+       user — the details are ₹19"). Signing in is free and keeps the vehicle and
+       allows more checks; the details are the paid report, said with its price. */
+    identityOnly: (p) => '✅ *Vehicle found in the Government records.*\n\n*Sign in free* with your mobile to save it to your account and check more vehicles.\n\nThe *full report* — insurance, PUC, road tax and fitness validity, challans, loan, blacklist and number of owners — is *' + p + '*, with a PDF and GST invoice.',
     expired: 'Expired', dueSoon: 'Due soon', challans: 'Pending challans',
     locked: 'In the full report',
     youHave: '📄 You have the full report for this vehicle.',
@@ -95,6 +109,15 @@ const T = {
     profileH: '👤 Your profile', mobileL: 'Mobile', nameL: 'Name', emailL: 'Email',
     offers: 'Tips & offers by SMS / email', signOut: 'Sign out', signedOut: 'You are signed out. Send any vehicle number for a free check.',
     vehicleBtn: 'Open',
+    tapPlate: 'Tap a number to see its RC card.',
+    rc: { title: 'Registration Certificate', sub: 'From VAHAN records · details masked', flip: '↔ Swipe or tap Flip for more',
+      flipBtn: 'Flip', back: 'My vehicles', prev: 'Previous', next: 'Next', report: 'Report', invoice: 'Invoice',
+      loading: 'Opening the card…', noRecord: 'No saved record yet.', recheck: 'Check it again',
+      owner: 'Owner', ownerNo: 'Owner no.', chassis: 'Chassis', engine: 'Engine', regDate: 'Registered on', rto: 'RTO',
+      colour: 'Colour', mfg: 'Manufactured', cc: 'Engine cc', seats: 'Seats', norms: 'Emission norms', status: 'RC status',
+      checks: (n) => `Checked ${n} time${n === 1 ? '' : 's'}`, docs: 'Documents', challans: 'Challans', loan: 'Loan', fastag: 'FASTag',
+      lockedH: 'Dates, challans, loan & owners', lockedP: 'are in the full report — with a PDF and GST invoice.',
+      unlock: (p) => `🔓 Full report ${p}`, fresh: (d) => `Saved record · ${d}`, attention: (n) => (n ? `⚠️ ${n} need attention` : '✅ Nothing flagged in the free check') },
     menu: 'Menu', mEmail: 'Email for reports', mNotify: 'Notifications', mLang: 'हिंदी में देखें', mHelp: 'Help & support',
     mTerms: 'Terms & privacy', mDeactivate: 'Deactivate my account', mHistory: 'Vehicle history',
     emailH: '✉️ Email for your reports and invoices', emailPh: 'you@example.com', save: 'Save',
@@ -137,8 +160,11 @@ const T = {
     deactWhy: 'Why are you leaving?', deactOther: 'Tell us a little more', deactFresh: 'If you sign in again later, it will be a completely new, empty account — your old vehicles and reports will not come back.',
   },
   hi: {
-    hello: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है।\n\nकोई भी गाड़ी नंबर लिखें — जैसे *KA01AB1234* — और उसकी बेसिक जानकारी *मुफ़्त* देखें, साइन इन की ज़रूरत नहीं।\n\nफिर पूरी रिपोर्ट, अपनी गाड़ियों, रिपोर्ट और अलर्ट के लिए मोबाइल नंबर से साइन इन करें।',
-    helloSignIn: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है — भारत में रजिस्टर्ड किसी भी गाड़ी का पूरा रिकॉर्ड।\n\nइंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, बाकी चालान, लोन (हाइपोथिकेशन), ब्लैकलिस्ट स्थिति और कितने मालिक — सरकारी VAHAN और e-Challan रिकॉर्ड से, कुछ ही सेकंड में, PDF रिपोर्ट के साथ।\n\n*आगे बढ़ने के लिए अपने मोबाइल नंबर से साइन इन करें* — हम SMS से एक बार का कोड भेजते हैं। कोई पासवर्ड नहीं, कोई ऐप नहीं।',
+    hello: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है — भारत में रजिस्टर्ड किसी भी गाड़ी का पूरा रिकॉर्ड।\n\nइंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, बाकी चालान, लोन (हाइपोथिकेशन), ब्लैकलिस्ट स्थिति और कितने मालिक — सरकारी VAHAN और e-Challan रिकॉर्ड से, PDF रिपोर्ट के साथ।\n\n*शुरू करने के लिए गाड़ी नंबर लिखें* — जैसे *KA01AB1234*। पहली जाँच मुफ़्त है, साइन इन की ज़रूरत नहीं।',
+    helloSignIn: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है — भारत में रजिस्टर्ड किसी भी गाड़ी का पूरा रिकॉर्ड, सरकारी VAHAN और e-Challan रिकॉर्ड से।\n\n'
+      + '*मुफ़्त जाँच* — साइन इन के बाद\n• कंपनी, मॉडल और वेरिएंट\n• फ़्यूल और गाड़ी का प्रकार\n• कितनी चीज़ों पर ध्यान चाहिए — समाप्त या जल्द समाप्त होने वाले दस्तावेज़ और बाकी चालान\n\n'
+      + '*पूरी रिपोर्ट — ₹19* · PDF, GST बिल के साथ\n• इंश्योरेंस (कंपनी और पॉलिसी), PUC और रोड टैक्स — और व्यावसायिक गाड़ियों के लिए फिटनेस और परमिट — हर एक की वैधता की तारीख़\n• हर बाकी चालान — अपराध, जगह और राशि के साथ\n• लोन / हाइपोथिकेशन, ब्लैकलिस्ट और NOC की स्थिति\n• कितने मालिक, रजिस्ट्रेशन की तारीख़ और RTO\n• मालिक का नाम, चेसिस और इंजन नंबर — छिपे हुए, जैसे परिवहन पर\n• दस्तावेज़ समाप्त होने से पहले अलर्ट, 28 दिनों तक\n\n'
+      + '*गाड़ियाँ जाँचना शुरू करने के लिए साइन इन करें* — मोबाइल नंबर पर SMS से एक बार का कोड। कोई पासवर्ड नहीं, कोई ऐप नहीं।',
     termsByUse: ['साइन इन करके आप GaadiPe की', 'उपयोग की शर्तें', 'गोपनीयता नीति', 'और', 'रिफ़ंड नीति से सहमत होते हैं'],
     signInToCheck: (r) => `🔐 *${r}* की जाँच के लिए कृपया साइन इन करें — नीचे अपना मोबाइल नंबर लिखें। साइन इन होते ही हम इसे जाँच देंगे।`,
     plateNoted: (r) => `👍 *${r}* नोट कर लिया — साइन इन होते ही इसकी जाँच करूँगा। कृपया अपना *मोबाइल नंबर* लिखें।`,
@@ -163,7 +189,7 @@ const T = {
     waDivider: 'GaadiPe के साथ आपकी WhatsApp चैट',
     nowHere: 'अब gaadipe.in पर',
     loadEarlier: 'पुराने संदेश देखें',
-    signInMore: 'पूरी रिपोर्ट, इतिहास और अलर्ट के लिए साइन इन करें — कुछ ही सेकंड लगते हैं।',
+    signInMore: 'अपनी जाँच सेव करने और और गाड़ियाँ जाँचने के लिए मुफ़्त साइन इन करें — कुछ ही सेकंड लगते हैं।',
     fullReport: (p) => `पूरी रिपोर्ट ${p}`,
     another: 'दूसरी गाड़ी',
     signIn: 'साइन इन',
@@ -174,6 +200,7 @@ const T = {
     howWorks: 'मुझे क्या मिलेगा?',
     howAnswer: '*मुफ़्त जाँच* में गाड़ी का मेक, मॉडल, ईंधन और कितनी चीज़ों पर ध्यान चाहिए, यह दिखता है।\n\n*पूरी रिपोर्ट* (₹19, GST बिल) में बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट की तारीखें, हर चालान (जगह और राशि), लोन, ब्लैकलिस्ट और मालिकों की संख्या — PDF में।',
     attention: (n) => (n ? `⚠️ *${n} चीज़ों पर ध्यान चाहिए*` : '✅ *कुछ भी बाकी नहीं*'),
+    identityOnly: (p) => '✅ *गाड़ी सरकारी रिकॉर्ड में मिल गई।*\n\nइसे अपने खाते में सेव करने और और गाड़ियाँ जाँचने के लिए मोबाइल से *मुफ़्त साइन इन* करें।\n\n*पूरी रिपोर्ट* — इंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, चालान, लोन, ब्लैकलिस्ट और कितने मालिक — *' + p + '* में, PDF और GST बिल के साथ।',
     expired: 'समाप्त', dueSoon: 'जल्द', challans: 'बाकी चालान',
     locked: 'पूरी रिपोर्ट में',
     youHave: '📄 इस गाड़ी की पूरी रिपोर्ट आपके पास है।',
@@ -199,6 +226,15 @@ const T = {
     profileH: '👤 आपकी प्रोफ़ाइल', mobileL: 'मोबाइल', nameL: 'नाम', emailL: 'ईमेल',
     offers: 'SMS / ईमेल पर टिप्स और ऑफ़र', signOut: 'साइन आउट', signedOut: 'आप साइन आउट हो गए। मुफ़्त जाँच के लिए कोई भी गाड़ी नंबर भेजें।',
     vehicleBtn: 'खोलें',
+    tapPlate: 'RC कार्ड देखने के लिए नंबर पर टैप करें।',
+    rc: { title: 'पंजीकरण प्रमाणपत्र (RC)', sub: 'VAHAN रिकॉर्ड से · जानकारी छिपी', flip: '↔ और देखने के लिए स्वाइप करें या पलटें',
+      flipBtn: 'पलटें', back: 'मेरी गाड़ियाँ', prev: 'पिछली', next: 'अगली', report: 'रिपोर्ट', invoice: 'बिल',
+      loading: 'कार्ड खुल रहा है…', noRecord: 'अभी कोई सहेजा रिकॉर्ड नहीं।', recheck: 'फिर से जाँचें',
+      owner: 'मालिक', ownerNo: 'मालिक क्रमांक', chassis: 'चेसिस', engine: 'इंजन', regDate: 'पंजीकरण तिथि', rto: 'RTO',
+      colour: 'रंग', mfg: 'निर्माण', cc: 'इंजन cc', seats: 'सीटें', norms: 'उत्सर्जन मानक', status: 'RC स्थिति',
+      checks: (n) => `${n} बार जाँची गई`, docs: 'दस्तावेज़', challans: 'चालान', loan: 'लोन', fastag: 'FASTag',
+      lockedH: 'तारीखें, चालान, लोन और मालिक', lockedP: 'पूरी रिपोर्ट में हैं — PDF और GST बिल के साथ।',
+      unlock: (p) => `🔓 पूरी रिपोर्ट ${p}`, fresh: (d) => `सहेजा रिकॉर्ड · ${d}`, attention: (n) => (n ? `⚠️ ${n} चीज़ों पर ध्यान चाहिए` : '✅ मुफ़्त जाँच में कुछ नहीं मिला') },
     menu: 'मेनू', mEmail: 'रिपोर्ट के लिए ईमेल', mNotify: 'नोटिफ़िकेशन', mLang: 'View in English', mHelp: 'मदद और सहायता',
     mTerms: 'नियम और गोपनीयता', mDeactivate: 'मेरा खाता बंद करें', mHistory: 'गाड़ियों का इतिहास',
     emailH: '✉️ आपकी रिपोर्ट और बिल के लिए ईमेल', emailPh: 'you@example.com', save: 'सहेजें',
@@ -303,7 +339,15 @@ export default function Chat() {
   const noticeSaid = useRef(false);
   // Sign in for every check (2026-10-08; check_sign_in_required) — known before the first number is typed.
   const [signInRequired, setSignInRequired] = useState(true);   // the default on the server too
-  useEffect(() => { api.notice().then((n) => { setCheckNotice(n?.check || null); setSignInRequired(Boolean(n?.sign_in_required)); }).catch(() => {}); }, []);
+  /* The greeting waits for this answer (2026-10-08): whether the first check
+     needs a sign-in decides which welcome is shown. 2.5 s at most. */
+  const [noticeReady, setNoticeReady] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setNoticeReady(true), 2500);
+    api.notice().then((n) => { setCheckNotice(n?.check || null); setSignInRequired(Boolean(n?.sign_in_required)); })
+      .catch(() => {}).finally(() => { clearTimeout(t); setNoticeReady(true); });
+    return () => clearTimeout(t);
+  }, []);
   const noticeText = checkNotice ? (lang === 'hi' ? checkNotice.hi : checkNotice.en) : '';
   const [mobile, setMobile] = useState('');
   const [input, setInput] = useState('');
@@ -314,6 +358,7 @@ export default function Chat() {
      server at every sign-in as before (consent_accepted, method sign_in). */
   const termsOk = true;
   const [buying, setBuying] = useState(null);       // { reg, price } — the payment window over the chat
+  const [rcAt, setRcAt] = useState(null);           // { rows, index } — the RC card over the chat
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifyState, setNotifyState] = useState('unknown');
   useEffect(() => { notify.state().then(setNotifyState).catch(() => setNotifyState('unsupported')); }, [me]);
@@ -385,12 +430,21 @@ export default function Chat() {
   const scrollDown = useCallback(() => {
     requestAnimationFrame(() => { const el = listRef.current; if (el) el.scrollTop = el.scrollHeight; });
   }, []);
-  useEffect(scrollDown, [items.length, scrollDown]);
+  /* THE WELCOME IS READ FROM ITS FIRST LINE (2026-10-08): while the visitor has
+     said nothing yet, the conversation stays at the top, so the long opening
+     (what GaadiPe is, free check, the ₹19 report) is not scrolled past its title. */
+  const onlyWelcome = items.length > 0 && items.every((x) => x.from !== 'me') && items.length <= 3;
+  useEffect(() => {
+    if (onlyWelcome) { requestAnimationFrame(() => { const el = listRef.current; if (el) el.scrollTop = 0; }); return; }
+    scrollDown();
+  }, [items.length, scrollDown]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* A card that grows after it is added (a list, a report, an image) would end up under the
      input bar (user, 2026-10-07: "my vehicles list is cropping at the end"): whenever the
      conversation grows, follow it down — if the reader was at the bottom already. */
   const innerRef = useRef(null);
+  const welcomeOnlyRef = useRef(false);
+  welcomeOnlyRef.current = onlyWelcome;
   useEffect(() => {
     const el = listRef.current; const inner = innerRef.current;
     if (!el || !inner || typeof ResizeObserver === 'undefined') return undefined;
@@ -399,19 +453,56 @@ export default function Chat() {
       const grew = inner.scrollHeight > lastH;
       const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < (inner.scrollHeight - lastH) + 160;
       lastH = inner.scrollHeight;
+      if (welcomeOnlyRef.current) return;      // the welcome is read from the top
       if (grew && nearBottom) el.scrollTop = el.scrollHeight;
     });
     ro.observe(inner);
     return () => ro.disconnect();
   }, []);
 
-  const push = useCallback((...list) => setItems((cur) => [...cur.filter((x) => x.kind !== 'typing'), ...list.map((x) => ({ id: uid(), at: new Date().toISOString(), ...x }))]), []);
-  const typing = useCallback(() => setItems((cur) => [...cur.filter((x) => x.kind !== 'typing'), { id: 'typing', kind: 'typing', from: 'bot' }]), []);
+  /*
+   * PACED LIKE A PERSON TYPING (user, 2026-10-08: "the entire conversation a
+   * beautiful, professional animation, like a human chatting"). Every message
+   * goes through one queue, in order: the customer's own appear at once; each
+   * of ours is preceded by the typing dots for as long as a short reply takes to
+   * type (longer text, a little longer — never more than about a second and a
+   * half), and time already spent waiting for the server counts towards it, so
+   * a slow answer is never made slower. Reduced motion: no waiting at all.
+   */
+  const queue = useRef(Promise.resolve());
+  const typingSince = useRef(0);
+  const paceOf = (x) => {
+    if (x.from !== 'bot' || x.kind === 'typing') return 0;
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return 0;
+    if (x.pace != null) return x.pace;
+    return x.kind === 'text' ? Math.min(1500, 420 + String(x.text || '').length * 8) : 700;
+  };
+  const showDots = () => setItems((cur) => (cur.some((x) => x.kind === 'typing') ? cur : [...cur, { id: 'typing', kind: 'typing', from: 'bot' }]));
+  const push = useCallback((...list) => {
+    queue.current = queue.current.then(async () => {
+      for (const x of list) {
+        const wait = paceOf(x);
+        if (wait) {
+          showDots();
+          if (!typingSince.current) typingSince.current = Date.now();
+          const left = wait - (Date.now() - typingSince.current);
+          if (left > 0) await new Promise((r) => setTimeout(r, left));
+        }
+        typingSince.current = 0;
+        const { pace, ...item } = x;
+        setItems((cur) => [...cur.filter((y) => y.kind !== 'typing'), { id: uid(), at: new Date().toISOString(), ...item }]);
+      }
+    }).catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // The dots while we fetch: in the same queue, so they follow the customer's message.
+  const typing = useCallback(() => {
+    queue.current = queue.current.then(() => { typingSince.current = Date.now(); showDots(); });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const bot = useCallback((text, extra = {}) => push({ from: 'bot', kind: 'text', text, ...extra }), [push]);
 
   /* First open: greet, once. Signed in: welcome back + their WhatsApp history. */
   useEffect(() => {
-    if (!ready || greeted.current) return;
+    if (!ready || !noticeReady || greeted.current) return;
     greeted.current = true;
     if (me) {
       setItems(loadFor(me.id)); loadedFor.current = me.id; welcome();
@@ -424,7 +515,7 @@ export default function Chat() {
       // Sign in first (2026-10-08): the greeting asks for the mobile, with the
       // policies to agree to right below — unless a number came with the link,
       // whose check asks for the sign-in itself.
-      bot(L.helloSignIn, { chips: ['howWorks'] });
+      bot(L.helloSignIn, { chips: ['howWorks'], pace: 650 });
       // (/login and ?signin=1 land here too: the same opening, asked once.)
       if (!(reg && looksLikePlate(reg))) startSignIn(null, { quiet: true });
     } else if (!me) bot(L.hello, { chips: ['howWorks', 'signIn'] });
@@ -465,7 +556,7 @@ export default function Chat() {
       else if (reg) setTimeout(() => check(reg), 300);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, me]);
+  }, [ready, me, noticeReady]);
 
   async function welcome({ justSignedIn = false } = {}) {
     try {
@@ -843,7 +934,7 @@ export default function Chat() {
             <div className="flex items-center gap-1 font-bold">GaadiPe
               <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#ffd84d]" fill="currentColor" aria-label="verified"><path d="M12 2l2.4 2.1 3.2-.4.9 3.1 2.8 1.6-1.2 3 1.2 3-2.8 1.6-.9 3.1-3.2-.4L12 22l-2.4-2.1-3.2.4-.9-3.1L2.7 15.6l1.2-3-1.2-3 2.8-1.6.9-3.1 3.2.4z"/><path d="M10.5 15.5l-3-3 1.4-1.4 1.6 1.6 4.6-4.6 1.4 1.4z" fill="#0f766e"/></svg>
             </div>
-            <div className="text-[11px] text-white/80">{busy ? (lang === 'hi' ? 'लिख रहा है…' : 'typing…') : L.online}</div>
+            <div className="text-[11px] text-white/80">{busy || items.some((x) => x.kind === 'typing') ?(lang === 'hi' ? 'लिख रहा है…' : 'typing…') : L.online}</div>
           </div>
           <Link to="/?home=1" className="rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold hover:bg-white/25">{L.home} ↗</Link>
           {/* The ⋮ menu, as on WhatsApp (2026-10-07): every account option, in the conversation. */}
@@ -877,7 +968,7 @@ export default function Chat() {
             if (it.kind === 'vehicle') {
               return <VehicleCard key={it.id} it={it} L={L} onFull={() => (it.paid ? openVehicle(it.vehicle.reg_no) : fullReport(it.vehicle.reg_no, it.price))} onAnother={() => chip('another')} />;
             }
-            if (it.kind === 'vehicles') return <VehiclesList key={it.id} rows={it.rows} L={L} onOpen={(r) => chip(`open:${r}`)} />;
+            if (it.kind === 'vehicles') return <VehiclesList key={it.id} rows={it.rows} L={L} onOpen={(index) => setRcAt({ rows: it.rows, index })} />;
             if (it.kind === 'reports' || it.kind === 'invoices') {
               return <DocsList key={it.id} kind={it.kind} rows={it.rows} L={L} onDownload={(row) => download(it.kind === 'invoices' ? 'invoice' : 'report', row)} />;
             }
@@ -958,6 +1049,12 @@ export default function Chat() {
 
       {/* Paying: the declaration and checkout open over the chat (BuyDialog); the
           payment page returns to /chat?paid=REG, where the report opens. */}
+      {rcAt && (
+        <RcViewer rows={rcAt.rows} index={rcAt.index} L={L} onIndex={(index) => setRcAt((s) => ({ ...s, index }))}
+          onClose={() => setRcAt(null)} onDownload={download}
+          onBuy={(reg, price) => { setRcAt(null); fullReport(reg, price); }}
+          onRecheck={(reg) => { setRcAt(null); push({ from: 'me', kind: 'plate', text: prettyPlate(reg) }); openVehicle(reg); }} />
+      )}
       {buying && (
         <BuyDialog regNo={buying.reg} pricePaise={buying.price} onClose={() => setBuying(null)}
           onAlreadyBought={() => { setBuying(null); openVehicle(buying.reg); }} />
@@ -1216,39 +1313,337 @@ const Row = ({ k, v, tone }) => (
   </div>
 );
 
+/*
+ * MY VEHICLES AS NUMBER PLATES (user, 2026-10-08). Just the plates, each with
+ * what it is underneath; a tap opens its RC card (RcViewer). Paid ones wear a
+ * small gold "REPORT" tag.
+ */
 function VehiclesList({ rows, L, onOpen }) {
   return (
     <div className="anim-up flex flex-col items-start">
       <div className="w-[94%] max-w-md overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
         <div className="px-3.5 pt-3 text-[14px] font-bold text-[#0b2e2b]">{L.yourVehicles(rows.length)}</div>
-        {rows.map((r) => (
-          <button key={r.reg_no} type="button" data-test={`open-${r.reg_no}`} onClick={() => onOpen(r.reg_no)}
-            className="flex w-full items-center gap-3 border-t border-black/5 px-3.5 py-2.5 text-left first-of-type:mt-2 active:bg-black/5">
-            <span className="rounded border-2 border-black bg-white px-1.5 font-mono text-[12px] font-black tracking-wider text-black">{prettyPlate(r.reg_no)}</span>
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-[13px] font-semibold text-[#0b2e2b]">{[r.maker, r.model].filter(Boolean).join(' ') || '—'}</span>
-              <span className="block text-[11.5px] text-black/50">
-                {r.report_id ? '📄 Full report' : r.needs_attention ? `⚠️ ${r.needs_attention} need attention` : r.expired?.length ? `⚠️ ${r.expired.join(', ')}` : ''}
-                {r.watched ? ' · 🔔 watched' : ''}
+        <div className="px-3.5 text-[11.5px] text-black/50">{L.tapPlate}</div>
+        <div className="grid grid-cols-1 gap-2 p-3 sm:grid-cols-2">
+          {rows.map((r, i) => (
+            <button key={r.reg_no} type="button" data-test={`open-${r.reg_no}`} onClick={() => onOpen(i)} style={{ animationDelay: `${0.08 + i * 0.06}s` }}
+              className="gp-pop gp-from-l group flex min-w-0 flex-col items-start gap-1 rounded-xl border border-black/5 bg-gradient-to-br from-white to-[#f1f8f7] p-2.5 text-left shadow-sm transition hover:shadow-md active:scale-[.97]">
+              <span className="flex w-full items-center justify-between gap-2">
+                <span className="flex items-stretch overflow-hidden rounded-md border-2 border-[#111] bg-white shadow-sm">
+                  <span className="flex w-4 items-center justify-center bg-[#1d4ed8] text-[6px] font-black text-white [writing-mode:vertical-rl]">IND</span>
+                  <span className="px-1.5 py-0.5 font-mono text-[14px] font-black tracking-[1.5px] text-[#111]">{prettyPlate(r.reg_no)}</span>
+                </span>
+                {r.report_id
+                  ? <span className="rounded-full bg-[#ffd84d] px-1.5 py-0.5 text-[9px] font-black text-[#0a4f49]">REPORT</span>
+                  : <span className="text-[16px] text-[#0f766e] transition group-hover:translate-x-0.5">›</span>}
               </span>
-              {/* The vehicle in full (user, 2026-10-07, #13): what it is, and — only with a paid report — its document dates. */}
-              <span className="mt-1 flex flex-wrap gap-1 text-[10.5px] text-[#0b2e2b]">
-                {[r.fuel, r.vehicle_class, r.rc_status ? `RC ${String(r.rc_status).toLowerCase()}` : null, r.check_count ? `${r.check_count} check${r.check_count === 1 ? '' : 's'}` : null]
-                  .filter(Boolean).map((t) => <span key={t} className="rounded-full bg-[#eef5f4] px-1.5 py-0.5">{t}</span>)}
-              </span>
-              {r.report_id ? (
-                <span className="mt-1 grid grid-cols-2 gap-x-3 text-[10.5px] text-black/60">
-                  {[['Insurance', r.insurance_upto], ['PUC', r.pucc_upto], ['Fitness', r.fitness_upto], ['Tax', r.tax_upto], ['Permit', r.permit_upto], ['Registration', r.reg_upto]]
-                    .filter(([, d]) => d).map(([k, d]) => {
-                      const left = Math.ceil((new Date(d) - Date.now()) / 86400000);
-                      return <span key={k} className={left < 0 ? 'text-[#c62828]' : left <= 30 ? 'text-[#b26a00]' : ''}>{k}: {day(d)}</span>;
-                    })}
-                </span>) : null}
-            </span>
-            <span className="text-[12px] font-bold text-[#0f766e]">{L.vehicleBtn} ›</span>
-          </button>
-        ))}
+              <span className="w-full truncate text-[12.5px] font-semibold text-[#0b2e2b]">{[r.maker, r.model].filter(Boolean).join(' ') || '—'}</span>
+            </button>
+          ))}
+        </div>
       </div>
+    </div>
+  );
+}
+
+/*
+ * THE RC CARD (user, 2026-10-08): "on tap of each vehicle number show a beautiful
+ * RC card, and when the user swipes left or right, flip the card and show the
+ * remaining details — with a back button to go to another vehicle".
+ *
+ *   front   what the vehicle is (identity, owner masked, chassis/engine masked)
+ *   back    paid: documents with their marks, challans, loan, FASTag
+ *           not paid: the same rows, blurred and locked, with the ₹19 offer
+ *   paid    small ⬇ Report and ⬇ Invoice buttons under the card
+ *
+ * Opening a card reads the SAVED record (/vehicles/:reg/card) — never a new
+ * Government lookup — and each is fetched once per opening of the viewer.
+ * Phone back, Esc and "‹ My vehicles" close it; ‹ › move between vehicles.
+ */
+function RcViewer({ rows, index, L, onIndex, onClose, onDownload, onBuy, onRecheck }) {
+  const R = L.rc;
+  const reg = rows[index]?.reg_no;
+  const cache = useRef(new Map());
+  const [card, setCard] = useState({ loading: true });
+  const [turn, setTurn] = useState(0);
+  const [enter, setEnter] = useState('rc-in');
+  const touch = useRef(null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
+  const rear = Math.abs(Math.round(turn / 180)) % 2 === 1;
+
+  useEffect(() => {
+    let live = true;
+    setTurn(0);
+    const hit = cache.current.get(reg);
+    if (hit) { setCard(hit); return undefined; }
+    setCard({ loading: true });
+    api.vehicleCard(reg)
+      .then((out) => { cache.current.set(reg, out); if (live) setCard(out); })
+      .catch((e) => { if (live) setCard({ error: e.body?.error || 'failed', message: e.message }); });
+    return () => { live = false; };
+  }, [reg]);
+
+  // The phone's back button closes the card rather than leaving the chat.
+  useEffect(() => {
+    window.history.pushState({ rcCard: true }, '');
+    const pop = () => closeRef.current();
+    window.addEventListener('popstate', pop);
+    const scroll = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { window.removeEventListener('popstate', pop); document.body.style.overflow = scroll; };
+  }, []);
+  const close = () => { if (window.history.state?.rcCard) window.history.back(); else closeRef.current(); };
+  const flip = (dir) => setTurn((t) => t + dir * 180);
+  const go = (d) => {
+    const n = index + d;
+    if (n < 0 || n >= rows.length) return;
+    setEnter(d > 0 ? 'rc-next' : 'rc-prev');
+    onIndex(n);
+  };
+  useEffect(() => {
+    const key = (e) => {
+      if (e.key === 'Escape') close();
+      else if (e.key === 'ArrowLeft') flip(-1);
+      else if (e.key === 'ArrowRight') flip(1);
+    };
+    window.addEventListener('keydown', key);
+    return () => window.removeEventListener('keydown', key);
+  });
+
+  const onTouchStart = (e) => { const t = e.touches[0]; touch.current = { x: t.clientX, y: t.clientY }; };
+  const onTouchEnd = (e) => {
+    const s = touch.current; touch.current = null;
+    if (!s) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - s.x; const dy = t.clientY - s.y;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) flip(dx < 0 ? -1 : 1);
+  };
+
+  const v = card.vehicle || {};
+  const paid = Boolean(v.paid);
+  return (
+    <div className="rc-back-drop fixed inset-0 z-40 flex flex-col bg-[#062a27]/80 backdrop-blur-md" role="dialog" aria-modal="true" aria-label={R.title}
+      style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <div className="mx-auto flex w-full max-w-md items-center justify-between px-3 py-3 text-white">
+        <button type="button" data-test="rc-back" onClick={close} className="flex items-center gap-1 rounded-full bg-white/15 px-3 py-1.5 text-[13px] font-bold active:scale-95">‹ {R.back}</button>
+        <span className="text-[12px] font-semibold text-white/75">{index + 1} / {rows.length}</span>
+      </div>
+
+      <div className="flex flex-1 items-center justify-center px-4">
+        <div key={reg} className={`${enter} rc-stage w-full max-w-[380px]`}>
+          <div className="rc-turn h-[min(64dvh,540px)] w-full" style={{ transform: `rotateY(${turn}deg)` }}
+            onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} data-test="rc-card">
+            <div className="rc-face overflow-hidden rounded-[22px] bg-white shadow-2xl" aria-hidden={rear}>
+              <RcFront card={card} v={v} reg={reg} L={L} onRecheck={(r) => { close(); onRecheck(r); }} />
+            </div>
+            <div className="rc-face rc-rear overflow-hidden rounded-[22px] bg-white shadow-2xl" aria-hidden={!rear}>
+              <RcRear card={card} v={v} L={L} onBuy={() => { close(); onBuy(reg, card.price_paise); }} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Small downloads for a paid vehicle (user, 2026-10-08). */}
+      <div className="mx-auto flex h-10 w-full max-w-md items-center justify-center gap-2 px-3">
+        {paid && card.report ? (
+          <button type="button" data-test="rc-dl-report" disabled={!card.report.downloadable} onClick={() => onDownload('report', card.report)}
+            className="gp-pop rounded-full bg-[#ffd84d] px-3 py-1.5 text-[12px] font-black text-[#0a4f49] shadow active:scale-95 disabled:opacity-50">⬇ {R.report}</button>
+        ) : null}
+        {paid && card.invoice ? (
+          <button type="button" data-test="rc-dl-invoice" disabled={!card.invoice.downloadable} onClick={() => onDownload('invoice', card.invoice)}
+            className="gp-pop rounded-full bg-white px-3 py-1.5 text-[12px] font-bold text-[#0a4f49] shadow active:scale-95 disabled:opacity-50" style={{ animationDelay: '.07s' }}>⬇ {R.invoice}</button>
+        ) : null}
+      </div>
+
+      <div className="mx-auto grid w-full max-w-md grid-cols-3 items-center gap-2 px-3 pb-4 pt-1">
+        <button type="button" data-test="rc-prev" onClick={() => go(-1)} disabled={index === 0}
+          className="rounded-full bg-white/15 py-2.5 text-[13px] font-bold text-white active:scale-95 disabled:opacity-30">‹ {R.prev}</button>
+        <button type="button" data-test="rc-flip" onClick={() => flip(1)}
+          className="rounded-full bg-white py-2.5 text-[13px] font-black text-[#0a4f49] shadow active:scale-95">⟲ {R.flipBtn}</button>
+        <button type="button" data-test="rc-next" onClick={() => go(1)} disabled={index >= rows.length - 1}
+          className="rounded-full bg-white/15 py-2.5 text-[13px] font-bold text-white active:scale-95 disabled:opacity-30">{R.next} ›</button>
+      </div>
+    </div>
+  );
+}
+
+/* The card's coloured top: title, holographic sheen and the number plate. */
+function RcHead({ v, reg, R, side }) {
+  return (
+    <div className="relative overflow-hidden bg-gradient-to-br from-[#0a4f49] via-[#0f766e] to-[#14a08f] px-4 pb-4 pt-3 text-white">
+      <div className="rc-holo pointer-events-none absolute inset-0" />
+      <div className="relative flex items-start justify-between gap-2">
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-[.18em] text-white/70">{side}</div>
+          <div className="text-[15px] font-black leading-tight">{R.title}</div>
+          <div className="text-[10.5px] text-white/70">{R.sub}</div>
+        </div>
+        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-[11px] font-black text-[#0f766e] shadow">GP</div>
+      </div>
+      <div className="relative mt-3 inline-flex items-stretch overflow-hidden rounded-lg border-[3px] border-[#111] bg-white shadow-md">
+        <span className="flex w-6 flex-col items-center justify-center bg-[#1d4ed8] text-[7px] font-black leading-none text-white"><span className="mb-0.5 text-[9px]">✦</span>IND</span>
+        <span className="px-2.5 py-1 font-mono text-[19px] font-black tracking-[2.5px] text-[#111]">{prettyPlate(v.reg_no || reg)}</span>
+      </div>
+    </div>
+  );
+}
+
+const Field = ({ k, v, wide = false }) => (v == null || v === '' ? null : (
+  <div className={wide ? 'col-span-2' : ''}>
+    <div className="text-[9.5px] font-bold uppercase tracking-wider text-black/40">{k}</div>
+    <div className="truncate text-[13px] font-semibold text-[#0b2e2b]">{v}</div>
+  </div>
+));
+
+function RcFront({ card, v, reg, L, onRecheck }) {
+  const R = L.rc;
+  if (card.loading || card.error) {
+    return (
+      <div className="flex h-full flex-col">
+        <RcHead v={v} reg={reg} R={R} side="RC · 1/2" />
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center text-[13.5px] text-[#0b2e2b]">
+          {card.loading ? (
+            <>
+              <div className="flex gap-1.5">{[0, 1, 2].map((i) => <span key={i} className="gp-dot h-2.5 w-2.5 rounded-full bg-[#0f766e]" style={{ animationDelay: `${i * 0.18}s` }} />)}</div>
+              <div className="text-black/50">{R.loading}</div>
+            </>
+          ) : (
+            <>
+              <div>{card.error === 'no_record' ? R.noRecord : `⚠️ ${card.message}`}</div>
+              <button type="button" onClick={() => onRecheck(reg)} className="rounded-full bg-[#0f766e] px-4 py-2 text-[13px] font-bold text-white active:scale-95">🔍 {R.recheck}</button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+  const id = v.identity || {};
+  const own = v.ownership || {};
+  const f = v.found || {};
+  const attention = v.paid
+    ? (v.documents || []).filter((d) => d.state !== 'valid').length + (v.challans?.pending_count ? 1 : 0)
+    : f.needs_attention ?? ((f.expired?.length || 0) + (f.due_soon?.length || 0) + (f.challans_pending ? 1 : 0));
+  return (
+    <div className="flex h-full flex-col">
+      <RcHead v={v} reg={reg} R={R} side="RC · 1/2" />
+      <div className="flex-1 overflow-y-auto px-4 py-3">
+        <div className="text-[17px] font-black leading-tight text-[#0b2e2b]">{[id.maker, id.model].filter(Boolean).join(' · ') || '—'}</div>
+        <div className="mb-3 text-[12px] text-black/55">{[id.fuel, id.vehicle_class].filter(Boolean).join(' · ')}</div>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+          {v.paid ? (
+            <>
+              <Field wide k={R.owner} v={own.owner_masked ? `${own.owner_masked}${own.owner_serial != null ? ` · ${R.ownerNo} ${own.owner_serial}` : ''}` : null} />
+              <Field k={R.regDate} v={id.reg_date ? day(id.reg_date) : null} />
+              <Field k={R.rto} v={id.registered_at} />
+              <Field k={R.colour} v={id.colour} />
+              <Field k={R.mfg} v={id.manufactured} />
+              <Field k={R.cc} v={Number(id.cubic_capacity) > 0 ? id.cubic_capacity : null} />
+              <Field k={R.seats} v={Number(id.seats) > 0 ? id.seats : null} />
+              <Field k={R.norms} v={id.norms} />
+              <Field k={R.status} v={id.rc_status} />
+              <Field k={R.chassis} v={own.chassis_masked} />
+              <Field k={R.engine} v={own.engine_masked} />
+            </>
+          ) : null}
+        </div>
+        {!v.paid && v.detail !== 'none' ? (
+          <div className="mt-1 space-y-1 text-[13px]">
+            <div className="font-semibold text-[#0b2e2b]">{R.attention(attention)}</div>
+            {f.expired?.length > 0 && <div className="flex items-center gap-1.5 text-[#c62828]"><Mark state="expired" small />{L.expired}: {f.expired.join(', ')}</div>}
+            {f.due_soon?.length > 0 && <div className="flex items-center gap-1.5 text-[#b26a00]"><Mark state="due" small />{L.dueSoon}: {f.due_soon.join(', ')}</div>}
+          </div>
+        ) : null}
+        {v.paid ? <div className="mt-3 text-[12.5px] font-semibold" style={{ color: attention ? '#b26a00' : '#12813f' }}>{attention ? `⚠️ ${attention} need attention` : '✅ All in order'}</div> : null}
+        {card.mine?.check_count ? <div className="mt-3 text-[11px] text-black/45">{R.checks(card.mine.check_count)}{card.mine.watched ? ' · 🔔' : ''}</div> : null}
+        {v.checked_at ? <div className="text-[11px] text-black/45">{R.fresh(day(v.checked_at))}</div> : null}
+        {v.limited ? <div className="mt-2 rounded-lg bg-[#fff4e0] p-2 text-[11.5px] text-[#8f5600]">Today's limit of full views is reached — your PDF report is still downloadable.</div> : null}
+      </div>
+      <div className="border-t border-black/5 py-2 text-center text-[11px] font-semibold text-[#0f766e]">{R.flip}</div>
+    </div>
+  );
+}
+
+function RcRear({ card, v, L, onBuy }) {
+  const R = L.rc;
+  const head = (
+    <div className="flex items-center justify-between bg-gradient-to-r from-[#0a4f49] to-[#0f766e] px-4 py-3 text-white">
+      <div><div className="text-[10px] font-bold uppercase tracking-[.18em] text-white/70">RC · 2/2</div><div className="text-[14px] font-black">{v.reg_no ? prettyPlate(v.reg_no) : ''}</div></div>
+      <div className="grid h-8 w-8 place-items-center rounded-full bg-white text-[10px] font-black text-[#0f766e]">GP</div>
+    </div>
+  );
+  if (card.loading || card.error) return <div className="flex h-full flex-col">{head}</div>;
+
+  if (!v.paid) {
+    // Not paid (option a, 2026-10-08): the shape of the answers, blurred, and the offer.
+    const ghost = ['Insurance', 'PUC', 'Road tax', 'Fitness', 'Permit', 'Challans', 'Loan', 'Owners'];
+    return (
+      <div className="relative flex h-full flex-col">
+        {head}
+        <div className="flex-1 select-none space-y-2 px-4 py-3 blur-[5px]" aria-hidden="true">
+          {ghost.map((g, i) => (
+            <div key={g} className="flex items-center justify-between gap-2">
+              <span className="flex items-center gap-1.5 text-[13px] text-[#0b2e2b]"><Mark state={i % 3 === 0 ? 'due' : 'valid'} />{g}</span>
+              <span className="rounded-full bg-[#e7f6ec] px-2 py-0.5 text-[11px] font-bold text-[#12813f]">██ ███ 20██</span>
+            </div>
+          ))}
+        </div>
+        <div className="absolute inset-x-0 bottom-0 top-[60px] flex flex-col items-center justify-center gap-2 bg-white/40 p-6 text-center">
+          <div className="grid h-14 w-14 place-items-center rounded-full bg-[#0f766e] text-[24px] shadow-lg">🔒</div>
+          <div className="text-[14.5px] font-black text-[#0b2e2b]">{R.lockedH}</div>
+          <div className="text-[12.5px] text-black/60">{R.lockedP}</div>
+          {card.can_buy !== false ? (
+            <button type="button" data-test="rc-unlock" onClick={onBuy}
+              className="gp-shine mt-1 rounded-full bg-[#ffd84d] px-5 py-2.5 text-[14px] font-black text-[#0a4f49] shadow-md active:scale-95">{R.unlock(rupee(card.price_paise))}</button>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
+  const docs = v.documents || [];
+  const ch = v.challans || {};
+  const own = v.ownership || {};
+  return (
+    <div className="flex h-full flex-col">
+      {head}
+      <div className="flex-1 space-y-3 overflow-y-auto px-4 py-3">
+        <div>
+          <div className="mb-1 text-[10.5px] font-bold uppercase tracking-wider text-[#0f766e]">📋 {R.docs}</div>
+          {docs.map((d) => (
+            <div key={d.label} className="flex items-center justify-between gap-2 py-0.5">
+              <span className="flex min-w-0 items-center gap-1.5 text-[12.5px] text-[#0b2e2b]"><Mark state={d.state} small /><span className="truncate">{d.name || d.label}</span></span>
+              <span className="shrink-0 rounded-full px-2 py-0.5 text-[10.5px] font-bold" style={{ color: STATE[d.state]?.[0], background: STATE[d.state]?.[1] }}>{d.valid_until ? day(d.valid_until) : L.daysLeft(d.days)}</span>
+            </div>
+          ))}
+        </div>
+        <div>
+          <div className="mb-1 text-[10.5px] font-bold uppercase tracking-wider text-[#0f766e]">🚨 {R.challans}</div>
+          {ch.pending_count ? (
+            <>
+              <div className="flex items-center gap-1.5 text-[12.5px] font-bold text-[#c62828]"><Mark state="expired" small />{L.pendingAmt(ch.pending_count, inr(ch.pending_amount_paise))}</div>
+              {(ch.pending || []).slice(0, 3).map((c, i) => (
+                <div key={c.challan_no || i} className="mt-1 rounded-lg bg-[#fdecea]/60 px-2 py-1 text-[11.5px]">
+                  <div className="flex justify-between gap-2 font-semibold text-[#0b2e2b]"><span className="truncate">{c.offence || 'Challan'}</span><span>{inr(c.amount_paise)}</span></div>
+                  <div className="truncate text-black/50">{[c.place, c.date ? day(c.date) : null].filter(Boolean).join(' · ')}</div>
+                </div>
+              ))}
+            </>
+          ) : <div className="flex items-center gap-1.5 text-[12.5px] font-semibold text-[#12813f]"><Mark state="valid" small />{L.noChallans}</div>}
+        </div>
+        <div>
+          <div className="mb-1 text-[10.5px] font-bold uppercase tracking-wider text-[#0f766e]">🏦 {R.loan}</div>
+          <Row k={R.loan} v={own.financer || L.noLoan} tone={own.financer ? 'due' : 'valid'} />
+          {own.blacklist_status ? <Row k={L.blacklist} v={own.blacklist_status} tone="expired" /> : null}
+        </div>
+        {v.fastag ? (
+          <div>
+            <div className="mb-1 text-[10.5px] font-bold uppercase tracking-wider text-[#0f766e]">🛣 {R.fastag}</div>
+            <Row k={v.fastag.active ? 'Active' : 'Not active'} v={v.fastag.balance != null ? inr(Number(v.fastag.balance) * 100) : ''} tone={v.fastag.active ? 'valid' : 'expired'} />
+          </div>
+        ) : null}
+      </div>
+      <div className="border-t border-black/5 py-2 text-center text-[11px] font-semibold text-[#0f766e]">{R.flip}</div>
     </div>
   );
 }
@@ -1389,9 +1784,9 @@ function Bubble({ item, onChip, chipLabel, faded = false }) {
   const mine = item.from === 'me';
   if (item.kind === 'typing') {
     return (
-      <div className="flex">
-        <div className="flex items-center gap-1 rounded-2xl rounded-bl-md bg-white px-4 py-3 shadow-sm">
-          {[0, 1, 2].map((i) => <span key={i} className="h-2 w-2 animate-bounce rounded-full bg-[#0f766e]/60" style={{ animationDelay: `${i * 0.15}s` }} />)}
+      <div className="gp-pop gp-from-l flex" aria-label="typing">
+        <div className="gp-bot flex items-center gap-1.5 rounded-2xl rounded-bl-md px-4 py-3.5 shadow-sm">
+          {[0, 1, 2].map((i) => <span key={i} className="gp-dot h-2 w-2 rounded-full bg-[#0f766e]" style={{ animationDelay: `${i * 0.18}s` }} />)}
         </div>
       </div>
     );
@@ -1414,7 +1809,7 @@ function Bubble({ item, onChip, chipLabel, faded = false }) {
   }
   const welcome = item.kind === 'welcome';
   return (
-    <div className={`flex flex-col ${mine ? 'items-end' : 'items-start'} ${faded ? 'opacity-75' : 'gp-pop'}`}>
+    <div className={`flex flex-col ${mine ? 'items-end' : 'items-start'} ${faded ? 'opacity-75' : `gp-pop ${mine ? 'gp-from-r' : 'gp-from-l'}`}`}>
       <div className={`max-w-[85%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2 text-[14.5px] leading-snug shadow-sm ${mine
         ? 'gp-me rounded-br-md text-white'
         : welcome ? 'rounded-bl-md border border-[#ffd84d] bg-gradient-to-br from-white to-[#fff8d6] text-[#0b2e2b]'
@@ -1426,12 +1821,12 @@ function Bubble({ item, onChip, chipLabel, faded = false }) {
         <div className={`mt-0.5 text-right text-[10px] ${mine ? 'text-white/70' : 'text-black/35'}`}>{time(item.at)}{faded ? ' · WhatsApp' : ''}</div>
       </div>
       {item.chips?.length > 0 && (
-        <div className={`mt-1.5 flex max-w-[90%] flex-wrap gap-1.5 ${mine ? 'justify-end' : ''}`}>
+        <div className={`mt-1.5 flex max-w-[90%] flex-wrap gap-1.5 ${mine ? 'justify-end' : ''} ${faded ? '' : 'gp-chips'}`}>
           {/* Old WhatsApp buttons are shown as plain labels — never tappable, never mistaken for real ones. */}
-          {item.chips.map((c) => (faded
+          {item.chips.map((c, i) => (faded
             ? <span key={c} className="rounded-full border border-black/10 bg-white/50 px-3 py-1 text-xs font-semibold text-black/40">{c}</span>
             : (
-              <button key={c} type="button" data-test={`chip-${c}`} onClick={() => onChip(c)}
+              <button key={c} type="button" data-test={`chip-${c}`} onClick={() => onChip(c)} style={{ '--i': i }}
                 className="rounded-full border border-[#0f766e]/30 bg-white px-3 py-1 text-xs font-semibold text-[#0f766e] shadow-sm active:scale-95">
                 {chipLabel(c)}
               </button>
@@ -1464,6 +1859,10 @@ function VehicleCard({ it, L, onFull, onAnother }) {
   const f = v.found || {};
   const attention = f.needs_attention ?? ((f.expired?.length || 0) + (f.due_soon?.length || 0) + (f.challans_pending ? 1 : 0));
   const ring = attention === 0 ? '#12a150' : attention <= 2 ? '#eda100' : '#d92d20';
+  /* Make and model only (free_view_detail 'none', 2026-10-08): nothing was
+     checked for the customer to see, so no "nothing needs attention" and no
+     green 0 — a lock and what signing in shows instead. */
+  const identityOnly = !it.paid && v.detail === 'none';
   return (
     <div className="anim-up flex flex-col items-start">
       <div className="w-[92%] max-w-sm overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
@@ -1472,9 +1871,13 @@ function VehicleCard({ it, L, onFull, onAnother }) {
             <span className="rounded-md border-2 border-black bg-white px-2.5 py-0.5 font-mono text-[17px] font-black tracking-[2px] text-black shadow">
               {v.pretty || v.reg_no}
             </span>
-            <span className="grid h-11 w-11 place-items-center rounded-full text-[15px] font-black" style={{ background: `conic-gradient(${ring} 100%, transparent 0)` }}>
-              <span className="grid h-8 w-8 place-items-center rounded-full bg-[#0a4f49] text-white">{attention}</span>
-            </span>
+            {identityOnly ? (
+              <span className="grid h-11 w-11 place-items-center rounded-full bg-white/15 text-[20px]" aria-label="details locked">🔒</span>
+            ) : (
+              <span className="grid h-11 w-11 place-items-center rounded-full text-[15px] font-black" style={{ background: `conic-gradient(${ring} 100%, transparent 0)` }}>
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-[#0a4f49] text-white">{attention}</span>
+              </span>
+            )}
           </div>
           <div className="mt-2 text-[15px] font-bold">{[id.maker, id.model].filter(Boolean).join(' · ') || '—'}</div>
           <div className="text-[12px] text-white/80">{[id.fuel, id.vehicle_class].filter(Boolean).join(' · ')}</div>
@@ -1482,7 +1885,9 @@ function VehicleCard({ it, L, onFull, onAnother }) {
         <div className="space-y-1.5 p-3.5 text-[13.5px] text-[#0b2e2b]">
           {it.paid ? <div className="font-semibold text-[#12813f]">{L.youHave}</div> : (
             <>
-              <div><Text text={L.attention(attention)} /></div>
+              {identityOnly
+                ? <div><Text text={L.identityOnly(rupee(it.price))} /></div>
+                : <div><Text text={L.attention(attention)} /></div>}
               {f.expired?.length > 0 && <div className="text-[#c62828]">● {L.expired}: {f.expired.join(', ')}</div>}
               {f.due_soon?.length > 0 && <div className="text-[#b26a00]">● {L.dueSoon}: {f.due_soon.join(', ')}</div>}
               {f.challans_pending > 0 && <div className="text-[#c62828]">● {L.challans}: {f.challans_pending}</div>}
@@ -1502,7 +1907,7 @@ function VehicleCard({ it, L, onFull, onAnother }) {
           <button type="button" data-test="card-another" onClick={onAnother} className="py-3 text-[14px] font-bold text-[#0f766e] active:bg-black/5">🔍 {L.another}</button>
         </div>
       </div>
-      {!it.signedIn && !it.paid && (
+      {!it.signedIn && !it.paid && !identityOnly && (
         <div className="mt-1.5 max-w-[88%] rounded-xl bg-white/80 px-3 py-2 text-[12px] text-[#0a4f49] shadow-sm">
           {L.signInMore}{typeof it.left === 'number' ? ` ${L.leftToday(it.left)}` : ''}
         </div>

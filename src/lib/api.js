@@ -195,6 +195,8 @@ export const api = {
   /* Vehicles */
   vehicles: () => call('/vehicles'),
   vehicle: (regNo) => call(`/vehicles/${encodeURIComponent(regNo)}`),
+  // The RC card in My vehicles: the saved record only, never a new lookup.
+  vehicleCard: (regNo) => call(`/vehicles/${encodeURIComponent(regNo)}/card`),
   check: (regNo) => call('/check', { method: 'POST', body: { reg_no: regNo } })
     .catch((e) => { if (e.body && (e.status === 404 || e.status === 429 || e.status === 403)) return e.body; throw e; }),
   /* The chat (2026-10-07): a free check without signing in, and — signed in —
