@@ -42,6 +42,12 @@ const T = {
        conversation: what GaadiPe is, the basic details we show, what ₹19 shows —
        fully described — then 'start checking vehicles by signing in'; then it is
        up to the user"). No vehicle details at all without signing in. */
+    // The short opening (user, 2026-10-08: 110+ visitors, most gone in 10 seconds) — the full text is one tap away.
+    helloShort: 'Namaste! 🙏 *GaadiPe* shows any Indian vehicle’s insurance, PUC, challans, loan and owners — from Government records.\n'
+      + 'Free check after sign-in · full report *₹19* with PDF.\n'
+      + '*Sign in with your mobile to start* 👇',
+    sample: { chip: '📄 See a sample report', more: '📋 Full details', intro: 'Here is what a full report looks like — on a *made-up vehicle*, so nothing real is shown 👇',
+      badge: 'SAMPLE', ribbon: 'SAMPLE — made-up vehicle, not real data', cta: '🔐 Sign in to check your vehicle' },
     helloSignIn: 'Namaste! 🙏 Welcome to *GaadiPe* — the complete record of any vehicle registered in India, from the Government’s VAHAN and e-Challan records.\n\n'
       + '*Free check* — after you sign in\n• Make, model and variant\n• Fuel and vehicle type\n• How many things need attention — expired or expiring documents and pending challans\n\n'
       + '*Full report — ₹19* · PDF with a GST invoice\n• Insurance (insurer and policy), PUC and road tax — and fitness and permit for commercial vehicles — each with its valid-until date\n• Every pending challan, with offence, place and amount\n• Loan / hypothecation, blacklist and NOC status\n• Number of owners, registration date and RTO\n• Owner name, chassis and engine number — masked, as on Parivahan\n• Alerts before documents expire, for 28 days\n\n'
@@ -167,6 +173,11 @@ const T = {
   },
   hi: {
     hello: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है — भारत में रजिस्टर्ड किसी भी गाड़ी का पूरा रिकॉर्ड।\n\nइंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, बाकी चालान, लोन (हाइपोथिकेशन), ब्लैकलिस्ट स्थिति और कितने मालिक — सरकारी VAHAN और e-Challan रिकॉर्ड से, PDF रिपोर्ट के साथ।\n\n*शुरू करने के लिए गाड़ी नंबर लिखें* — जैसे *KA01AB1234*। पहली जाँच मुफ़्त है, साइन इन की ज़रूरत नहीं।',
+    helloShort: 'नमस्ते! 🙏 *GaadiPe* किसी भी भारतीय गाड़ी का इंश्योरेंस, PUC, चालान, लोन और मालिक दिखाता है — सरकारी रिकॉर्ड से।\n'
+      + 'साइन इन के बाद मुफ़्त जाँच · पूरी रिपोर्ट *₹19* में, PDF के साथ।\n'
+      + '*शुरू करने के लिए मोबाइल से साइन इन करें* 👇',
+    sample: { chip: '📄 नमूना रिपोर्ट देखें', more: '📋 पूरी जानकारी', intro: 'पूरी रिपोर्ट ऐसी दिखती है — एक *काल्पनिक गाड़ी* पर, कुछ भी असली नहीं 👇',
+      badge: 'नमूना', ribbon: 'नमूना — काल्पनिक गाड़ी, असली डेटा नहीं', cta: '🔐 अपनी गाड़ी जाँचने के लिए साइन इन करें' },
     helloSignIn: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है — भारत में रजिस्टर्ड किसी भी गाड़ी का पूरा रिकॉर्ड, सरकारी VAHAN और e-Challan रिकॉर्ड से।\n\n'
       + '*मुफ़्त जाँच* — साइन इन के बाद\n• कंपनी, मॉडल और वेरिएंट\n• फ़्यूल और गाड़ी का प्रकार\n• कितनी चीज़ों पर ध्यान चाहिए — समाप्त या जल्द समाप्त होने वाले दस्तावेज़ और बाकी चालान\n\n'
       + '*पूरी रिपोर्ट — ₹19* · PDF, GST बिल के साथ\n• इंश्योरेंस (कंपनी और पॉलिसी), PUC और रोड टैक्स — और व्यावसायिक गाड़ियों के लिए फिटनेस और परमिट — हर एक की वैधता की तारीख़\n• हर बाकी चालान — अपराध, जगह और राशि के साथ\n• लोन / हाइपोथिकेशन, ब्लैकलिस्ट और NOC की स्थिति\n• कितने मालिक, रजिस्ट्रेशन की तारीख़ और RTO\n• मालिक का नाम, चेसिस और इंजन नंबर — छिपे हुए, जैसे परिवहन पर\n• दस्तावेज़ समाप्त होने से पहले अलर्ट, 28 दिनों तक\n\n'
@@ -417,8 +428,9 @@ export default function Chat() {
       setHistory({ items: [], more: false, before: null, loaded: false });
       setMode(signInRequired ? 'mobile' : 'plate');
       const note = resetNote.current; resetNote.current = null;
-      setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note ? `${note}\n\n${signInRequired ? L.helloSignIn : L.hello}` : (signInRequired ? L.helloSignIn : L.hello) },
-        ...(signInRequired ? [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: T[lang === 'hi' ? 'en' : 'hi'].helloSignIn }] : []),
+      setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note ? `${note}\n\n${signInRequired ? L.helloShort : L.hello}` : (signInRequired ? L.helloShort : L.hello),
+        ...(signInRequired ? { chips: ['sample', 'fullInfo'] } : {}) },
+        ...(signInRequired ? [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: T[lang === 'hi' ? 'en' : 'hi'].helloShort }] : []),
         // Signed out with sign-in required: straight back to the mobile number, policies first (2026-10-08).
         ...(signInRequired ? [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'terms' }] : [])]);
     } else if (prevMe.current && me && String(prevMe.current.id) !== String(me.id)) {
@@ -539,8 +551,9 @@ export default function Chat() {
       // whose check asks for the sign-in itself.
       // In both languages (user, 2026-10-08: "people prefer Hindi as well") —
       // the chosen one first, the other right after.
-      bot(L.helloSignIn, { pace: 650 });
-      bot(T[lang === 'hi' ? 'en' : 'hi'].helloSignIn, { pace: 900 });
+      // Short, in both languages; a sample report and the full text one tap away (2026-10-08).
+      bot(L.helloShort, { pace: 650, chips: ['sample', 'fullInfo'] });
+      bot(T[lang === 'hi' ? 'en' : 'hi'].helloShort, { pace: 700 });
       // (/login and ?signin=1 land here too: the same opening, asked once.)
       if (!(reg && looksLikePlate(reg))) startSignIn(null, { quiet: true });
     } else if (!me) bot(L.hello, { chips: ['signIn'] });
@@ -916,6 +929,20 @@ export default function Chat() {
   function chip(key) {
     // "What do I get?" lives with the signed-in options now (user, 2026-10-08: the welcome already says it all).
     if (key === 'howWorks') { push({ from: 'me', kind: 'text', text: L.howWorks }); bot(L.howAnswer, { chips: me ? ['another'] : ['signIn'] }); return; }
+    // The sample report on a made-up vehicle, and the full description (2026-10-08).
+    if (key === 'sample') {
+      journey({ step: 'welcome', section: 'sample report' });
+      push({ from: 'me', kind: 'text', text: L.sample.chip });
+      bot(L.sample.intro);
+      push({ from: 'bot', kind: 'sample' });
+      return;
+    }
+    if (key === 'fullInfo') {
+      journey({ step: 'welcome', section: 'full details' });
+      push({ from: 'me', kind: 'text', text: L.sample.more });
+      bot(L.helloSignIn, { chips: me ? [] : ['sample'] });
+      return;
+    }
     if (key === 'another') { setMode('plate'); inputRef.current?.focus(); return; }
     if (key === 'signIn') { startSignIn(); return; }
     if (key === 'myVehicles') { showList('vehicles'); return; }
@@ -932,6 +959,7 @@ export default function Chat() {
   const chipLabel = (key) => (key.startsWith('open:') ? `🔓 ${prettyPlate(key.slice(5))}` : {
     howWorks: `❓ ${L.howWorks}`, another: `🔍 ${L.another}`, signIn: `🔐 ${L.signIn}`,
     myVehicles: `🚗 ${L.myVehicles}`, myReports: `📄 ${L.myReports}`, profile: `👤 ${L.profile}`, invoices: `🧾 ${L.invoices}`,
+    sample: L.sample.chip, fullInfo: L.sample.more,
     notifyOff: `🔕 ${L.turnOff}`, addEmail: `📧 ${L.addEmail}`, later: `⏰ ${L.later}`, resendEmail: `↻ ${L.resend}`,
   }[key] || (key.startsWith('useEmail:') ? `✓ ${L.didYouMean(key.slice(9))}` : key));
 
@@ -1017,6 +1045,10 @@ export default function Chat() {
             }
             if (it.kind === 'vehicle') {
               return <VehicleCard key={it.id} it={it} L={L} onFull={() => (it.paid ? openVehicle(it.vehicle.reg_no) : fullReport(it.vehicle.reg_no, it.price))} onAnother={() => chip('another')} />;
+            }
+            if (it.kind === 'sample') {
+              return <FullCard key={it.id} it={{ vehicle: sampleVehicle(), sample: true }} L={L}
+                onSignIn={() => (me ? chip('another') : startSignIn())} />;
             }
             if (it.kind === 'vehicles') {
               return <VehiclesList key={it.id} rows={it.rows} L={L} onOpen={(index) => setRcAt({ rows: it.rows, index })}
@@ -1275,6 +1307,31 @@ const DEMO_FULL = {
   fastag: { active: true, balance: 245 },
 };
 
+/*
+ * THE SAMPLE REPORT (user, 2026-10-08: "a sample report on a made-up vehicle,
+ * no ULIP data, no risk"). XX is no state's code, so XX00AB0000 can never be a
+ * real vehicle; every name is invented; dates are counted from today so the
+ * sample always looks current. Never fetched, never stored.
+ */
+const sampleVehicle = () => {
+  const on = (days) => new Date(Date.now() + days * 86400000).toISOString().slice(0, 10);
+  return {
+    reg_no: 'XX00AB0000', paid: true, sample: true,
+    identity: { maker: 'MARUTI SUZUKI', model: 'SWIFT VXI', fuel: 'Petrol', vehicle_class: 'Motor Car', colour: 'Red', manufactured: '03/2019' },
+    documents: [
+      { label: 'insurance', name: 'Insurance', valid_until: on(158), days: 158, state: 'valid' },
+      { label: 'puc', name: 'PUC (emission test)', valid_until: on(5), days: 5, state: 'due' },
+      { label: 'tax', name: 'Road tax', valid_until: on(2700), days: 2700, state: 'valid' },
+      { label: 'fitness', name: 'Fitness', valid_until: on(-270), days: -270, state: 'expired' },
+    ],
+    challans: { pending_count: 2, pending_amount_paise: 150000, pending: [
+      { challan_no: 'S1', offence: 'Over-speeding', place: 'Sample City', date: on(-55), amount_paise: 100000, status: 'Pending' },
+      { challan_no: 'S2', offence: 'Wrong parking', place: 'Sample City', date: on(-98), amount_paise: 50000, status: 'Pending' } ] },
+    ownership: { owner_serial: 2, owner_masked: 'S***** K****', financer: 'SAMPLE BANK LTD', blacklist_status: null },
+    fastag: { active: true, balance: 245 },
+  };
+};
+
 const inr = (p) => (p == null ? '—' : `₹${(Number(p) / 100).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`);
 const day = (d) => { try { return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); } catch { return d || ''; } };
 const STATE = { expired: ['#c62828', '#fdecea'], due: ['#b26a00', '#fff4e0'], valid: ['#12813f', '#e7f6ec'] };
@@ -1295,20 +1352,32 @@ function Mark({ state, small = false }) {
 }
 
 /** The full report, as a card in the conversation. */
-function FullCard({ it, L, onDownload, onAnother }) {
+function FullCard({ it, L, onDownload, onAnother, onSignIn }) {
   const v = it.vehicle || {};
   const id = v.identity || {};
   const docs = v.documents || [];
   const ch = v.challans || {};
   const own = v.ownership || {};
   const bad = docs.filter((d) => d.state !== 'valid').length + (ch.pending_count ? 1 : 0);
+  const sample = Boolean(it.sample);    // the made-up sample: marked on every side, no download
   return (
     <div className="anim-up flex flex-col items-start">
-      <div className="w-[94%] max-w-md overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
+      <div className={`relative w-[94%] max-w-md overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md ${sample ? 'ring-2 ring-[#e08700]/60' : ''}`}>
+        {sample ? (
+          <>
+            <div className="bg-[#fff4e0] px-3 py-1.5 text-center text-[11.5px] font-black uppercase tracking-wider text-[#8f5600]">🧪 {L.sample.ribbon}</div>
+            {/* Marked wherever it is scrolled to, not only at the top. */}
+            <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-around overflow-hidden" aria-hidden="true">
+              {[0, 1, 2].map((i) => (
+                <span key={i} className="-rotate-[24deg] whitespace-nowrap text-[44px] font-black tracking-[.3em] text-[#e08700]/[.13]">{L.sample.badge}</span>
+              ))}
+            </div>
+          </>
+        ) : null}
         <div className="bg-gradient-to-br from-[#0f766e] to-[#0a4f49] p-3.5 text-white">
           <div className="flex items-center justify-between gap-3">
             <span className="rounded-md border-2 border-black bg-white px-2.5 py-0.5 font-mono text-[17px] font-black tracking-[2px] text-black shadow">{prettyPlate(v.reg_no)}</span>
-            <span className="rounded-full bg-[#ffd84d] px-2.5 py-1 text-[11px] font-black text-[#0a4f49]">FULL REPORT</span>
+            <span className={`rounded-full px-2.5 py-1 text-[11px] font-black ${sample ? 'bg-[#e08700] text-white' : 'bg-[#ffd84d] text-[#0a4f49]'}`}>{sample ? L.sample.badge : 'FULL REPORT'}</span>
           </div>
           <div className="mt-2 text-[15px] font-bold">{[id.maker, id.model].filter(Boolean).join(' · ')}</div>
           <div className="text-[12px] text-white/80">{[id.fuel, id.vehicle_class, id.colour, id.manufactured].filter(Boolean).join(' · ')}</div>
@@ -1353,10 +1422,15 @@ function FullCard({ it, L, onDownload, onAnother }) {
           </Section>
         )}
 
-        <div className="grid grid-cols-2 border-t border-black/5">
-          <button type="button" data-test="full-download" onClick={onDownload} disabled={!it.report} className="gp-shine bg-[#ffd84d] py-3 text-[14px] font-black text-[#0a4f49] disabled:opacity-50">📄 {L.download}</button>
-          <button type="button" data-test="full-another" onClick={onAnother} className="py-3 text-[14px] font-bold text-[#0f766e]">🔍 {L.another}</button>
-        </div>
+        {sample ? (
+          <button type="button" data-test="sample-signin" onClick={onSignIn}
+            className="gp-shine w-full border-t border-black/5 bg-[#ffd84d] py-3 text-[14px] font-black text-[#0a4f49] active:brightness-95">{L.sample.cta}</button>
+        ) : (
+          <div className="grid grid-cols-2 border-t border-black/5">
+            <button type="button" data-test="full-download" onClick={onDownload} disabled={!it.report} className="gp-shine bg-[#ffd84d] py-3 text-[14px] font-black text-[#0a4f49] disabled:opacity-50">📄 {L.download}</button>
+            <button type="button" data-test="full-another" onClick={onAnother} className="py-3 text-[14px] font-bold text-[#0f766e]">🔍 {L.another}</button>
+          </div>
+        )}
       </div>
     </div>
   );
