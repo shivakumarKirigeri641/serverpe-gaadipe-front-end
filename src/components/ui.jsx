@@ -43,16 +43,24 @@ export function Modal({ title, onClose, children, footer }) {
     return () => window.removeEventListener('keydown', key);
   }, [onClose]);
 
+  /*
+   * FITS A PHONE (user, 2026-10-08: "the Full report pop-up goes out of the
+   * mobile screen"). A tall box centred in a flex column overflows at the top
+   * and bottom where it cannot be scrolled to. Now: never taller than the screen;
+   * the title and the buttons stay put and only the middle scrolls. On a phone it
+   * is a sheet from the bottom; from sm up, a centred box as before.
+   */
   return createPortal((
-    <div className="anim-in fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/40 px-4 py-8"
+    <div className="anim-in fixed inset-0 z-50 flex items-end justify-center bg-ink/40 sm:items-center sm:px-4 sm:py-6"
       onClick={onClose}>
-      <div className="card anim-pop w-full max-w-md shadow-pop" onClick={(e) => e.stopPropagation()}>
-        <div className="border-b border-line px-5 py-4">
+      <div className="card anim-pop flex max-h-[92dvh] w-full max-w-md flex-col overflow-hidden rounded-b-none shadow-pop sm:max-h-[90dvh] sm:rounded-b-2xl"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }} onClick={(e) => e.stopPropagation()}>
+        <div className="shrink-0 border-b border-line px-5 py-4">
           <h2 className="text-base font-semibold text-ink">{title}</h2>
         </div>
-        <div className="space-y-4 px-5 py-4">{children}</div>
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-5 py-4">{children}</div>
         {footer && (
-          <div className="flex flex-wrap justify-end gap-2 border-t border-line bg-shell/60 px-5 py-3">
+          <div className="flex shrink-0 flex-wrap justify-end gap-2 border-t border-line bg-shell/60 px-5 py-3">
             {footer}
           </div>
         )}
