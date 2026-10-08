@@ -63,7 +63,9 @@ const T = {
       hidden: 'Model variant hidden — sign in free to see the full model and variant.',
       inReport: 'Full report — insurance, PUC, road tax & fitness dates, every challan with amount, loan, blacklist, number of owners, PDF + 28 days of alerts.',
       buy: (p) => `🔓 Get full report — ${p}`,
-      more: 'This was today’s free check. Sign in free to check more vehicles.',
+      more: 'This was today’s free check. Sign in for more — *basic details free* (make, model, variant, fuel, vehicle type), *full report ₹19*.',
+      // When today's free check is used (the server's limit), in the visitor's language (2026-10-08).
+      limit: '🔐 You’ve used today’s free check. Sign in with your mobile to check more — *basic details free* (make, model, variant, fuel, vehicle type), *full report ₹19*.',
       signIn: '🔐 Sign in to check more',
     },
     sample: { chip: '📄 See a sample report', more: '📋 Full details', intro: 'Here is what a full report looks like — on a *made-up vehicle*, so nothing real is shown 👇',
@@ -73,7 +75,7 @@ const T = {
       + '*Full report — ₹19* · PDF with a GST invoice\n• Insurance (insurer and policy), PUC and road tax — and fitness and permit for commercial vehicles — each with its valid-until date\n• Every pending challan, with offence, place and amount\n• Loan / hypothecation, blacklist and NOC status\n• Number of owners, registration date and RTO\n• Owner name, chassis and engine number — masked, as on Parivahan\n• Alerts before documents expire, for 28 days\n\n'
       + '*Start checking vehicles by signing in* with your mobile number — a one-time code by SMS. No password, no app.',
     termsByUse: ['By signing in, you agree to GaadiPe’s', 'Terms of use', 'Privacy policy', 'and', 'Refund policy'],
-    signInToCheck: (r) => `🔐 Please sign in to check *${r}* — enter your mobile number below. We will check it straight after.`,
+    signInToCheck: (r) => `🔐 Sign in with your mobile to check *${r}* — *basic details free* (make, model, variant, fuel, vehicle type), *full report ₹19*. I’ll check it straight after.`,
     plateNoted: (r) => `👍 Noted *${r}* — I’ll check it right after you sign in. Your *mobile number*, please.`,
     checking: (r) => `Checking *${r}* …`,
     placeholderPlate: 'Type a vehicle number…',
@@ -96,7 +98,7 @@ const T = {
     waDivider: 'Your WhatsApp chat with GaadiPe',
     nowHere: 'Now on gaadipe.in',
     loadEarlier: 'Load earlier messages',
-    signInMore: 'Sign in free to save your checks and check more vehicles — it takes a few seconds.',
+    signInMore: 'Sign in to save your checks and check more vehicles — basic details free (make, model, variant, fuel, vehicle type), full report ₹19.',
     fullReport: (p) => `Full report ${p}`,
     another: 'Check another',
     signIn: 'Sign in',
@@ -211,7 +213,8 @@ const T = {
       hidden: 'मॉडल का वेरिएंट छिपा है — पूरा मॉडल और वेरिएंट देखने के लिए मुफ़्त साइन इन करें।',
       inReport: 'पूरी रिपोर्ट — इंश्योरेंस, PUC, रोड टैक्स और फिटनेस की तारीखें, हर चालान राशि के साथ, लोन, ब्लैकलिस्ट, कितने मालिक, PDF + 28 दिन अलर्ट।',
       buy: (p) => `🔓 पूरी रिपोर्ट लें — ${p}`,
-      more: 'यह आज की मुफ़्त जाँच थी। और गाड़ियाँ जाँचने के लिए मुफ़्त साइन इन करें।',
+      more: 'यह आज की मुफ़्त जाँच थी। और जाँचने के लिए साइन इन करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*।',
+      limit: '🔐 आज की मुफ़्त जाँच हो चुकी है। और जाँचने के लिए मोबाइल से साइन इन करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*।',
       signIn: '🔐 और जाँचने के लिए साइन इन करें',
     },
     sample: { chip: '📄 नमूना रिपोर्ट देखें', more: '📋 पूरी जानकारी', intro: 'पूरी रिपोर्ट ऐसी दिखती है — एक *काल्पनिक गाड़ी* पर, कुछ भी असली नहीं 👇',
@@ -221,7 +224,7 @@ const T = {
       + '*पूरी रिपोर्ट — ₹19* · PDF, GST बिल के साथ\n• इंश्योरेंस (कंपनी और पॉलिसी), PUC और रोड टैक्स — और व्यावसायिक गाड़ियों के लिए फिटनेस और परमिट — हर एक की वैधता की तारीख़\n• हर बाकी चालान — अपराध, जगह और राशि के साथ\n• लोन / हाइपोथिकेशन, ब्लैकलिस्ट और NOC की स्थिति\n• कितने मालिक, रजिस्ट्रेशन की तारीख़ और RTO\n• मालिक का नाम, चेसिस और इंजन नंबर — छिपे हुए, जैसे परिवहन पर\n• दस्तावेज़ समाप्त होने से पहले अलर्ट, 28 दिनों तक\n\n'
       + '*गाड़ियाँ जाँचना शुरू करने के लिए साइन इन करें* — मोबाइल नंबर पर SMS से एक बार का कोड। कोई पासवर्ड नहीं, कोई ऐप नहीं।',
     termsByUse: ['साइन इन करके आप GaadiPe की', 'उपयोग की शर्तें', 'गोपनीयता नीति', 'और', 'रिफ़ंड नीति से सहमत होते हैं'],
-    signInToCheck: (r) => `🔐 *${r}* की जाँच के लिए कृपया साइन इन करें — नीचे अपना मोबाइल नंबर लिखें। साइन इन होते ही हम इसे जाँच देंगे।`,
+    signInToCheck: (r) => `🔐 *${r}* जाँचने के लिए मोबाइल से साइन इन करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*। साइन इन होते ही मैं इसे जाँच दूँगा।`,
     plateNoted: (r) => `👍 *${r}* नोट कर लिया — साइन इन होते ही इसकी जाँच करूँगा। कृपया अपना *मोबाइल नंबर* लिखें।`,
     checking: (r) => `*${r}* की जाँच हो रही है…`,
     placeholderPlate: 'गाड़ी नंबर लिखें…',
@@ -244,7 +247,7 @@ const T = {
     waDivider: 'GaadiPe के साथ आपकी WhatsApp चैट',
     nowHere: 'अब gaadipe.in पर',
     loadEarlier: 'पुराने संदेश देखें',
-    signInMore: 'अपनी जाँच सेव करने और और गाड़ियाँ जाँचने के लिए मुफ़्त साइन इन करें — कुछ ही सेकंड लगते हैं।',
+    signInMore: 'अपनी जाँच सेव करने और और गाड़ियाँ जाँचने के लिए साइन इन करें — बेसिक जानकारी मुफ़्त (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), पूरी रिपोर्ट ₹19।',
     fullReport: (p) => `पूरी रिपोर्ट ${p}`,
     another: 'दूसरी गाड़ी',
     signIn: 'साइन इन',
@@ -347,6 +350,19 @@ const loadFor = (userId) => {
 };
 const USED = 'gp.chat.used';
 const uid = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
+/* A SIGN-IN IN PROGRESS survives a refresh (user, 2026-10-08: "on refresh it asks
+   the vehicle number"): this tab remembers that the visitor was signing in — and,
+   once the code was sent, to which mobile — for 10 minutes. Cleared on sign-in. */
+const SIGNING = 'gp.signing';
+const signingSaved = () => {
+  try {
+    const s = JSON.parse(sessionStorage.getItem(SIGNING) || 'null');
+    return s && Date.now() - (s.at || 0) < 10 * 60 * 1000 ? s : null;
+  } catch { return null; }
+};
+const saveSigning = (s) => { try { sessionStorage.setItem(SIGNING, JSON.stringify({ ...s, at: Date.now() })); } catch { /* private mode */ } };
+const clearSigning = () => { try { sessionStorage.removeItem(SIGNING); } catch { /* private mode */ } };
+
 // Today's free check before sign-in, used on this browser (India date). The server is the real limit.
 const istDay = () => new Date(Date.now() + 5.5 * 3600 * 1000).toISOString().slice(0, 10);
 const freeUsedToday = () => { try { return localStorage.getItem('gp.free.day') === istDay(); } catch { return false; } };
@@ -497,6 +513,8 @@ export default function Chat() {
     journey(step ? { step, section: null } : { step: 'welcome' });
   }, [mode]);
   useEffect(() => { if (buying) journey({ step: 'paying', section: `₹19 payment · ${buying.reg}` }); }, [buying]);
+  // Signed in: the sign-in-in-progress note is done with.
+  useEffect(() => { if (me) clearSigning(); }, [me]);
   useEffect(() => { scrollSource(listRef.current); return () => scrollSource(null); }, []);
   // An admin ended this visit (support or security): sign out, and say so.
   useEffect(() => onEnded(() => {
@@ -599,6 +617,20 @@ export default function Chat() {
       bot(T[lang === 'hi' ? 'en' : 'hi'].helloShort, { pace: 700 });
       // (/login and ?signin=1 land here too: the same opening, asked once.)
       if (!(reg && looksLikePlate(reg))) startSignIn(null, { quiet: true });
+    } else if (!me && (params.get('signin') || params.get('open') || params.get('next') || signingSaved())) {
+      /* Came here TO SIGN IN (a Sign in button, ?signin=1; an old account
+         address; or a refresh in the middle of signing in): the sign-in welcome
+         and the mobile box — not the free-check pitch followed by "your mobile
+         number, please" (user, 2026-10-08). After the code was sent, straight
+         back to "type the code". */
+      const saved = signingSaved();
+      bot(L.helloShort, { pace: 650, chips: ['sample', 'fullInfo'] });
+      bot(T[lang === 'hi' ? 'en' : 'hi'].helloShort, { pace: 700 });
+      startSignIn(null, { quiet: true });
+      if (saved?.stage === 'code' && /^[6-9]\d{9}$/.test(saved.mobile || '')) {
+        setMobile(saved.mobile); setMode('code');
+        bot(L.codeSent(`${saved.mobile.slice(0, 5)} ${saved.mobile.slice(5)}`), { pace: 500 });
+      }
     } else if (!me) {
       // The free check is on (check_sign_in_required false, migration 142): type a number, see make & model.
       bot(L.helloFree, { pace: 650, chips: ['sample', 'fullInfo', 'signIn'] });
@@ -630,8 +662,7 @@ export default function Chat() {
     }
     if (params.get('signin') || open || next) {
       const rest = new URLSearchParams(params); ['signin', 'open', 'next'].forEach((k) => rest.delete(k)); setParams(rest, { replace: true });
-      // With sign-in required the greeting has already asked for the mobile.
-      if (!me && !signInRequired && (params.get('signin') || open || next)) setTimeout(() => startSignIn(), 400);
+      // The greeting above has already asked for the mobile (both modes).
     }
     // Back from paying (?paid=REG): the report opens right here in the chat.
     const paid = cleanPlate(params.get('paid'));
@@ -762,7 +793,7 @@ export default function Chat() {
       if (out.error === 'sign_in_needed') {
         markFreeUsed();
         interaction('error', 'Free check used up — asked to sign in', { reg_no: reg });
-        bot(`🔐 ${out.message}`); setPendingReg(reg); startSignIn(); return;
+        bot(L.free.limit); setPendingReg(reg); startSignIn(); return;
       }
       if (out.error || !out.vehicle) {
         interaction('error', `Free check of ${reg} failed: ${String(out.message || out.error || '').slice(0, 60)}`, { reg_no: reg });
@@ -782,6 +813,7 @@ export default function Chat() {
   function startSignIn(reg = null, { quiet = false } = {}) {
     if (reg) setPendingReg(reg);
     setMode('mobile');
+    if (!signingSaved()) saveSigning({ stage: 'mobile' });
     if (!quiet) bot(L.askMobile);   // quiet: the greeting already asked for it
     // "By signing in, you agree to…" — one small line, shown once (no tick, 2026-10-08).
     // In the message queue, so it sits under the greeting rather than above it.
@@ -799,6 +831,7 @@ export default function Chat() {
       const out = await api.requestCode(m);
       if (!out.ok) { bot(`⚠️ ${out.message}`); return; }
       setMobile(m); setMode('code');
+      saveSigning({ stage: 'code', mobile: m });
       bot(L.codeSent(`${m.slice(0, 5)} ${m.slice(5)}`));
     } catch (e) { bot(`⚠️ ${e.message}`); } finally { setBusy(false); }
   }
