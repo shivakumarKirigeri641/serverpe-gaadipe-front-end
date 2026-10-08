@@ -82,7 +82,9 @@ export default function Layout({ children, wide = false }) {
                 {inApp && <button className="btn-quiet !py-2 hidden sm:inline-flex" onClick={signOut}>{t('common.signOut')}</button>}
               </>
             ) : (
-              <Link className="btn-primary !py-2" to="/chat?signin=1">{t('common.signIn')}</Link>
+              /* "Check vehicle", not "Sign in" (user, 2026-10-08): the free check
+                 needs no sign-in, and it is what a visitor came for. */
+              <Link className="btn-primary !py-2" to="/chat">{t('common.checkVehicle')}</Link>
             )}
             <button className="btn-quiet !px-2.5 !py-2 md:hidden" onClick={() => setOpen(!open)} aria-label="Menu">☰</button>
           </div>
@@ -93,7 +95,7 @@ export default function Layout({ children, wide = false }) {
             <div className="wrap flex flex-col py-2">
               {(inApp ? appLinks
                 : [['/#price', t('nav.price')],
-                   WEB_LOGIN ? [me ? '/chat' : '/chat?signin=1', me ? t('common.myVehicles') : t('common.signIn')] : [waLink('Hi'), t('wa.short')],
+                   WEB_LOGIN ? ['/chat', me ? t('common.myVehicles') : t('common.checkVehicle')] : [waLink('Hi'), t('wa.short')],
                    ['/terms', t('nav.terms')], ['/privacy', t('nav.privacy')], ['/refund', t('nav.refunds')]]
               ).map(([to, label]) => (
                 to.startsWith('/#') || to.startsWith('https:')
