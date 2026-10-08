@@ -29,8 +29,11 @@ const T = {
   en: {
     hello: 'Namaste! 🙏 Welcome to *GaadiPe*.\n\nType any vehicle number — like *KA01AB1234* — to see its basic details *free*, no sign-in needed.\n\nThen sign in with your mobile number for the full report, your vehicles, reports and alerts.',
     // When every check needs a sign-in (check_sign_in_required, 2026-10-08).
-    helloSignIn: 'Namaste! 🙏 Welcome to *GaadiPe*.\n\nType any vehicle number — like *KA01AB1234* — and sign in with your mobile number to see its details. It takes a few seconds.\n\nYour checks, full reports and alerts stay in your account.',
+    // Sign in first, then the vehicle (user, 2026-10-08: asking for a number and
+    // then for a mobile "may be a bit weird") — the greeting asks for the mobile.
+    helloSignIn: 'Namaste! 🙏 Welcome to *GaadiPe*.\n\nTo check any vehicle, first sign in with your *mobile number* — we send a one-time code by SMS. No password, no app.\n\nTick *I agree* below, then type your mobile number.',
     signInToCheck: (r) => `🔐 Please sign in to check *${r}* — enter your mobile number below. We will check it straight after.`,
+    plateNoted: (r) => `👍 Noted *${r}* — I’ll check it right after you sign in. Your *mobile number*, please.`,
     checking: (r) => `Checking *${r}* …`,
     placeholderPlate: 'Type a vehicle number…',
     placeholderMobile: 'Your 10-digit mobile number',
@@ -131,8 +134,9 @@ const T = {
   },
   hi: {
     hello: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है।\n\nकोई भी गाड़ी नंबर लिखें — जैसे *KA01AB1234* — और उसकी बेसिक जानकारी *मुफ़्त* देखें, साइन इन की ज़रूरत नहीं।\n\nफिर पूरी रिपोर्ट, अपनी गाड़ियों, रिपोर्ट और अलर्ट के लिए मोबाइल नंबर से साइन इन करें।',
-    helloSignIn: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है।\n\nकोई भी गाड़ी नंबर लिखें — जैसे *KA01AB1234* — और उसकी जानकारी देखने के लिए मोबाइल नंबर से साइन इन करें। इसमें कुछ ही सेकंड लगते हैं।\n\nआपकी जाँच, पूरी रिपोर्ट और अलर्ट आपके खाते में रहते हैं।',
+    helloSignIn: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है।\n\nकिसी भी गाड़ी की जाँच के लिए पहले अपने *मोबाइल नंबर* से साइन इन करें — हम SMS से एक बार का कोड भेजते हैं। कोई पासवर्ड नहीं, कोई ऐप नहीं।\n\nनीचे *मैं सहमत हूँ* पर टिक करें, फिर अपना मोबाइल नंबर लिखें।',
     signInToCheck: (r) => `🔐 *${r}* की जाँच के लिए कृपया साइन इन करें — नीचे अपना मोबाइल नंबर लिखें। साइन इन होते ही हम इसे जाँच देंगे।`,
+    plateNoted: (r) => `👍 *${r}* नोट कर लिया — साइन इन होते ही इसकी जाँच करूँगा। कृपया अपना *मोबाइल नंबर* लिखें।`,
     checking: (r) => `*${r}* की जाँच हो रही है…`,
     placeholderPlate: 'गाड़ी नंबर लिखें…',
     placeholderMobile: 'अपना 10 अंकों का मोबाइल नंबर',
@@ -338,9 +342,11 @@ export default function Chat() {
     if (prevMe.current && !me) {
       loadedFor.current = null;
       setHistory({ items: [], more: false, before: null, loaded: false });
-      setMode('plate');
+      setMode(signInRequired ? 'mobile' : 'plate');
       const note = resetNote.current; resetNote.current = null;
-      setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note ? `${note}\n\n${signInRequired ? L.helloSignIn : L.hello}` : (signInRequired ? L.helloSignIn : L.hello), chips: signInRequired ? ['howWorks', 'signIn'] : ['howWorks'] }]);
+      setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note ? `${note}\n\n${signInRequired ? L.helloSignIn : L.hello}` : (signInRequired ? L.helloSignIn : L.hello), chips: ['howWorks'] },
+        // Signed out with sign-in required: straight back to the mobile number, policies first (2026-10-08).
+        ...(signInRequired ? [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'terms' }] : [])]);
     } else if (prevMe.current && me && String(prevMe.current.id) !== String(me.id)) {
       // Another account on this phone (a new mobile number): its own conversation, nothing of the old one.
       loadedFor.current = me.id;
@@ -404,9 +410,15 @@ export default function Chat() {
       // No confirmed email yet: the recommendation again, once a day.
       if (!me.email_verified && nudgeDue(me.id)) { setTimeout(emailNudge, 900); markNudged(me.id); }
     }
-    else bot(signInRequired ? L.helloSignIn : L.hello, { chips: ['howWorks', 'signIn'] });
     // A number brought from the home page (?reg=) is checked at once, then dropped from the address.
     const reg = cleanPlate(params.get('reg'));
+    if (!me && signInRequired) {
+      // Sign in first (2026-10-08): the greeting asks for the mobile, with the
+      // policies to agree to right below — unless a number came with the link,
+      // whose check asks for the sign-in itself.
+      bot(L.helloSignIn, { chips: ['howWorks'] });
+      if (!(reg && looksLikePlate(reg)) && !params.get('signin')) startSignIn(null, { quiet: true });
+    } else if (!me) bot(L.hello, { chips: ['howWorks', 'signIn'] });
     /* LOCAL DEVELOPMENT ONLY (?demo=full): the full-report card with sample data,
        to try its buttons without a live lookup. Never in a production build. */
     // ?demo=basic — a free-check card, to try "Full report ₹19" while the records server is down.
@@ -478,6 +490,14 @@ export default function Chat() {
     const text = String(raw ?? input).trim();
     if (!text || busy) return;
     setInput('');
+    // A vehicle number typed while we ask for the mobile: keep it, check it after sign-in.
+    if (mode === 'mobile' && !/^[\d\s+-]+$/.test(text) && looksLikePlate(text)) {
+      const reg = cleanPlate(text);
+      push({ from: 'me', kind: 'plate', text: prettyPlate(reg) });
+      interaction('search', `Searched ${reg} — asked to sign in first`, { reg_no: reg });
+      setPendingReg(reg); bot(L.plateNoted(prettyPlate(reg)));   // the policy card is already on screen
+      return;
+    }
     if (mode === 'mobile') return sendMobile(text);
     if (mode === 'code') return sendCode(text);
     if (mode === 'name') return sendName(text);
@@ -528,10 +548,10 @@ export default function Chat() {
     } finally { setBusy(false); }
   }
 
-  function startSignIn(reg = null) {
+  function startSignIn(reg = null, { quiet = false } = {}) {
     if (reg) setPendingReg(reg);
     setMode('mobile');
-    bot(L.askMobile);
+    if (!quiet) bot(L.askMobile);   // quiet: the greeting already asked for it
     // The policies to agree to, ticked before the number is accepted (2026-10-08).
     if (!termsOk) push({ from: 'bot', kind: 'terms' });
     setTimeout(() => inputRef.current?.focus(), 50);
