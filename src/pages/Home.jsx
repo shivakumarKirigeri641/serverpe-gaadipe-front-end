@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSession } from '../lib/session.jsx';
 import { api, waLink, WHATSAPP_ENABLED, WEB_LOGIN } from '../lib/api';
 import WhatsAppCta from '../components/WhatsAppCta.jsx';
 import { rupees } from '../lib/format';
@@ -30,16 +31,16 @@ export default function Home() {
   const [reg, setReg] = useState('');
   const navigate = useNavigate();
 
-  /* Someone who has used the chat opens straight into it (2026-10-07); the
-     chat's "Home" link comes back here with ?home=1. */
+  /* gaadipe.in IS the home page, on a phone too (user, 2026-10-08: "you are
+     redirecting gaadipe.in to /chat — change that"). Sending every phone and
+     every one-time chat visitor straight into the chat meant a cold visitor
+     from an ad never learned what GaadiPe is before being asked for a mobile.
+     Only someone already signed in — a customer — goes on to their chat;
+     ?home=1 (the chat's Home link) always shows this page. */
+  const { me, ready } = useSession();
   useEffect(() => {
-    let used = false;
-    try { used = localStorage.getItem('gp.chat.used') === '1'; } catch { /* private mode */ }
-    // On a phone, GaadiPe IS the app (user, 2026-10-07: "must look exactly like a mobile app"):
-    // the chat opens at once. A computer still sees this page; ?home=1 shows it anywhere.
-    const phone = window.matchMedia?.('(max-width: 767px)').matches;
-    if ((used || phone) && !new URLSearchParams(window.location.search).has('home')) navigate(`/chat${window.location.search}`, { replace: true });
-  }, [navigate]);
+    if (ready && me && !new URLSearchParams(window.location.search).has('home')) navigate(`/chat${window.location.search}`, { replace: true });
+  }, [ready, me, navigate]);
 
   useEffect(() => { api.pricing().then(setPricing).catch(() => {}); }, []);
   // What a free check gives away, so the example card matches it (free_view_detail).
