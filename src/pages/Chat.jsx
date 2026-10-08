@@ -1136,6 +1136,21 @@ const inr = (p) => (p == null ? '—' : `₹${(Number(p) / 100).toLocaleString('
 const day = (d) => { try { return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); } catch { return d || ''; } };
 const STATE = { expired: ['#c62828', '#fdecea'], due: ['#b26a00', '#fff4e0'], valid: ['#12813f', '#e7f6ec'] };
 
+/* A status mark beside a document or challan, like the PDF's (2026-10-08):
+   green tick — all good; orange "!" — ends soon; red cross — expired / to pay. */
+function Mark({ state, small = false }) {
+  const s = small ? 14 : 18;
+  const color = state === 'expired' ? '#c62828' : state === 'due' ? '#e07b00' : '#12813f';
+  return (
+    <svg width={s} height={s} viewBox="0 0 20 20" aria-label={state === 'expired' ? 'expired' : state === 'due' ? 'ends soon' : 'valid'} className="shrink-0">
+      <circle cx="10" cy="10" r="10" fill={color} />
+      {state === 'expired' ? <path d="M6.5 6.5l7 7M13.5 6.5l-7 7" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
+        : state === 'due' ? <><path d="M10 4.8v6.4" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" /><circle cx="10" cy="14.8" r="1.4" fill="#fff" /></>
+        : <path d="M5.6 10.4l3 3 5.8-6.6" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />}
+    </svg>
+  );
+}
+
 /** The full report, as a card in the conversation. */
 function FullCard({ it, L, onDownload, onAnother }) {
   const v = it.vehicle || {};
@@ -1160,7 +1175,8 @@ function FullCard({ it, L, onDownload, onAnother }) {
         <Section title={`📋 ${L.documents}`}>
           {docs.map((d) => (
             <div key={d.label} className="flex items-center justify-between gap-2 py-1">
-              <span className="text-[13px] text-[#0b2e2b]">{d.name || d.label}</span>
+              {/* Green tick: valid · orange: ends soon · red: expired (2026-10-08). */}
+              <span className="flex items-center gap-1.5 text-[13px] text-[#0b2e2b]"><Mark state={d.state} />{d.name || d.label}</span>
               <span className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ color: STATE[d.state]?.[0], background: STATE[d.state]?.[1] }}>
                 {L.daysLeft(d.days)}{d.valid_until ? ` · ${day(d.valid_until)}` : ''}
               </span>
@@ -1171,15 +1187,15 @@ function FullCard({ it, L, onDownload, onAnother }) {
         <Section title={`🚨 ${L.challansH}`}>
           {ch.pending_count ? (
             <>
-              <div className="text-[13px] font-bold text-[#c62828]">{L.pendingAmt(ch.pending_count, inr(ch.pending_amount_paise))}</div>
+              <div className="flex items-center gap-1.5 text-[13px] font-bold text-[#c62828]"><Mark state="expired" />{L.pendingAmt(ch.pending_count, inr(ch.pending_amount_paise))}</div>
               {(ch.pending || []).slice(0, 6).map((c, i) => (
                 <div key={c.challan_no || i} className="mt-1.5 rounded-lg bg-[#fdecea]/50 p-2 text-[12.5px]">
-                  <div className="flex justify-between gap-2 font-semibold text-[#0b2e2b]"><span>{c.offence || 'Challan'}</span><span>{inr(c.amount_paise)}</span></div>
+                  <div className="flex justify-between gap-2 font-semibold text-[#0b2e2b]"><span className="flex items-center gap-1.5"><Mark state="expired" small />{c.offence || 'Challan'}</span><span>{inr(c.amount_paise)}</span></div>
                   <div className="text-black/50">{[c.place, c.date ? day(c.date) : null, c.status].filter(Boolean).join(' · ')}</div>
                 </div>
               ))}
             </>
-          ) : <div className="text-[13px] font-semibold text-[#12813f]">✅ {L.noChallans}</div>}
+          ) : <div className="flex items-center gap-1.5 text-[13px] font-semibold text-[#12813f]"><Mark state="valid" />{L.noChallans}</div>}
         </Section>
 
         <Section title={`🏦 ${L.ownership}`}>
