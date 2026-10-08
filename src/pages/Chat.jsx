@@ -85,6 +85,8 @@ const T = {
     termsAgree: ['I have read and agree to the', 'Terms of use', 'Privacy policy', 'and the', 'Refund policy'],
     agreeFirst: 'Please tick *I agree* to the Terms of use, Privacy policy and Refund policy first, then send your mobile number again.',
     askMobile: 'Sure! Your *mobile number*, please — I’ll send a one-time code by SMS. No password, no app.',
+    // Added to a "sign in to …" message, so it is one bubble, not two (2026-10-08).
+    codeHint: 'Type your *mobile number* below 👇 — I’ll send a one-time code by SMS. No password, no app.',
     badMobile: 'That doesn’t look like a 10-digit mobile number. Please try again.',
     codeSent: (m) => `✓ Code sent by SMS to *${m}*. Type it here.\n\n_Used GaadiPe on WhatsApp before? Your chat and reports will be here right after you verify._`,
     badCode: 'Please type the 6-digit code from the SMS.',
@@ -234,6 +236,7 @@ const T = {
     termsAgree: ['मैंने पढ़ लिया है और मैं सहमत हूँ —', 'उपयोग की शर्तें', 'गोपनीयता नीति', 'और', 'रिफ़ंड नीति'],
     agreeFirst: 'कृपया पहले उपयोग की शर्तें, गोपनीयता नीति और रिफ़ंड नीति पर *सहमत* का निशान लगाएँ, फिर अपना मोबाइल नंबर दोबारा भेजें।',
     askMobile: 'ज़रूर! अपना *मोबाइल नंबर* भेजें — मैं SMS से एक कोड भेजूँगा। कोई पासवर्ड नहीं, कोई ऐप नहीं।',
+    codeHint: 'नीचे अपना *मोबाइल नंबर* लिखें 👇 — मैं SMS से एक कोड भेजूँगा। कोई पासवर्ड नहीं, कोई ऐप नहीं।',
     badMobile: 'यह 10 अंकों का मोबाइल नंबर नहीं लगता। फिर से कोशिश करें।',
     codeSent: (m) => `✓ *${m}* पर SMS से कोड भेजा गया। उसे यहाँ लिखें।\n\n_पहले WhatsApp पर GaadiPe इस्तेमाल किया है? वेरिफ़ाई करते ही आपकी चैट और रिपोर्ट यहाँ होंगी।_`,
     badCode: 'कृपया SMS का 6 अंकों का कोड लिखें।',
@@ -736,8 +739,7 @@ export default function Chat() {
     // Sign in first (2026-10-08): the number is kept and checked straight after signing in.
     if (!me && !signedIn && signInRequired) {
       interaction('search', `Searched ${reg} — asked to sign in first`, { reg_no: reg });
-      bot(L.signInToCheck(prettyPlate(reg)));
-      setPendingReg(reg); startSignIn();
+      askToSignIn(L.signInToCheck(prettyPlate(reg)), reg);
       return;
     }
     /* THE FREE CHECK BEFORE SIGN-IN (2026-10-08): nothing is looked up until the
@@ -745,8 +747,7 @@ export default function Chat() {
     if (!me && !signedIn && freeUsedToday()) {
       // Today's free check is used on this browser: straight to the sign-in (the server enforces it too).
       interaction('search', `Searched ${reg} — free check already used today, asked to sign in`, { reg_no: reg });
-      bot(L.signInToCheck(prettyPlate(reg)));
-      setPendingReg(reg); startSignIn();
+      askToSignIn(L.signInToCheck(prettyPlate(reg)), reg);
       return;
     }
     if (!me && !signedIn) {
@@ -764,7 +765,7 @@ export default function Chat() {
     interaction('search', `Searched ${reg}`, { reg_no: reg });
     try {
       const out = await api.check(reg);
-      if (out.error === 'sign_in_needed') { interaction('error', 'Free checks used up — asked to sign in'); bot(out.message); setPendingReg(reg); startSignIn(); return; }
+      if (out.error === 'sign_in_needed') { interaction('error', 'Free checks used up — asked to sign in'); askToSignIn(out.message, reg); return; }
       if (out.error || !out.vehicle) {
         interaction('error', `Check of ${reg} failed: ${String(out.message || out.error || '').slice(0, 60)}`, { reg_no: reg });
         bot(`⚠️ ${out.message || 'Something went wrong. Please try again.'}${again}`, { chips: ['another'] }); return;
@@ -793,7 +794,7 @@ export default function Chat() {
       if (out.error === 'sign_in_needed') {
         markFreeUsed();
         interaction('error', 'Free check used up — asked to sign in', { reg_no: reg });
-        bot(L.free.limit); setPendingReg(reg); startSignIn(); return;
+        askToSignIn(L.free.limit, reg); return;
       }
       if (out.error || !out.vehicle) {
         interaction('error', `Free check of ${reg} failed: ${String(out.message || out.error || '').slice(0, 60)}`, { reg_no: reg });
@@ -808,6 +809,14 @@ export default function Chat() {
     } catch (e) {
       bot(`⚠️ ${e.message}`, { chips: ['signIn'] });
     } finally { setBusy(false); }
+  }
+
+  /* "Sign in to …" and "type your mobile number" in ONE message (user, 2026-10-08:
+     the separate "Sure! Your mobile number, please" right after it repeated it). */
+  function askToSignIn(text, reg) {
+    bot(`${text}\n\n${L.codeHint}`);
+    setPendingReg(reg);
+    startSignIn(null, { quiet: true });
   }
 
   function startSignIn(reg = null, { quiet = false } = {}) {
@@ -1405,7 +1414,7 @@ function FreeVehicleCard({ it, L, onBuy, onSignIn }) {
         <button type="button" data-test="free-signin" onClick={onSignIn}
           className="w-full border-t border-black/5 py-2.5 text-[13px] font-bold text-[#0f766e]">{L.free.signIn}</button>
       </div>
-      <div className="mt-1.5 max-w-[88%] rounded-xl bg-white/80 px-3 py-2 text-[12px] text-[#0a4f49] shadow-sm">{L.free.more}</div>
+      <div className="mt-1.5 max-w-[88%] rounded-xl bg-white/80 px-3 py-2 text-[12px] text-[#0a4f49] shadow-sm"><Text text={L.free.more} /></div>
     </div>
   );
 }
