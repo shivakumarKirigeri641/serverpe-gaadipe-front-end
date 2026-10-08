@@ -5,7 +5,7 @@ import { useSession } from '../lib/session';
 import { useLang } from '../lib/i18n.jsx';
 import BuyDialog from '../components/BuyDialog.jsx';
 import * as notify from '../lib/notify';
-import { journey, interaction, scrollSource, onEnded, mirror } from '../lib/track';
+import { journey, interaction, scrollSource, onEnded } from '../lib/track';
 import EmailVerify from '../components/EmailVerify.jsx';
 import { saveBlob } from '../components/ui.jsx';
 
@@ -387,30 +387,6 @@ export default function Chat() {
   }, []);
   useEffect(scrollDown, [items.length, scrollDown]);
 
-  /* The live replica for the admin's visit screen (lib/track.js mirror,
-     2026-10-08): what is on screen now — bubbles, cards in summary, what the
-     input box asks for. Never what is being typed. */
-  useEffect(() => {
-    const label = (k) => (typeof L[k] === 'string' ? L[k] : k);
-    const snap = (it) => {
-      const base = { from: it.from, kind: it.kind, at: it.at, text: typeof it.text === 'string' ? it.text : undefined, chips: (it.chips || []).map(label) };
-      if (it.kind === 'vehicle') {
-        const v = it.vehicle || {};
-        base.card = { reg: v.pretty || v.reg_no, title: [v.identity?.maker, v.identity?.model].filter(Boolean).join(' '), fuel: v.identity?.fuel,
-          view: it.paid ? 'Full report' : 'Free details', attention: v.found?.needs_attention != null ? String(v.found.needs_attention) : undefined };
-      } else if (['vehicles', 'reports', 'invoices'].includes(it.kind)) {
-        const rows = it.rows || [];
-        base.card = { count: String(rows.length), items: rows.slice(0, 6).map((r) => r.pretty || r.reg_no || r.report_number || r.invoice_number || '') };
-      } else if (it.kind === 'terms') base.card = { agreed: 'by_signing_in' };
-      else if (it.kind === 'profile') base.card = { name: it.user?.name || '' };
-      return base;
-    };
-    const list = items.filter((x) => x.kind !== 'typing').map(snap);
-    if (items.some((x) => x.kind === 'typing')) list.push({ from: 'bot', kind: 'typing' });
-    const ask = { mobile: L.placeholderMobile, code: L.placeholderCode, ecode: L.placeholderCode, name: L.placeholderName, email: L.placeholderEmail }[mode] || L.placeholderPlate;
-    mirror({ items: list, mode, input: ask });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, mode, termsOk]);
   /* A card that grows after it is added (a list, a report, an image) would end up under the
      input bar (user, 2026-10-07: "my vehicles list is cropping at the end"): whenever the
      conversation grows, follow it down — if the reader was at the bottom already. */
