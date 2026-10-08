@@ -36,7 +36,8 @@ export default function Layout({ children, wide = false }) {
   const appLinks = [
     ['/app', t('common.myVehicles')], ['/app/check', t('common.checkVehicle')],
     ['/app/reports', t('nav.reports')], ['/app/invoices', t('nav.invoices')],
-    ['/app/refer', t('nav.refer')], ['/app/profile', t('nav.profile')],
+    // Refer & earn is hidden while referral rewards are off (2026-10-08).
+    ['/app/profile', t('nav.profile')],
   ];
 
   return (
