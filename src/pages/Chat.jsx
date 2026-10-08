@@ -46,6 +46,26 @@ const T = {
     helloShort: 'Namaste! 🙏 *GaadiPe* shows any Indian vehicle’s insurance, PUC, challans, loan and owners — from Government records.\n'
       + 'Free check after sign-in · full report *₹19* with PDF.\n'
       + '*Sign in with your mobile to start* 👇',
+    // The free check before sign-in (2026-10-08, migration 142).
+    helloFree: 'Namaste! 🙏 I’m *GaadiPe* — I read any Indian vehicle’s record from Government data.\n'
+      + '*Type any vehicle number below* 👇 and I’ll tell you its make and model *free*, no sign-in (the exact variant shows after you sign in).\n'
+      + 'Want everything — insurance, PUC, challans, loan, owners? Full report *₹19*.',
+    free: {
+      // GaadiPe talking (user, 2026-10-08: "make the conversation look like GaadiPe replying, attractive").
+      ask: (r) => `Great — let’s look up *${r}* 🔎\nOne quick thing before I do:`,
+      foundIntro: (r) => `Here you go! ✨ This is what Government records say about *${r}*:`,
+      nudge: '💡 Buying this vehicle? The ₹19 report shows if there’s a *loan*, *pending challans*, *expired insurance or PUC* and *how many owners* — before you pay the seller.',
+      consentH: (r) => `Check ${r}`,
+      consent: 'By continuing you agree to GaadiPe’s Terms of use, Privacy policy and Refund policy, and confirm you are checking this vehicle for a lawful purpose (for example buying it, or it is your own). Your device and network details are recorded with this check.',
+      agree: '✅ Agree & check',
+      links: ['Terms of use', 'Privacy policy', 'Refund policy'],
+      found: '✅ Found in Government records',
+      hidden: 'Model variant hidden — sign in free to see the full model and variant.',
+      inReport: 'Full report — insurance, PUC, road tax & fitness dates, every challan with amount, loan, blacklist, number of owners, PDF + 28 days of alerts.',
+      buy: (p) => `🔓 Get full report — ${p}`,
+      more: 'This was today’s free check. Sign in free to check more vehicles.',
+      signIn: '🔐 Sign in to check more',
+    },
     sample: { chip: '📄 See a sample report', more: '📋 Full details', intro: 'Here is what a full report looks like — on a *made-up vehicle*, so nothing real is shown 👇',
       badge: 'SAMPLE', ribbon: 'SAMPLE — made-up vehicle, not real data', cta: '🔐 Sign in to check your vehicle' },
     helloSignIn: 'Namaste! 🙏 Welcome to *GaadiPe* — the complete record of any vehicle registered in India, from the Government’s VAHAN and e-Challan records.\n\n'
@@ -176,6 +196,24 @@ const T = {
     helloShort: 'नमस्ते! 🙏 *GaadiPe* किसी भी भारतीय गाड़ी का इंश्योरेंस, PUC, चालान, लोन और मालिक दिखाता है — सरकारी रिकॉर्ड से।\n'
       + 'साइन इन के बाद मुफ़्त जाँच · पूरी रिपोर्ट *₹19* में, PDF के साथ।\n'
       + '*शुरू करने के लिए मोबाइल से साइन इन करें* 👇',
+    helloFree: 'नमस्ते! 🙏 मैं *GaadiPe* हूँ — सरकारी डेटा से किसी भी भारतीय गाड़ी का रिकॉर्ड पढ़ता हूँ।\n'
+      + '*नीचे कोई भी गाड़ी नंबर लिखें* 👇 — मैं उसकी कंपनी और मॉडल *मुफ़्त* बताऊँगा, बिना साइन इन (सटीक वेरिएंट साइन इन के बाद दिखेगा)।\n'
+      + 'सब कुछ चाहिए — इंश्योरेंस, PUC, चालान, लोन, मालिक? पूरी रिपोर्ट *₹19*।',
+    free: {
+      ask: (r) => `बढ़िया — *${r}* देखते हैं 🔎\nउससे पहले एक छोटी सी बात:`,
+      foundIntro: (r) => `यह रहा! ✨ सरकारी रिकॉर्ड में *${r}* के बारे में:`,
+      nudge: '💡 यह गाड़ी ख़रीद रहे हैं? ₹19 की रिपोर्ट बताती है कि इस पर *लोन* है या नहीं, *बाकी चालान*, *इंश्योरेंस या PUC समाप्त* और *कितने मालिक* — विक्रेता को पैसे देने से पहले।',
+      consentH: (r) => `${r} जाँचें`,
+      consent: 'आगे बढ़ने पर आप GaadiPe के उपयोग की शर्तें, गोपनीयता नीति और रिफ़ंड नीति से सहमत होते हैं, और पुष्टि करते हैं कि आप यह गाड़ी किसी वैध उद्देश्य से जाँच रहे हैं (जैसे इसे ख़रीदना, या यह आपकी अपनी है)। इस जाँच के साथ आपके डिवाइस और नेटवर्क की जानकारी दर्ज की जाती है।',
+      agree: '✅ सहमत हूँ, जाँचें',
+      links: ['उपयोग की शर्तें', 'गोपनीयता नीति', 'रिफ़ंड नीति'],
+      found: '✅ सरकारी रिकॉर्ड में मिली',
+      hidden: 'मॉडल का वेरिएंट छिपा है — पूरा मॉडल और वेरिएंट देखने के लिए मुफ़्त साइन इन करें।',
+      inReport: 'पूरी रिपोर्ट — इंश्योरेंस, PUC, रोड टैक्स और फिटनेस की तारीखें, हर चालान राशि के साथ, लोन, ब्लैकलिस्ट, कितने मालिक, PDF + 28 दिन अलर्ट।',
+      buy: (p) => `🔓 पूरी रिपोर्ट लें — ${p}`,
+      more: 'यह आज की मुफ़्त जाँच थी। और गाड़ियाँ जाँचने के लिए मुफ़्त साइन इन करें।',
+      signIn: '🔐 और जाँचने के लिए साइन इन करें',
+    },
     sample: { chip: '📄 नमूना रिपोर्ट देखें', more: '📋 पूरी जानकारी', intro: 'पूरी रिपोर्ट ऐसी दिखती है — एक *काल्पनिक गाड़ी* पर, कुछ भी असली नहीं 👇',
       badge: 'नमूना', ribbon: 'नमूना — काल्पनिक गाड़ी, असली डेटा नहीं', cta: '🔐 अपनी गाड़ी जाँचने के लिए साइन इन करें' },
     helloSignIn: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है — भारत में रजिस्टर्ड किसी भी गाड़ी का पूरा रिकॉर्ड, सरकारी VAHAN और e-Challan रिकॉर्ड से।\n\n'
@@ -309,6 +347,10 @@ const loadFor = (userId) => {
 };
 const USED = 'gp.chat.used';
 const uid = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
+// Today's free check before sign-in, used on this browser (India date). The server is the real limit.
+const istDay = () => new Date(Date.now() + 5.5 * 3600 * 1000).toISOString().slice(0, 10);
+const freeUsedToday = () => { try { return localStorage.getItem('gp.free.day') === istDay(); } catch { return false; } };
+const markFreeUsed = () => { try { localStorage.setItem('gp.free.day', istDay()); } catch { /* private mode */ } };
 const rupee = (p) => (p == null ? '₹19' : `₹${Math.round(p / 100)}`);
 const cleanPlate = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 const looksLikePlate = (s) => /^[A-Z]{2}\d{1,2}[A-Z]{0,3}\d{3,4}$/.test(cleanPlate(s)) || /^\d{2}BH\d{4}[A-Z]{1,2}$/.test(cleanPlate(s));
@@ -428,9 +470,10 @@ export default function Chat() {
       setHistory({ items: [], more: false, before: null, loaded: false });
       setMode(signInRequired ? 'mobile' : 'plate');
       const note = resetNote.current; resetNote.current = null;
-      setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note ? `${note}\n\n${signInRequired ? L.helloShort : L.hello}` : (signInRequired ? L.helloShort : L.hello),
-        ...(signInRequired ? { chips: ['sample', 'fullInfo'] } : {}) },
-        ...(signInRequired ? [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: T[lang === 'hi' ? 'en' : 'hi'].helloShort }] : []),
+      const hello = signInRequired ? 'helloShort' : 'helloFree';
+      setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note ? `${note}\n\n${L[hello]}` : L[hello],
+        chips: signInRequired ? ['sample', 'fullInfo'] : ['sample', 'fullInfo', 'signIn'] },
+        { id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: T[lang === 'hi' ? 'en' : 'hi'][hello] },
         // Signed out with sign-in required: straight back to the mobile number, policies first (2026-10-08).
         ...(signInRequired ? [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'terms' }] : [])]);
     } else if (prevMe.current && me && String(prevMe.current.id) !== String(me.id)) {
@@ -556,7 +599,11 @@ export default function Chat() {
       bot(T[lang === 'hi' ? 'en' : 'hi'].helloShort, { pace: 700 });
       // (/login and ?signin=1 land here too: the same opening, asked once.)
       if (!(reg && looksLikePlate(reg))) startSignIn(null, { quiet: true });
-    } else if (!me) bot(L.hello, { chips: ['signIn'] });
+    } else if (!me) {
+      // The free check is on (check_sign_in_required false, migration 142): type a number, see make & model.
+      bot(L.helloFree, { pace: 650, chips: ['sample', 'fullInfo', 'signIn'] });
+      bot(T[lang === 'hi' ? 'en' : 'hi'].helloFree, { pace: 700 });
+    }
     /* LOCAL DEVELOPMENT ONLY (?demo=full): the full-report card with sample data,
        to try its buttons without a live lookup. Never in a production build. */
     // ?demo=basic — a free-check card, to try "Full report ₹19" while the records server is down.
@@ -662,6 +709,22 @@ export default function Chat() {
       setPendingReg(reg); startSignIn();
       return;
     }
+    /* THE FREE CHECK BEFORE SIGN-IN (2026-10-08): nothing is looked up until the
+       visitor taps "Agree & check" on the card that names the number. */
+    if (!me && !signedIn && freeUsedToday()) {
+      // Today's free check is used on this browser: straight to the sign-in (the server enforces it too).
+      interaction('search', `Searched ${reg} — free check already used today, asked to sign in`, { reg_no: reg });
+      bot(L.signInToCheck(prettyPlate(reg)));
+      setPendingReg(reg); startSignIn();
+      return;
+    }
+    if (!me && !signedIn) {
+      interaction('search', `Typed ${reg} — asked to agree before the free check`, { reg_no: reg });
+      journey({ step: 'consent', section: `free check · ${reg}` });
+      bot(L.free.ask(prettyPlate(reg)));
+      push({ from: 'bot', kind: 'consent', reg });
+      return;
+    }
     // Said before the first check; after that, only alongside a failure (never twice in a row).
     const again = noticeText && noticeSaid.current ? `\n\n${noticeText}` : '';
     if (noticeText && !noticeSaid.current) { noticeSaid.current = true; bot(`⚠️ ${noticeText}`); }
@@ -669,7 +732,7 @@ export default function Chat() {
     journey({ step: 'checking' });
     interaction('search', `Searched ${reg}`, { reg_no: reg });
     try {
-      const out = (me || signedIn) ? await api.check(reg) : await api.chatCheck(reg);
+      const out = await api.check(reg);
       if (out.error === 'sign_in_needed') { interaction('error', 'Free checks used up — asked to sign in'); bot(out.message); setPendingReg(reg); startSignIn(); return; }
       if (out.error || !out.vehicle) {
         interaction('error', `Check of ${reg} failed: ${String(out.message || out.error || '').slice(0, 60)}`, { reg_no: reg });
@@ -684,6 +747,35 @@ export default function Chat() {
     } catch (e) {
       interaction('error', `Check of ${reg} failed: ${String(e.message).slice(0, 60)}`, { reg_no: reg });
       bot(`⚠️ ${e.message}${again}`, { chips: ['another'] });
+    } finally { setBusy(false); }
+  }
+
+  /* "Agree & check" tapped: the one free look — make, model name and fuel — with
+     the exact words the visitor agreed to sent along and recorded (migration 142). */
+  async function freeCheck(reg, itemId) {
+    setItems((cur) => cur.map((x) => (x.id === itemId ? { ...x, agreed: true } : x)));
+    interaction('click', `Agreed & checked ${reg} (free check)`, { reg_no: reg });
+    setBusy(true); typing();
+    journey({ step: 'checking', section: `free check · ${reg}` });
+    try {
+      const out = await api.chatCheck(reg, { agreed: true, words: `${L.free.consentH(prettyPlate(reg))}. ${L.free.consent}`, language: lang === 'hi' ? 'hi' : 'en' });
+      if (out.error === 'sign_in_needed') {
+        markFreeUsed();
+        interaction('error', 'Free check used up — asked to sign in', { reg_no: reg });
+        bot(`🔐 ${out.message}`); setPendingReg(reg); startSignIn(); return;
+      }
+      if (out.error || !out.vehicle) {
+        interaction('error', `Free check of ${reg} failed: ${String(out.message || out.error || '').slice(0, 60)}`, { reg_no: reg });
+        bot(`⚠️ ${out.message || 'Something went wrong. Please try again.'}`, { chips: ['signIn'] }); return;
+      }
+      markFreeUsed();
+      journey({ step: 'viewing', section: `free check result · ${reg}` });
+      interaction('view', `Saw the free check of ${reg}`, { reg_no: reg });
+      bot(L.free.foundIntro(prettyPlate(reg)), { pace: 500 });
+      push({ from: 'bot', kind: 'freeVehicle', vehicle: out.vehicle, price: out.price_paise });
+      bot(L.free.nudge, { pace: 1300 });
+    } catch (e) {
+      bot(`⚠️ ${e.message}`, { chips: ['signIn'] });
     } finally { setBusy(false); }
   }
 
@@ -1046,6 +1138,13 @@ export default function Chat() {
             if (it.kind === 'vehicle') {
               return <VehicleCard key={it.id} it={it} L={L} onFull={() => (it.paid ? openVehicle(it.vehicle.reg_no) : fullReport(it.vehicle.reg_no, it.price))} onAnother={() => chip('another')} />;
             }
+            if (it.kind === 'consent') {
+              return <ConsentCard key={it.id} it={it} L={L} busy={busy} onAgree={() => freeCheck(it.reg, it.id)} />;
+            }
+            if (it.kind === 'freeVehicle') {
+              return <FreeVehicleCard key={it.id} it={it} L={L}
+                onBuy={() => fullReport(it.vehicle.reg_no, it.price)} onSignIn={() => startSignIn()} />;
+            }
             if (it.kind === 'sample') {
               return <FullCard key={it.id} it={{ vehicle: sampleVehicle(), sample: true }} L={L}
                 onSignIn={() => (me ? chip('another') : startSignIn())} />;
@@ -1219,6 +1318,61 @@ function TermsLine({ L }) {
       <p data-test="terms-notice" className="ml-1 max-w-[88%] px-1 text-[11.5px] leading-relaxed text-black/55">
         🔒 {t[0]} {link('/terms', t[1])}, {link('/privacy', t[2])} {t[3]} {link('/refund', t[4])}{/[.।]$/.test(t[4]) ? '' : '.'}
       </p>
+    </div>
+  );
+}
+
+/*
+ * "AGREE & CHECK" (user, 2026-10-08): before the free check, the visitor agrees
+ * to the Terms, Privacy and Refund policies and confirms a lawful purpose. The
+ * exact words on this card are what is recorded with the check.
+ */
+function ConsentCard({ it, L, busy, onAgree }) {
+  const link = (href, label) => <a href={href} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#0f766e] underline">{label}</a>;
+  const [terms, privacy, refund] = L.free.links;
+  return (
+    <div className="gp-pop gp-from-l flex flex-col items-start">
+      <div className="w-[92%] max-w-sm overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
+        <div className="flex items-center gap-2 border-b border-black/5 px-3.5 py-2.5">
+          <span className="rounded-md border-2 border-[#111] bg-white px-2 py-0.5 font-mono text-[15px] font-black tracking-[1.5px] text-[#111]">{prettyPlate(it.reg)}</span>
+          <span className="text-[13px] font-bold text-[#0b2e2b]">{L.free.consentH('').trim()}</span>
+        </div>
+        <p className="px-3.5 py-2.5 text-[12.5px] leading-relaxed text-black/70">{L.free.consent}</p>
+        <p className="px-3.5 pb-2 text-[11.5px] text-black/50">📜 {link('/terms', terms)} · {link('/privacy', privacy)} · {link('/refund', refund)}</p>
+        <button type="button" data-test="free-agree" disabled={it.agreed || busy} onClick={onAgree}
+          className="gp-shine w-full bg-[#0f766e] py-3 text-[14.5px] font-black text-white active:brightness-95 disabled:opacity-60">
+          {it.agreed ? '✓' : L.free.agree}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* The free check's answer: make, model name (variant hidden) and fuel — then the ₹19 offer. */
+function FreeVehicleCard({ it, L, onBuy, onSignIn }) {
+  const v = it.vehicle || {};
+  const id = v.identity || {};
+  return (
+    <div className="anim-up flex flex-col items-start">
+      <div className="w-[92%] max-w-sm overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
+        <div className="bg-gradient-to-br from-[#0f766e] to-[#0a4f49] p-3.5 text-white">
+          <div className="flex items-center justify-between gap-3">
+            <span className="rounded-md border-2 border-black bg-white px-2.5 py-0.5 font-mono text-[17px] font-black tracking-[2px] text-black shadow">{prettyPlate(v.reg_no)}</span>
+            <span className="text-[11px] font-semibold text-white/85">{L.free.found}</span>
+          </div>
+          <div className="mt-2 text-[17px] font-black" data-test="free-identity">
+            {[id.maker, id.model ? `${id.model}${id.variant_hidden ? ' •••' : ''}` : null].filter(Boolean).join(' · ') || '—'}
+          </div>
+          {id.fuel ? <div className="text-[12.5px] text-white/85">⛽ {id.fuel}</div> : null}
+          {id.variant_hidden ? <div className="mt-1 text-[11.5px] text-[#ffd84d]">🔒 {L.free.hidden}</div> : null}
+        </div>
+        <div className="px-3.5 py-2.5 text-[12.5px] leading-relaxed text-[#0b2e2b]">{L.free.inReport}</div>
+        <button type="button" data-test="free-buy" onClick={onBuy}
+          className="gp-shine w-full bg-[#ffd84d] py-3 text-[14.5px] font-black text-[#0a4f49] active:brightness-95">{L.free.buy(rupee(it.price))}</button>
+        <button type="button" data-test="free-signin" onClick={onSignIn}
+          className="w-full border-t border-black/5 py-2.5 text-[13px] font-bold text-[#0f766e]">{L.free.signIn}</button>
+      </div>
+      <div className="mt-1.5 max-w-[88%] rounded-xl bg-white/80 px-3 py-2 text-[12px] text-[#0a4f49] shadow-sm">{L.free.more}</div>
     </div>
   );
 }

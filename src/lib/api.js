@@ -203,7 +203,9 @@ export const api = {
     .catch((e) => { if (e.body && (e.status === 404 || e.status === 429 || e.status === 403)) return e.body; throw e; }),
   /* The chat (2026-10-07): a free check without signing in, and — signed in —
      the "welcome back" summary and the WhatsApp conversation. */
-  chatCheck: async (regNo) => call('/chat/check', { method: 'POST', auth: false, body: { reg_no: regNo, client: await clientInfo() } })
+  // The free check before sign-in: only after "Agree & check" — the words shown go with it (migration 142).
+  chatCheck: async (regNo, consent = null) => call('/chat/check', { method: 'POST', auth: false,
+    body: { reg_no: regNo, consent, client: { ...(await clientInfo()), session_id: (() => { try { return sessionStorage.getItem('gp.sid') || null; } catch { return null; } })() } } })
     .catch((e) => { if (e.body && [400, 403, 404, 429, 503].includes(e.status)) return e.body; throw e; }),
   chatSummary: () => call('/chat/summary'),
   // Notifications on this phone (2026-10-07, back end src/site/push.js).

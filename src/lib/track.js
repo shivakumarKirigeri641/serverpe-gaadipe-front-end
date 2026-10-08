@@ -34,7 +34,7 @@ const store = (s, k, make) => {
 };
 
 export const visitorId = () => store(localStorage, VID_KEY, () => `v_${rand(20)}`);
-const sessionId = () => store(sessionStorage, SID_KEY, () => `s_${rand(20)}`);
+export const sessionId = () => store(sessionStorage, SID_KEY, () => `s_${rand(20)}`);
 
 /*
  * The WhatsApp code: the same five characters the back end derives from the
