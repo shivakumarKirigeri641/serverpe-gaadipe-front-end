@@ -109,8 +109,9 @@ const T = {
     profileH: '👤 Your profile', mobileL: 'Mobile', nameL: 'Name', emailL: 'Email',
     offers: 'Tips & offers by SMS / email', signOut: 'Sign out', signedOut: 'You are signed out. Send any vehicle number for a free check.',
     vehicleBtn: 'Open',
-    tapPlate: 'Tap a number to see its RC card.',
-    rc: { title: 'Registration Certificate', sub: 'From VAHAN records · details masked', flip: '↔ Swipe or tap Flip for more',
+    tapPlate: 'Tap a number to see its vehicle summary.',
+    // Never "Registration Certificate" (user, 2026-10-08): this is GaadiPe's summary, not an RC.
+    rc: { title: 'Vehicle Summary', sub: 'By GaadiPe from VAHAN records · not an RC or official document', flip: '↔ Swipe or tap Flip for more',
       flipBtn: 'Flip', back: 'My vehicles', prev: 'Previous', next: 'Next', report: 'Report', invoice: 'Invoice',
       loading: 'Opening the card…', noRecord: 'No saved record yet.', recheck: 'Check it again',
       owner: 'Owner', ownerNo: 'Owner no.', chassis: 'Chassis', engine: 'Engine', regDate: 'Registered on', rto: 'RTO',
@@ -226,8 +227,8 @@ const T = {
     profileH: '👤 आपकी प्रोफ़ाइल', mobileL: 'मोबाइल', nameL: 'नाम', emailL: 'ईमेल',
     offers: 'SMS / ईमेल पर टिप्स और ऑफ़र', signOut: 'साइन आउट', signedOut: 'आप साइन आउट हो गए। मुफ़्त जाँच के लिए कोई भी गाड़ी नंबर भेजें।',
     vehicleBtn: 'खोलें',
-    tapPlate: 'RC कार्ड देखने के लिए नंबर पर टैप करें।',
-    rc: { title: 'पंजीकरण प्रमाणपत्र (RC)', sub: 'VAHAN रिकॉर्ड से · जानकारी छिपी', flip: '↔ और देखने के लिए स्वाइप करें या पलटें',
+    tapPlate: 'गाड़ी का सारांश देखने के लिए नंबर पर टैप करें।',
+    rc: { title: 'गाड़ी का सारांश', sub: 'GaadiPe द्वारा VAHAN रिकॉर्ड से · यह RC या सरकारी दस्तावेज़ नहीं है', flip: '↔ और देखने के लिए स्वाइप करें या पलटें',
       flipBtn: 'पलटें', back: 'मेरी गाड़ियाँ', prev: 'पिछली', next: 'अगली', report: 'रिपोर्ट', invoice: 'बिल',
       loading: 'कार्ड खुल रहा है…', noRecord: 'अभी कोई सहेजा रिकॉर्ड नहीं।', recheck: 'फिर से जाँचें',
       owner: 'मालिक', ownerNo: 'मालिक क्रमांक', chassis: 'चेसिस', engine: 'इंजन', regDate: 'पंजीकरण तिथि', rto: 'RTO',
@@ -292,11 +293,8 @@ const rupee = (p) => (p == null ? '₹19' : `₹${Math.round(p / 100)}`);
 const cleanPlate = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 const looksLikePlate = (s) => /^[A-Z]{2}\d{1,2}[A-Z]{0,3}\d{3,4}$/.test(cleanPlate(s)) || /^\d{2}BH\d{4}[A-Z]{1,2}$/.test(cleanPlate(s));
 const prettyMobile = (m) => { const d = String(m || '').replace(/\D/g, '').slice(-10); return d.length === 10 ? `${d.slice(0, 5)} ${d.slice(5)}` : d; };
-const prettyPlate = (s) => {
-  const p = cleanPlate(s);
-  const m = p.match(/^([A-Z]{2})(\d{1,2})([A-Z]{0,3})(\d{1,4})$/);
-  return m ? [m[1], m[2], m[3], m[4]].filter(Boolean).join(' ') : p;
-};
+// Vehicle numbers are shown together, no spaces (user, 2026-10-08): KA02EX1480.
+const prettyPlate = (s) => cleanPlate(s);
 const ten = (s) => String(s || '').replace(/\D/g, '').slice(-10);
 
 /** *bold* inside a run of text (also inside _italic_). */
@@ -376,7 +374,7 @@ export default function Chat() {
   useEffect(() => {
     if (!me?.id || loadedFor.current !== me.id) return;   // a visitor's conversation is never kept
     const keep = items.filter((x) => x.kind !== 'typing').map((x) => {
-      if (x.kind === 'vehicle' && x.paid) return { ...x, kind: 'text', from: 'bot', text: `📄 *${x.vehicle?.pretty || x.vehicle?.reg_no}* — full report`, chips: [`open:${x.vehicle?.reg_no}`], vehicle: undefined };
+      if (x.kind === 'vehicle' && x.paid) return { ...x, kind: 'text', from: 'bot', text: `📄 *${x.vehicle?.reg_no}* — full report`, chips: [`open:${x.vehicle?.reg_no}`], vehicle: undefined };
       if (['profile', 'reports', 'invoices', 'vehicles', 'email', 'deactivate', 'notify', 'help', 'welcome', 'terms'].includes(x.kind)) return null;
       return x;
     }).filter(Boolean);
@@ -1251,7 +1249,7 @@ function FullCard({ it, L, onDownload, onAnother }) {
       <div className="w-[94%] max-w-md overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
         <div className="bg-gradient-to-br from-[#0f766e] to-[#0a4f49] p-3.5 text-white">
           <div className="flex items-center justify-between gap-3">
-            <span className="rounded-md border-2 border-black bg-white px-2.5 py-0.5 font-mono text-[17px] font-black tracking-[2px] text-black shadow">{v.pretty || v.reg_no}</span>
+            <span className="rounded-md border-2 border-black bg-white px-2.5 py-0.5 font-mono text-[17px] font-black tracking-[2px] text-black shadow">{prettyPlate(v.reg_no)}</span>
             <span className="rounded-full bg-[#ffd84d] px-2.5 py-1 text-[11px] font-black text-[#0a4f49]">FULL REPORT</span>
           </div>
           <div className="mt-2 text-[15px] font-bold">{[id.maker, id.model].filter(Boolean).join(' · ')}</div>
@@ -1507,7 +1505,7 @@ function RcFront({ card, v, reg, L, onRecheck }) {
   if (card.loading || card.error) {
     return (
       <div className="flex h-full flex-col">
-        <RcHead v={v} reg={reg} R={R} side="RC · 1/2" />
+        <RcHead v={v} reg={reg} R={R} side="1 / 2" />
         <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center text-[13.5px] text-[#0b2e2b]">
           {card.loading ? (
             <>
@@ -1532,7 +1530,7 @@ function RcFront({ card, v, reg, L, onRecheck }) {
     : f.needs_attention ?? ((f.expired?.length || 0) + (f.due_soon?.length || 0) + (f.challans_pending ? 1 : 0));
   return (
     <div className="flex h-full flex-col">
-      <RcHead v={v} reg={reg} R={R} side="RC · 1/2" />
+      <RcHead v={v} reg={reg} R={R} side="1 / 2" />
       <div className="flex-1 overflow-y-auto px-4 py-3">
         <div className="text-[17px] font-black leading-tight text-[#0b2e2b]">{[id.maker, id.model].filter(Boolean).join(' · ') || '—'}</div>
         <div className="mb-3 text-[12px] text-black/55">{[id.fuel, id.vehicle_class].filter(Boolean).join(' · ')}</div>
@@ -1574,7 +1572,7 @@ function RcRear({ card, v, L, onBuy }) {
   const R = L.rc;
   const head = (
     <div className="flex items-center justify-between bg-gradient-to-r from-[#0a4f49] to-[#0f766e] px-4 py-3 text-white">
-      <div><div className="text-[10px] font-bold uppercase tracking-[.18em] text-white/70">RC · 2/2</div><div className="text-[14px] font-black">{v.reg_no ? prettyPlate(v.reg_no) : ''}</div></div>
+      <div><div className="text-[10px] font-bold uppercase tracking-[.18em] text-white/70">2 / 2</div><div className="text-[14px] font-black">{v.reg_no ? prettyPlate(v.reg_no) : ''}</div></div>
       <div className="grid h-8 w-8 place-items-center rounded-full bg-white text-[10px] font-black text-[#0f766e]">GP</div>
     </div>
   );
@@ -1875,7 +1873,7 @@ function VehicleCard({ it, L, onFull, onAnother }) {
         <div className="bg-gradient-to-br from-[#0f766e] to-[#0a4f49] p-3.5 text-white">
           <div className="flex items-center justify-between gap-3">
             <span className="rounded-md border-2 border-black bg-white px-2.5 py-0.5 font-mono text-[17px] font-black tracking-[2px] text-black shadow">
-              {v.pretty || v.reg_no}
+              {prettyPlate(v.reg_no)}
             </span>
             {identityOnly ? (
               <span className="grid h-11 w-11 place-items-center rounded-full bg-white/15 text-[20px]" aria-label="details locked">🔒</span>
