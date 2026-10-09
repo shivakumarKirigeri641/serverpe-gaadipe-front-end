@@ -42,11 +42,22 @@ export default function Layout({ children, wide = false }) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {noticeText && (
+      {noticeText && (notice.tone === 'good' ? (
+        // Good news (2026-10-09: WhatsApp is back) — green, with the way in.
+        <div role="status" className="border-b border-good-500/25 bg-good-50 px-4 py-2.5 text-center text-sm font-medium text-good-700">
+          ✅ {noticeText}
+          {WHATSAPP_ENABLED && (
+            <a href={waLink('Hi')} target="_blank" rel="noopener noreferrer"
+              className="ml-2 inline-block rounded-full bg-good-500 px-3 py-0.5 text-xs font-semibold text-white hover:bg-good-700">
+              {lang === 'hi' ? 'WhatsApp खोलें' : 'Open WhatsApp'}
+            </a>
+          )}
+        </div>
+      ) : (
         <div role="status" className="border-b border-watch-500/25 bg-watch-50 px-4 py-2.5 text-center text-sm font-medium text-watch-700">
           ⚠️ {noticeText}
         </div>
-      )}
+      ))}
       <header className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
         <div className="wrap flex h-16 items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2.5">
