@@ -61,7 +61,7 @@ const T = {
       links: ['Terms of use', 'Privacy policy', 'Refund policy'],
       found: '✅ Found in Government records',
       hidden: 'Model variant hidden — sign in free to see the full model and variant.',
-      inReport: '*Sign in free* to see every validity date — insurance, PUC, road tax, fitness — and how many challans. *Full report ₹19:* loan, blacklist & NOC, every challan with amount, number of owners, a clear verdict, PDF + 28 days of alerts.',
+      inReport: '*Full report ₹19:* loan, blacklist & NOC, every challan with amount, number of owners, a clear verdict, PDF + 28 days of alerts.',
       buy: (p) => `🔓 Get full report — ${p}`,
       more: 'This was today’s free check. *Sign in free* for every date and the challan count; *full report ₹19* for the loan, challan amounts and the verdict.',
       // When today's free check is used (the server's limit), in the visitor's language (2026-10-08).
@@ -69,6 +69,10 @@ const T = {
       // A second number after today's free check (user, 2026-10-09: "say politely that 1 free check is done for the day").
       usedToday: (r) => `🙏 Sorry, today’s *1 free check* is already done.\n\nPlease *sign in* to check *${r}* and more vehicles — *basic details free* (make, model, variant, fuel, vehicle type), *full report ₹19*. I’ll check *${r}* right after you sign in.`,
       signIn: '🔐 Sign in to check more',
+      // The blurred preview of what signing in shows (2026-10-10) — labels only, the values are dummies.
+      blurRows: ['Registered on', 'Insurance valid till', 'PUC valid till', 'Road tax valid till', 'Fitness valid till', 'Pending challans'],
+      unlock: '🔓 Sign in free to see',
+      unlockNote: 'Every date and the challan count — free with your mobile number.',
     },
     sample: { chip: '📄 See a sample report', more: '📋 Full details', intro: 'Here is what a full report looks like — on a *made-up vehicle*, so nothing real is shown 👇',
       badge: 'SAMPLE', ribbon: 'SAMPLE — made-up vehicle, not real data', cta: '🔐 Sign in to check your vehicle' },
@@ -222,12 +226,15 @@ const T = {
       links: ['उपयोग की शर्तें', 'गोपनीयता नीति', 'रिफ़ंड नीति'],
       found: '✅ सरकारी रिकॉर्ड में मिली',
       hidden: 'मॉडल का वेरिएंट छिपा है — पूरा मॉडल और वेरिएंट देखने के लिए मुफ़्त साइन इन करें।',
-      inReport: 'हर वैधता की तारीख — इंश्योरेंस, PUC, रोड टैक्स, फिटनेस — और कितने चालान, देखने के लिए *मुफ़्त साइन इन* करें। *पूरी रिपोर्ट ₹19:* लोन, ब्लैकलिस्ट व NOC, हर चालान राशि के साथ, कितने मालिक, साफ़ फ़ैसला, PDF + 28 दिन अलर्ट।',
+      inReport: '*पूरी रिपोर्ट ₹19:* लोन, ब्लैकलिस्ट व NOC, हर चालान राशि के साथ, कितने मालिक, साफ़ फ़ैसला, PDF + 28 दिन अलर्ट।',
       buy: (p) => `🔓 पूरी रिपोर्ट लें — ${p}`,
       more: 'यह आज की मुफ़्त जाँच थी। हर तारीख और चालानों की गिनती के लिए *मुफ़्त साइन इन* करें; लोन, चालान राशि और फ़ैसले के लिए *पूरी रिपोर्ट ₹19*।',
       usedToday: (r) => `🙏 माफ़ कीजिए, आज की *1 मुफ़्त जाँच* हो चुकी है।\n\n*${r}* और दूसरी गाड़ियाँ जाँचने के लिए कृपया *साइन इन* करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*। साइन इन होते ही मैं *${r}* जाँच दूँगा।`,
       limit: '🔐 आज की मुफ़्त जाँच हो चुकी है। और जाँचने के लिए मोबाइल से साइन इन करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*।',
       signIn: '🔐 और जाँचने के लिए साइन इन करें',
+      blurRows: ['पंजीकरण की तारीख', 'इंश्योरेंस की वैधता', 'PUC की वैधता', 'रोड टैक्स की वैधता', 'फिटनेस की वैधता', 'बाकी चालान'],
+      unlock: '🔓 देखने के लिए मुफ़्त साइन इन करें',
+      unlockNote: 'हर तारीख और चालानों की गिनती — आपके मोबाइल नंबर से मुफ़्त।',
     },
     sample: { chip: '📄 नमूना रिपोर्ट देखें', more: '📋 पूरी जानकारी', intro: 'पूरी रिपोर्ट ऐसी दिखती है — एक *काल्पनिक गाड़ी* पर, कुछ भी असली नहीं 👇',
       badge: 'नमूना', ribbon: 'नमूना — काल्पनिक गाड़ी, असली डेटा नहीं', cta: '🔐 अपनी गाड़ी जाँचने के लिए साइन इन करें' },
@@ -1515,13 +1522,30 @@ function FreeVehicleCard({ it, L, onBuy, onSignIn }) {
         </div>
         {/* The RTO, from the number (2026-10-10, like CarInfo). */}
         {v.rto ? <RtoLine rto={v.rto} L={L} /> : null}
+        {/*
+          WHAT SIGNING IN SHOWS, BLURRED (user, 2026-10-10: "remove the sign-in button —
+          show what is blurred and 'sign in to see'"). The labels are real; the values
+          are dummies, so nothing about this vehicle is in the page to be un-blurred.
+        */}
+        <div className="relative border-b border-black/5 px-3.5 py-2.5">
+          <div className="select-none space-y-1.5" aria-hidden="true" style={{ filter: 'blur(4px)' }}>
+            {L.free.blurRows.map((k, i) => (
+              <div key={k} className="flex items-center justify-between gap-2 text-[12.5px]">
+                <span className="text-black/60">{k}</span>
+                <span className="font-bold text-[#0b2e2b]">{i === L.free.blurRows.length - 1 ? '0 0' : '00 Xxx 2000'}</span>
+              </div>
+            ))}
+          </div>
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-white/40 px-4 text-center">
+            <button type="button" data-test="free-signin" onClick={onSignIn}
+              className="gp-shine rounded-full bg-[#0f766e] px-4 py-2 text-[13.5px] font-black text-white shadow-md active:brightness-95">{L.free.unlock}</button>
+            <span className="text-[11.5px] font-semibold text-[#0a4f49]">{L.free.unlockNote}</span>
+          </div>
+        </div>
         <div className="px-3.5 py-2.5 text-[12.5px] leading-relaxed text-[#0b2e2b]"><Text text={L.free.inReport} /></div>
         <button type="button" data-test="free-buy" onClick={onBuy}
           className="gp-shine w-full bg-[#ffd84d] py-3 text-[14.5px] font-black text-[#0a4f49] active:brightness-95">{L.free.buy(rupee(it.price))}</button>
-        <button type="button" data-test="free-signin" onClick={onSignIn}
-          className="w-full border-t border-black/5 py-2.5 text-[13px] font-bold text-[#0f766e]">{L.free.signIn}</button>
       </div>
-      <div className="mt-1.5 max-w-[88%] rounded-xl bg-white/80 px-3 py-2 text-[12px] text-[#0a4f49] shadow-sm"><Text text={L.free.more} /></div>
     </div>
   );
 }
