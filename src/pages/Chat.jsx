@@ -61,9 +61,9 @@ const T = {
       links: ['Terms of use', 'Privacy policy', 'Refund policy'],
       found: '✅ Found in Government records',
       hidden: 'Model variant hidden — sign in free to see the full model and variant.',
-      inReport: 'Full report — insurance, PUC, road tax & fitness dates, every challan with amount, loan, blacklist, number of owners, PDF + 28 days of alerts.',
+      inReport: '*Sign in free* to see every validity date — insurance, PUC, road tax, fitness — and how many challans. *Full report ₹19:* loan, blacklist & NOC, every challan with amount, number of owners, a clear verdict, PDF + 28 days of alerts.',
       buy: (p) => `🔓 Get full report — ${p}`,
-      more: 'This was today’s free check. Sign in for more — *basic details free* (make, model, variant, fuel, vehicle type), *full report ₹19*.',
+      more: 'This was today’s free check. *Sign in free* for every date and the challan count; *full report ₹19* for the loan, challan amounts and the verdict.',
       // When today's free check is used (the server's limit), in the visitor's language (2026-10-08).
       limit: '🔐 You’ve used today’s free check. Sign in with your mobile to check more — *basic details free* (make, model, variant, fuel, vehicle type), *full report ₹19*.',
       // A second number after today's free check (user, 2026-10-09: "say politely that 1 free check is done for the day").
@@ -102,7 +102,7 @@ const T = {
     waDivider: 'Your WhatsApp chat with GaadiPe',
     nowHere: 'Now on gaadipe.in',
     loadEarlier: 'Load earlier messages',
-    signInMore: 'Sign in to save your checks and check more vehicles — basic details free (make, model, variant, fuel, vehicle type), full report ₹19.',
+    signInMore: 'Sign in free to see every validity date and how many challans, and to save your checks. Full report ₹19.',
     fullReport: (p) => `Full report ${p}`,
     another: 'Check another',
     signIn: 'Sign in',
@@ -120,6 +120,13 @@ const T = {
     expired: 'Expired', dueSoon: 'Due soon', challans: 'Pending challans',
     locked: 'In the full report',
     youHave: '📄 You have the full report for this vehicle.',
+    // The public record, free after sign-in (2026-10-10, free_view_detail 'public').
+    pub: {
+      owner: 'Owner', regOn: 'Registered', age: (y, m) => `${y} yr ${m} mo old`, norms: 'Norms', seats: 'Seats',
+      weight: 'Weight', rcStatus: 'RC status', rto: 'RTO', dates: 'Validity',
+      challans: (n) => (n ? `🚨 ${n} pending challan${n === 1 ? '' : 's'} — offences and amounts in the full report` : '✅ No pending challans'),
+      locked: 'In the ₹19 full report', verdictH: 'Verdict — before you pay',
+    },
     open: 'Open report',
     trust: '🔒 Official Government records · Secure payments · Data protected',
     online: 'online',
@@ -215,9 +222,9 @@ const T = {
       links: ['उपयोग की शर्तें', 'गोपनीयता नीति', 'रिफ़ंड नीति'],
       found: '✅ सरकारी रिकॉर्ड में मिली',
       hidden: 'मॉडल का वेरिएंट छिपा है — पूरा मॉडल और वेरिएंट देखने के लिए मुफ़्त साइन इन करें।',
-      inReport: 'पूरी रिपोर्ट — इंश्योरेंस, PUC, रोड टैक्स और फिटनेस की तारीखें, हर चालान राशि के साथ, लोन, ब्लैकलिस्ट, कितने मालिक, PDF + 28 दिन अलर्ट।',
+      inReport: 'हर वैधता की तारीख — इंश्योरेंस, PUC, रोड टैक्स, फिटनेस — और कितने चालान, देखने के लिए *मुफ़्त साइन इन* करें। *पूरी रिपोर्ट ₹19:* लोन, ब्लैकलिस्ट व NOC, हर चालान राशि के साथ, कितने मालिक, साफ़ फ़ैसला, PDF + 28 दिन अलर्ट।',
       buy: (p) => `🔓 पूरी रिपोर्ट लें — ${p}`,
-      more: 'यह आज की मुफ़्त जाँच थी। और जाँचने के लिए साइन इन करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*।',
+      more: 'यह आज की मुफ़्त जाँच थी। हर तारीख और चालानों की गिनती के लिए *मुफ़्त साइन इन* करें; लोन, चालान राशि और फ़ैसले के लिए *पूरी रिपोर्ट ₹19*।',
       usedToday: (r) => `🙏 माफ़ कीजिए, आज की *1 मुफ़्त जाँच* हो चुकी है।\n\n*${r}* और दूसरी गाड़ियाँ जाँचने के लिए कृपया *साइन इन* करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*। साइन इन होते ही मैं *${r}* जाँच दूँगा।`,
       limit: '🔐 आज की मुफ़्त जाँच हो चुकी है। और जाँचने के लिए मोबाइल से साइन इन करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*।',
       signIn: '🔐 और जाँचने के लिए साइन इन करें',
@@ -253,7 +260,7 @@ const T = {
     waDivider: 'GaadiPe के साथ आपकी WhatsApp चैट',
     nowHere: 'अब gaadipe.in पर',
     loadEarlier: 'पुराने संदेश देखें',
-    signInMore: 'अपनी जाँच सेव करने और और गाड़ियाँ जाँचने के लिए साइन इन करें — बेसिक जानकारी मुफ़्त (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), पूरी रिपोर्ट ₹19।',
+    signInMore: 'हर वैधता की तारीख और कितने चालान देखने और अपनी जाँच सेव करने के लिए मुफ़्त साइन इन करें। पूरी रिपोर्ट ₹19।',
     fullReport: (p) => `पूरी रिपोर्ट ${p}`,
     another: 'दूसरी गाड़ी',
     signIn: 'साइन इन',
@@ -268,6 +275,12 @@ const T = {
     expired: 'समाप्त', dueSoon: 'जल्द', challans: 'बाकी चालान',
     locked: 'पूरी रिपोर्ट में',
     youHave: '📄 इस गाड़ी की पूरी रिपोर्ट आपके पास है।',
+    pub: {
+      owner: 'मालिक', regOn: 'पंजीकरण', age: (y, m) => `${y} साल ${m} महीने पुरानी`, norms: 'मानक', seats: 'सीटें',
+      weight: 'वज़न', rcStatus: 'RC स्थिति', rto: 'RTO', dates: 'वैधता',
+      challans: (n) => (n ? `🚨 ${n} चालान बाकी — अपराध और राशि पूरी रिपोर्ट में` : '✅ कोई चालान बाकी नहीं'),
+      locked: '₹19 की पूरी रिपोर्ट में', verdictH: 'फ़ैसला — पैसे देने से पहले',
+    },
     open: 'रिपोर्ट खोलें',
     trust: '🔒 आधिकारिक सरकारी रिकॉर्ड · सुरक्षित भुगतान · डेटा सुरक्षित',
     online: 'ऑनलाइन',
@@ -1393,6 +1406,94 @@ function ConsentCard({ it, L, busy, onAgree }) {
   );
 }
 
+/* The RTO, worked out from the number: code, office, district, state (2026-10-10). */
+function RtoLine({ rto, L }) {
+  return (
+    <div className="border-b border-black/5 px-3.5 py-2 text-[12px] text-[#0b2e2b]">
+      🏛️ <b>{L.pub.rto} {rto.code}</b>{rto.office ? ` · ${rto.office}` : ''}{rto.district ? `, ${rto.district}` : ''}{rto.state ? ` · ${rto.state}` : ''}
+    </div>
+  );
+}
+
+/* How old, from the registration date: "19 yr 10 mo old". */
+function ageOf(d, L) {
+  const t = new Date(d);
+  if (Number.isNaN(t.getTime())) return null;
+  const now = new Date();
+  let months = (now.getFullYear() - t.getFullYear()) * 12 + (now.getMonth() - t.getMonth());
+  if (now.getDate() < t.getDate()) months -= 1;
+  return months >= 0 ? L.pub.age(Math.floor(months / 12), months % 12) : null;
+}
+
+/*
+ * THE PUBLIC RECORD, free after sign-in (2026-10-10, like CarInfo): the masked
+ * owner, registration date and age, norms, seats, weight, RC status, every
+ * validity date, and how many challans — then what the ₹19 report adds.
+ */
+function PublicFacts({ v, L }) {
+  const id = v.identity || {};
+  const f = v.found || {};
+  const facts = [
+    [L.pub.owner, id.owner_masked],
+    [L.pub.regOn, id.reg_date ? `${day(id.reg_date)}${ageOf(id.reg_date, L) ? ` · ${ageOf(id.reg_date, L)}` : ''}` : null],
+    [L.pub.rcStatus, id.rc_status],
+    [L.pub.norms, id.norms],
+    [L.pub.seats, id.seats],
+    [L.pub.weight, id.unladen_weight ? `${id.unladen_weight} kg` : null],
+  ].filter(([, val]) => val != null && val !== '');
+  return (
+    <div className="space-y-2.5">
+      {facts.length > 0 && (
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
+          {facts.map(([k, val]) => (
+            <div key={k} className="min-w-0">
+              <div className="text-[10.5px] uppercase tracking-wide text-black/45">{k}</div>
+              <div className="break-words text-[13px] font-semibold leading-snug text-[#0b2e2b]">{val}</div>
+            </div>
+          ))}
+        </div>
+      )}
+      {(v.documents || []).length > 0 && (
+        <div>
+          <div className="mb-1 text-[10.5px] uppercase tracking-wide text-black/45">{L.pub.dates}</div>
+          {v.documents.map((d) => (
+            <div key={d.label} className="flex items-center justify-between gap-2 py-0.5">
+              <span className="flex items-center gap-1.5 text-[13px] text-[#0b2e2b]"><Mark state={d.state} />{d.name || d.label}</span>
+              <span className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ color: STATE[d.state]?.[0], background: STATE[d.state]?.[1] }}>
+                {L.daysLeft(d.days)}{d.valid_until ? ` · ${day(d.valid_until)}` : ''}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className={`text-[13px] font-semibold ${f.challans_pending ? 'text-[#c62828]' : 'text-[#12813f]'}`}>{L.pub.challans(f.challans_pending || 0)}</div>
+      {v.locked?.length > 0 && (
+        <div className="rounded-xl bg-[#f3f7f6] p-2.5">
+          <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[#0f766e]">🔒 {L.pub.locked}</div>
+          {v.locked.map((x) => <div key={x} className="text-[12.5px] text-black/60">• {x}</div>)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* The buyer's verdict at the top of the paid view (2026-10-10). */
+function Verdict({ lines, L }) {
+  if (!lines?.length) return null;
+  const tone = { wrong: ['#c62828', '#fdecea', '⛔'], watch: ['#b26a00', '#fff4e0', '⚠️'], good: ['#12813f', '#e7f6ec', '✅'] };
+  return (
+    <div className="border-b border-black/5 px-3.5 py-3">
+      <div className="mb-1.5 text-[11px] font-black uppercase tracking-wider text-[#0a4f49]">🧭 {L.pub.verdictH}</div>
+      {lines.map((l, i) => (
+        <div key={i} className="mb-1.5 rounded-lg px-2.5 py-2 text-[12.8px] font-semibold leading-snug"
+          style={{ color: tone[l.tone]?.[0], background: tone[l.tone]?.[1] }}>
+          {tone[l.tone]?.[2]} {l.text}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* The free check's answer: make, model name (variant hidden) and fuel — then the ₹19 offer. */
 function FreeVehicleCard({ it, L, onBuy, onSignIn }) {
   const v = it.vehicle || {};
@@ -1408,10 +1509,13 @@ function FreeVehicleCard({ it, L, onBuy, onSignIn }) {
           <div className="mt-2 text-[17px] font-black" data-test="free-identity">
             {[id.maker, id.model ? `${id.model}${id.variant_hidden ? ' •••' : ''}` : null].filter(Boolean).join(' · ') || '—'}
           </div>
-          {id.fuel ? <div className="text-[12.5px] text-white/85">⛽ {id.fuel}</div> : null}
+          {id.fuel || id.vehicle_class ? <div className="text-[12.5px] text-white/85">⛽ {[id.fuel, id.vehicle_class].filter(Boolean).join(' · ')}</div> : null}
+          {id.owner_masked ? <div className="text-[12.5px] text-white/85">👤 {L.pub.owner}: {id.owner_masked}</div> : null}
           {id.variant_hidden ? <div className="mt-1 text-[11.5px] text-[#ffd84d]">🔒 {L.free.hidden}</div> : null}
         </div>
-        <div className="px-3.5 py-2.5 text-[12.5px] leading-relaxed text-[#0b2e2b]">{L.free.inReport}</div>
+        {/* The RTO, from the number (2026-10-10, like CarInfo). */}
+        {v.rto ? <RtoLine rto={v.rto} L={L} /> : null}
+        <div className="px-3.5 py-2.5 text-[12.5px] leading-relaxed text-[#0b2e2b]"><Text text={L.free.inReport} /></div>
         <button type="button" data-test="free-buy" onClick={onBuy}
           className="gp-shine w-full bg-[#ffd84d] py-3 text-[14.5px] font-black text-[#0a4f49] active:brightness-95">{L.free.buy(rupee(it.price))}</button>
         <button type="button" data-test="free-signin" onClick={onSignIn}
@@ -1582,6 +1686,8 @@ function FullCard({ it, L, onDownload, onAnother, onSignIn }) {
           <div className="text-[12px] text-white/80">{[id.fuel, id.vehicle_class, id.colour, id.manufactured].filter(Boolean).join(' · ')}</div>
           <div className="mt-1 text-[12px] text-white/80">{bad ? `⚠️ ${bad} need attention` : '✅ All in order'}</div>
         </div>
+        <Verdict lines={v.verdict} L={L} />
+        {v.rto ? <RtoLine rto={v.rto} L={L} /> : null}
 
         <Section title={`📋 ${L.documents}`}>
           {docs.map((d) => (
@@ -2265,8 +2371,9 @@ function VehicleCard({ it, L, onFull, onAnother }) {
           <div className="mt-2 text-[15px] font-bold">{[id.maker, id.model].filter(Boolean).join(' · ') || '—'}</div>
           <div className="text-[12px] text-white/80">{[id.fuel, id.vehicle_class].filter(Boolean).join(' · ')}</div>
         </div>
+        {v.rto ? <RtoLine rto={v.rto} L={L} /> : null}
         <div className="space-y-1.5 p-3.5 text-[13.5px] text-[#0b2e2b]">
-          {it.paid ? <div className="font-semibold text-[#12813f]">{L.youHave}</div> : (
+          {it.paid ? <div className="font-semibold text-[#12813f]">{L.youHave}</div> : v.detail === 'public' ? <PublicFacts v={v} L={L} /> : (
             <>
               {identityOnly
                 ? <div><Text text={L.identityOnly(rupee(it.price))} /></div>
