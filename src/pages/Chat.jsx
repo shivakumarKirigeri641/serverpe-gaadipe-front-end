@@ -66,6 +66,8 @@ const T = {
       more: 'This was today’s free check. Sign in for more — *basic details free* (make, model, variant, fuel, vehicle type), *full report ₹19*.',
       // When today's free check is used (the server's limit), in the visitor's language (2026-10-08).
       limit: '🔐 You’ve used today’s free check. Sign in with your mobile to check more — *basic details free* (make, model, variant, fuel, vehicle type), *full report ₹19*.',
+      // A second number after today's free check (user, 2026-10-09: "say politely that 1 free check is done for the day").
+      usedToday: (r) => `🙏 Sorry, today’s *1 free check* is already done.\n\nPlease *sign in* to check *${r}* and more vehicles — *basic details free* (make, model, variant, fuel, vehicle type), *full report ₹19*. I’ll check *${r}* right after you sign in.`,
       signIn: '🔐 Sign in to check more',
     },
     sample: { chip: '📄 See a sample report', more: '📋 Full details', intro: 'Here is what a full report looks like — on a *made-up vehicle*, so nothing real is shown 👇',
@@ -216,6 +218,7 @@ const T = {
       inReport: 'पूरी रिपोर्ट — इंश्योरेंस, PUC, रोड टैक्स और फिटनेस की तारीखें, हर चालान राशि के साथ, लोन, ब्लैकलिस्ट, कितने मालिक, PDF + 28 दिन अलर्ट।',
       buy: (p) => `🔓 पूरी रिपोर्ट लें — ${p}`,
       more: 'यह आज की मुफ़्त जाँच थी। और जाँचने के लिए साइन इन करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*।',
+      usedToday: (r) => `🙏 माफ़ कीजिए, आज की *1 मुफ़्त जाँच* हो चुकी है।\n\n*${r}* और दूसरी गाड़ियाँ जाँचने के लिए कृपया *साइन इन* करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*। साइन इन होते ही मैं *${r}* जाँच दूँगा।`,
       limit: '🔐 आज की मुफ़्त जाँच हो चुकी है। और जाँचने के लिए मोबाइल से साइन इन करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*।',
       signIn: '🔐 और जाँचने के लिए साइन इन करें',
     },
@@ -747,7 +750,7 @@ export default function Chat() {
     if (!me && !signedIn && freeUsedToday()) {
       // Today's free check is used on this browser: straight to the sign-in (the server enforces it too).
       interaction('search', `Searched ${reg} — free check already used today, asked to sign in`, { reg_no: reg });
-      askToSignIn(L.signInToCheck(prettyPlate(reg)), reg);
+      askToSignIn(L.free.usedToday(prettyPlate(reg)), reg);
       return;
     }
     if (!me && !signedIn) {
@@ -794,7 +797,7 @@ export default function Chat() {
       if (out.error === 'sign_in_needed') {
         markFreeUsed();
         interaction('error', 'Free check used up — asked to sign in', { reg_no: reg });
-        askToSignIn(L.free.limit, reg); return;
+        askToSignIn(L.free.usedToday(prettyPlate(reg)), reg); return;
       }
       if (out.error || !out.vehicle) {
         interaction('error', `Free check of ${reg} failed: ${String(out.message || out.error || '').slice(0, 60)}`, { reg_no: reg });

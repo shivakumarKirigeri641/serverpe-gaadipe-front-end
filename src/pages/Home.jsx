@@ -39,7 +39,9 @@ export default function Home() {
      ?home=1 (the chat's Home link) always shows this page. */
   const { me, ready } = useSession();
   useEffect(() => {
-    if (ready && me && !new URLSearchParams(window.location.search).has('home')) navigate(`/chat${window.location.search}`, { replace: true });
+    // Only while the website is the main door (VITE_WEB_LOGIN): WhatsApp-first (2026-10-09)
+    // keeps /chat as a quiet backup that nobody is sent to.
+    if (WEB_LOGIN && ready && me && !new URLSearchParams(window.location.search).has('home')) navigate(`/chat${window.location.search}`, { replace: true });
   }, [ready, me, navigate]);
 
   useEffect(() => { api.pricing().then(setPricing).catch(() => {}); }, []);
@@ -128,7 +130,7 @@ export default function Home() {
             )}
 
             <p className="anim-up mt-3 text-sm text-muted" style={{ animationDelay: '.3s' }}>
-              <Rich text={t('home.freeLine', { price })} />
+              <Rich text={t(wa ? 'home.freeLine.wa' : 'home.freeLine', { price })} />
             </p>
 
             {/* Why pay at all (user, 2026-09-30): what the other way costs — up
