@@ -68,7 +68,8 @@ void KEY;
 
 const listeners = new Set();
 export const onSignedOut = (fn) => { listeners.add(fn); return () => listeners.delete(fn); };
-const signedOut = () => { setToken(null); listeners.forEach((fn) => fn()); };
+// info: the server's answer — reason 'signed_in_elsewhere' when another device signed in (2026-10-10).
+const signedOut = (info = {}) => { setToken(null); listeners.forEach((fn) => fn(info)); };
 
 export class ApiError extends Error {
   constructor(message, { code = 'error', status = 0, body = null } = {}) {
@@ -111,7 +112,7 @@ async function call(path, { method = 'GET', body, auth = true, base = SITE, time
   if (data === undefined) data = await res.json().catch(() => ({}));
 
   if (res.status === 401 && auth) {
-    signedOut();
+    signedOut({ reason: data.reason || null, message: data.message || null });
     throw new ApiError(data.message || 'Please sign in again.', { code: 'signed_out', status: 401 });
   }
   if (!res.ok) {

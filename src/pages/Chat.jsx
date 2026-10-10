@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { api } from '../lib/api';
+import { api, onSignedOut } from '../lib/api';
 import { useSession } from '../lib/session';
 import { useLang } from '../lib/i18n.jsx';
 import BuyDialog from '../components/BuyDialog.jsx';
@@ -288,6 +288,7 @@ const T = {
     emailNudge: '📧 *Please add and confirm your email.*\n\nThat is where we send:\n🔔 *alerts* about your vehicles — a new challan, insurance or PUC about to expire\n📄 your *full reports*\n🧾 your *GST invoices*\n\nIt takes a minute: a *4-digit code* by email.',
     emailNudgeHave: (e) => `📧 *Please confirm your email* — *${e}*.\n\nThat is where we send:\n🔔 *alerts* about your vehicles — a new challan, insurance or PUC about to expire\n📄 your *full reports*\n🧾 your *GST invoices*\n\nTap below and type the *4-digit code* we email you.`,
     verifyEmail: 'Confirm my email', addEmailOnly: 'Add my email', resendCode: 'Send the code again',
+    elsewhere: 'You signed in on another device, so you were signed out here. Sign in again to use GaadiPe on this one.',
     addEmail: 'Add my name & email', later: 'Later',
     askName: 'Great! First, your *name* — how should we address you?',
     askEmail: (n) => `Thanks${n ? `, *${n}*` : ''}! Now your *email address* — I’ll send a *4-digit code* to confirm it is yours.`,
@@ -527,6 +528,7 @@ const T = {
     emailNudge: '📧 *कृपया अपना ईमेल जोड़ें और कन्फ़र्म करें।*\n\nवहीं हम भेजते हैं:\n🔔 आपकी गाड़ियों के *अलर्ट* — नया चालान, बीमा या PUC खत्म होने वाला हो\n📄 आपकी *पूरी रिपोर्ट*\n🧾 आपके *GST बिल*\n\nबस एक मिनट: ईमेल पर *4 अंकों का कोड*।',
     emailNudgeHave: (e) => `📧 *कृपया अपना ईमेल कन्फ़र्म करें* — *${e}*।\n\nवहीं हम भेजते हैं:\n🔔 आपकी गाड़ियों के *अलर्ट* — नया चालान, बीमा या PUC खत्म होने वाला हो\n📄 आपकी *पूरी रिपोर्ट*\n🧾 आपके *GST बिल*\n\nनीचे दबाएँ और ईमेल पर आया *4 अंकों का कोड* लिखें।`,
     verifyEmail: 'मेरा ईमेल कन्फ़र्म करें', addEmailOnly: 'मेरा ईमेल जोड़ें', resendCode: 'कोड फिर से भेजें',
+    elsewhere: 'आपने किसी दूसरे डिवाइस पर साइन इन किया, इसलिए यहाँ से साइन आउट हो गए। इस डिवाइस पर GaadiPe इस्तेमाल करने के लिए फिर से साइन इन करें।',
     addEmail: 'नाम और ईमेल जोड़ें', later: 'बाद में',
     askName: 'बढ़िया! पहले अपना *नाम* लिखें — हम आपको किस नाम से बुलाएँ?',
     askEmail: (n) => `धन्यवाद${n ? `, *${n}*` : ''}! अब अपना *ईमेल पता* लिखें — कन्फ़र्म करने के लिए मैं *4 अंकों का कोड* भेजूँगा।`,
@@ -703,6 +705,15 @@ export default function Chat() {
      was given). Nothing of the account stays on screen. */
   const prevMe = useRef(null);
   const resetNote = useRef(null);
+  /* SIGNED IN ON ANOTHER DEVICE (one sign-in at a time, 2026-10-10): this browser was
+     signed out by the server. It says why, and nothing of the account stays here —
+     the conversation saved on this device for that account is removed. */
+  useEffect(() => onSignedOut((info) => {
+    if (info?.reason !== 'signed_in_elsewhere') return;
+    resetNote.current = `🔐 ${T[lang === 'hi' ? 'hi' : 'en'].elsewhere}`;
+    const id = prevMe.current?.id;
+    try { if (id) localStorage.removeItem(`${STORE}${id}`); } catch { /* private mode */ }
+  }), [lang]);
   const afterSignIn = useRef(null);          // { open, next } from an old account address
   useEffect(() => {
     if (prevMe.current && !me) {
@@ -1153,7 +1164,9 @@ export default function Chat() {
       if (after?.next) { navigate(after.next); return; }
       if (after?.open) setTimeout(() => (after.open === 'profile' ? showProfile() : showList(after.open)), 600);
       // Right after signing in: offer notifications (only where the browser can, and not if already on).
-      const ns = await notify.state().catch(() => 'unsupported');
+      // Signing in drops the account's notification devices (one sign-in at a time): this one
+      // re-subscribes quietly if it had allowed them and not turned them off (notify.resume).
+      const ns = await notify.resume().catch(() => 'unsupported');
       setNotifyState(ns);
       if (ns === 'off') push({ from: 'bot', kind: 'notify' });
       if (pendingReg) {
@@ -1523,14 +1536,16 @@ export default function Chat() {
   const plateHint = mode === 'plate' && looksLikePlate(input);
 
   return (
-    <div className="gp-chat-bg flex h-[100dvh] flex-col">
+    <div className="gp-chat-bg gp-chat-frame relative flex h-[100dvh] flex-col">
       {/* GaadiPe's own moving background (index.css) — clearly not WhatsApp. */}
       <div className="gp-glows" aria-hidden="true"><span className="a" /><span className="b" /><span className="c" /><span className="road" /></div>
       {/* The top bar: who you are talking to, why it can be trusted, a way home. */}
-      <header className="z-10 bg-gradient-to-r from-[#0a4f49] via-[#0f766e] to-[#14a08f] text-white shadow-md"
+      <header className="gp-bar-in z-10 bg-gradient-to-r from-[#0a4f49] via-[#0f766e] to-[#14a08f] text-white shadow-md"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-        <div className="mx-auto flex max-w-2xl items-center gap-3 px-3 py-2.5">
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-sm font-black text-[#0f766e] shadow">GP</div>
+        <div className="mx-auto flex max-w-2xl items-center gap-2 px-2 py-2 sm:gap-3 sm:px-3 sm:py-2.5">
+          <div className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-sm font-black text-[#0f766e] shadow">GP
+            <span className="gp-online absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#0a4f49] bg-[#22c55e]" aria-hidden="true" />
+          </div>
           <div className="min-w-0 flex-1 leading-tight">
             {/* Signed in with a name (user, 2026-10-10): only their name — no "GaadiPe · online" under it. */}
             {me?.name ? (
@@ -1557,9 +1572,9 @@ export default function Chat() {
           </Link>
           {/* The menu: every account option, in the conversation — labelled in words, not just ⋮ (2026-10-08). */}
           <button type="button" data-test="menu" aria-label={L.menu} aria-expanded={menuOpen} onClick={() => { hideMenuHint(); setMenuOpen((v) => !v); }}
-            className={`flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[12.5px] font-bold text-[#0a4f49] shadow active:scale-95 ${menuHint ? 'gp-menu-pulse' : ''}`}>
+            className={`flex min-h-10 items-center gap-1.5 rounded-full bg-white px-2.5 py-1.5 text-[12.5px] font-bold text-[#0a4f49] shadow active:scale-95 sm:px-3 ${menuHint ? 'gp-menu-pulse' : ''}`}>
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
-            {L.menu}
+            <span className="hidden min-[380px]:inline">{L.menu}</span>
           </button>
         </div>
         {menuHint && !menuOpen ? (
@@ -1666,7 +1681,7 @@ export default function Chat() {
       </main>
 
       {/* Quick actions and the composer, above the keyboard. */}
-      <footer className="border-t border-black/5 bg-white/95 backdrop-blur" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <footer className="gp-composer border-t border-black/5 bg-white/95 backdrop-blur" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="mx-auto max-w-2xl">
           {/* What to do next, always in sight: type this — or tap a button above (user, 2026-10-10). */}
           <div className="flex items-center justify-between gap-2 px-4 pt-2 text-[12px] font-medium text-[#0a4f49]/70">
@@ -1692,7 +1707,7 @@ export default function Chat() {
               {plateHint && <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#12a150]">✓ {prettyPlate(input)}</span>}
             </div>
             <button type="submit" disabled={busy || !input.trim()} aria-label="Send"
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#0f766e] text-white shadow-md transition active:scale-90 disabled:opacity-40">
+              className={`grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#0f766e] text-white shadow-md transition active:scale-90 disabled:opacity-40 ${input.trim() && !busy ? 'gp-send-ready' : ''}`}>
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M3 20.5l18-8.5L3 3.5v6.6l12 1.9-12 1.9z" /></svg>
             </button>
           </form>
@@ -1746,23 +1761,23 @@ export default function Chat() {
 function Menu({ items, onClose, me }) {
   const m = String(me?.mobile || '').slice(-10);
   return (
-    <div className="fixed inset-0 z-40" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/20" />
+    <div className="absolute inset-0 z-40" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/35 backdrop-blur-[2px]" />
       <div role="menu" onClick={(e) => e.stopPropagation()}
-        className="gp-pop absolute right-2 flex w-64 max-w-[calc(100vw-16px)] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/5"
-        // Fits the phone (user, 2026-10-10: "menu options not fitting my mobile"): never past the bottom; the list scrolls.
-        style={{ top: 'calc(env(safe-area-inset-top) + 64px)', maxHeight: 'calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 76px)' }}>
+        className="gp-sheet absolute inset-x-0 bottom-0 flex max-h-[78dvh] w-full flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl ring-1 ring-black/5 md:inset-auto md:right-3 md:top-[calc(env(safe-area-inset-top)+64px)] md:bottom-auto md:w-72 md:max-h-[min(32rem,calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom)-76px))] md:rounded-2xl"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        <div className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-black/15 md:hidden" aria-hidden="true" />
         {me && (
           <div className="shrink-0 border-b border-black/5 bg-gradient-to-r from-[#0f766e] to-[#14a08f] px-4 py-3 text-white">
             <div className="text-[14px] font-bold">{me.name || '-'}</div>
             <div className="text-[12px] text-white/80">{m ? `${m.slice(0, 5)} ${m.slice(5)}` : ''}</div>
           </div>
         )}
-        <div className="min-h-0 overflow-y-auto overscroll-contain" data-test="menu-list">
+        <div className="min-h-0 overflow-y-auto overscroll-contain pb-2" data-test="menu-list">
         {items.map(([icon, label, act, key, tone]) => (
           <button key={key} type="button" role="menuitem" data-test={`menu-${key}`} onClick={act}
-            className={`flex w-full items-center gap-3 px-4 py-2 text-left text-[14px] active:bg-black/5 ${tone === 'danger' ? 'text-[#c62828]' : tone === 'warn' ? 'text-[#b26a00]' : 'text-[#0b2e2b]'}`}>
-            <span className="w-5 shrink-0 text-center">{icon}</span><span className="min-w-0">{label}</span>
+            className={`gp-menu-row flex w-full items-center gap-3 px-4 py-2.5 text-left text-[15px] ${tone === 'danger' ? 'text-[#c62828]' : tone === 'warn' ? 'text-[#b26a00]' : 'text-[#0b2e2b]'}`}>
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#f3f8f7] text-center">{icon}</span><span className="min-w-0">{label}</span>
           </button>
         ))}
         </div>
@@ -2907,7 +2922,7 @@ function Bubble({ item, onChip, chipLabel, faded = false }) {
   if (item.kind === 'typing') {
     return (
       <div className="gp-pop gp-from-l flex" aria-label="typing">
-        <div className="gp-bot flex items-center gap-1.5 rounded-2xl rounded-bl-md px-4 py-3.5 shadow-sm">
+        <div className="gp-bot gp-tail-l flex items-center gap-1.5 rounded-2xl rounded-bl-md px-4 py-3.5 shadow-sm">
           {[0, 1, 2].map((i) => <span key={i} className="gp-dot h-2 w-2 rounded-full bg-[#0f766e]" style={{ animationDelay: `${i * 0.18}s` }} />)}
         </div>
       </div>
@@ -2936,9 +2951,9 @@ function Bubble({ item, onChip, chipLabel, faded = false }) {
       {/* The message and its buttons share one width, as on WhatsApp. */}
       <div className={`flex max-w-[85%] flex-col ${hasChips ? 'min-w-[240px]' : ''}`}>
       <div className={`whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2 text-[14.5px] leading-snug shadow-sm ${mine
-        ? 'gp-me rounded-br-md text-white'
+        ? 'gp-me gp-tail-r rounded-br-md text-white'
         : welcome ? 'rounded-bl-md border border-[#ffd84d] bg-gradient-to-br from-white to-[#fff8d6] text-[#0b2e2b]'
-          : 'gp-bot rounded-bl-md text-[#0b2e2b]'}`}>
+          : 'gp-bot gp-tail-l rounded-bl-md text-[#0b2e2b]'}`}>
         {item.label && <div className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-[#0f766e]">📣 {item.label}</div>}
         {item.kind === 'file'
           ? <FileLine item={item} />
