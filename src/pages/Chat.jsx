@@ -132,6 +132,7 @@ const T = {
     loadEarlier: 'Load earlier messages',
     signInMore: 'Sign in free to see every validity date and the challans — and get 14 days of free monitoring for one vehicle. Then ₹19 for 28 days.',
     fullReport: (p) => `Full report ${p}`,
+    renewFor: (p) => `Renew 28 days · ${p}`,
     another: 'Check another',
     signIn: 'Sign in',
     home: 'Home',
@@ -140,7 +141,7 @@ const T = {
     profile: 'Profile',
     howWorks: 'What do I get?',
     // As the site is now (2026-10-10): the three levels, in plain words.
-    howAnswer: '*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 2 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, up to 10 vehicles a day, and *14 days of free monitoring* for one vehicle.\n\n*Full report ₹19* — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears.',
+    howAnswer: '*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 2 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, up to 10 vehicles a day (30 a month — every report you buy adds 5 more), and *14 days of free monitoring* for one vehicle.\n\n*Full report ₹19* (₹11 to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears.',
     attention: (n) => (n ? `⚠️ *${n} thing${n === 1 ? '' : 's'} need attention*` : '✅ *Nothing needs attention*'),
     /* Honest about what signing in gives (user, 2026-10-08: "this fools the
        user — the details are ₹19"). Signing in is free and keeps the vehicle and
@@ -230,6 +231,13 @@ const T = {
     emailH: '✉️ Email for your reports, invoices and vehicle alerts', emailPh: 'you@example.com', save: 'Save',
     // After every menu option: what can be done next (user, 2026-10-10: "on every tap of options, give replying buttons").
     next: 'What next? Type a vehicle number, or tap below.', langNow: 'Okay — English from now on. 👍',
+    // Checks left (user, 2026-10-10: "show the vehicle check count, updated when they buy").
+    left: {
+      line: (d, m) => `🔢 Checks left: *${d}* today${m != null ? ` · *${m}* this month` : ''}`,
+      bonus: (n) => `Every report you buy (₹19, or ₹11 to renew) adds *${n} more* this month.`,
+      hint: (d, m) => `${d} checks left today${m != null ? ` · ${m} this month` : ''}`,
+      none: 'No checks left now',
+    },
     emailSent: (e) => `✓ Saved. A confirmation link was sent to *${e}* — tap it to get your reports and invoices there.`,
     emailSaved: '✓ Saved.', emailBad: 'That email address does not look right.',
     deactH: '⛔ Deactivate my account',
@@ -340,6 +348,7 @@ const T = {
     loadEarlier: 'पुराने संदेश देखें',
     signInMore: 'हर वैधता की तारीख और चालान देखने के लिए मुफ़्त साइन इन करें — और एक गाड़ी की 14 दिन मुफ़्त निगरानी पाएँ। फिर ₹19 में 28 दिन।',
     fullReport: (p) => `पूरी रिपोर्ट ${p}`,
+    renewFor: (p) => `28 दिन रिन्यू करें · ${p}`,
     another: 'दूसरी गाड़ी',
     signIn: 'साइन इन',
     home: 'होम',
@@ -347,7 +356,7 @@ const T = {
     myReports: 'मेरी रिपोर्ट',
     profile: 'प्रोफ़ाइल',
     howWorks: 'मुझे क्या मिलेगा?',
-    howAnswer: '*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 2 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, दिन में 10 गाड़ियाँ, और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ₹19* — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे।',
+    howAnswer: '*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 2 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, दिन में 10 गाड़ियाँ (महीने में 30 — हर ख़रीदी रिपोर्ट पर 5 और), और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ₹19* (ख़रीदी हुई गाड़ी का रिन्यू ₹11) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे।',
     attention: (n) => (n ? `⚠️ *${n} चीज़ों पर ध्यान चाहिए*` : '✅ *कुछ भी बाकी नहीं*'),
     identityOnly: (p) => '✅ *गाड़ी सरकारी रिकॉर्ड में मिल गई।*\n\nइसे अपने खाते में सेव करने और और गाड़ियाँ जाँचने के लिए मोबाइल से *मुफ़्त साइन इन* करें।\n\n*पूरी रिपोर्ट* — इंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, चालान, लोन, ब्लैकलिस्ट और कितने मालिक — *' + p + '* में, PDF और GST बिल के साथ।',
     expired: 'समाप्त', dueSoon: 'जल्द', challans: 'बाकी चालान',
@@ -428,6 +437,12 @@ const T = {
     mTerms: 'नियम और गोपनीयता', mDeactivate: 'मेरा खाता बंद करें', mHistory: 'गाड़ियों का इतिहास',
     emailH: '✉️ आपकी रिपोर्ट, बिल और गाड़ियों के अलर्ट के लिए ईमेल', emailPh: 'you@example.com', save: 'सहेजें',
     next: 'आगे क्या? गाड़ी नंबर लिखें, या नीचे कोई बटन दबाएँ।', langNow: 'ठीक है — अब से हिंदी में। 👍',
+    left: {
+      line: (d, m) => `🔢 बाकी जाँच: आज *${d}*${m != null ? ` · इस महीने *${m}*` : ''}`,
+      bonus: (n) => `हर रिपोर्ट ख़रीदने पर (₹19, या रिन्यू के लिए ₹11) इस महीने *${n} जाँच और* मिलती हैं।`,
+      hint: (d, m) => `आज ${d} जाँच बाकी${m != null ? ` · इस महीने ${m}` : ''}`,
+      none: 'अभी कोई जाँच बाकी नहीं',
+    },
     emailSent: (e) => `✓ सहेजा गया। *${e}* पर पुष्टि लिंक भेजा गया — रिपोर्ट और बिल वहाँ पाने के लिए उसे टैप करें।`,
     emailSaved: '✓ सहेजा गया।', emailBad: 'यह ईमेल पता सही नहीं लगता।',
     deactH: '⛔ मेरा खाता बंद करें',
@@ -581,6 +596,9 @@ export default function Chat() {
   const [notifyState, setNotifyState] = useState('unknown');
   // Free monitoring for one vehicle (2026-10-10): can they start it, and for which vehicle it runs.
   const [fm, setFm] = useState(null);
+  // Checks left today and this month (2026-10-10); null = not known / not signed in.
+  const [quota, setQuota] = useState(null);
+  useEffect(() => { if (!me) setQuota(null); }, [me]);
   // Offers by SMS — optional, never pre-ticked, asked under the Terms line at sign-in (2026-10-10).
   const [offersOptIn, setOffersOptIn] = useState(false);
   useEffect(() => { notify.state().then(setNotifyState).catch(() => setNotifyState('unsupported')); }, [me]);
@@ -845,19 +863,25 @@ export default function Chat() {
 
   async function welcome({ justSignedIn = false } = {}) {
     try {
-      const [s, h] = await Promise.all([api.chatSummary(), api.chatHistory()]);
+      const [s, h, q] = await Promise.all([api.chatSummary(), api.chatHistory(), api.checksLeft().catch(() => null)]);
       setHistory({ items: h.items || [], more: h.more, before: h.before, loaded: true });
+      setQuota(q);
       // "We found your history" only when something is still there — removed
       // vehicles (and their reports) are gone for the customer (user, 2026-10-10).
       const found = s.vehicles || s.reports;
+      // How many checks are left, on signing in (user, 2026-10-10).
+      const leftLines = q && !q.unlimited
+        ? ['', L.left.line(q.today.left, q.month ? q.month.left : null), ...(q.month?.per_report ? [L.left.bonus(q.month.per_report)] : [])]
+        : [];
       const lines = found || s.whatsapp
         ? [L.welcomeBack(s.name ? String(s.name).split(/\s+/)[0] : ''),
           ...(found ? ['', L.found,
             s.vehicles ? `• ${L.vehicles(s.vehicles)}` : null,
             s.reports ? `• ${L.reports(s.reports)}` : null] : []),
+          ...leftLines,
           // Once signed in, ask for the next number (2026-10-08).
           '', L.askVehicle].filter((x) => x !== null).join('\n')
-        : L.welcomeNew;
+        : [L.welcomeNew, ...leftLines].join('\n');
       if (justSignedIn || !items.some((x) => x.kind === 'welcome')) {
         // Type a number, or tap — reply buttons like WhatsApp's (user, 2026-10-10, later the same day).
         push({ from: 'bot', kind: 'welcome', text: lines, last: s.last_vehicle,
@@ -881,6 +905,17 @@ export default function Chat() {
     const text = String(raw ?? input).trim();
     if (!text || busy) return;
     setInput('');
+    /* WHAT WAS TYPED, for the web admin's trail (user, 2026-10-10: "pin-to-pin tracking of
+       what the user taps or types"; Privacy 22). Vehicle numbers are recorded by the check
+       itself. A mobile number with most digits hidden; codes, names and emails never. */
+    if (!(mode === 'plate' && looksLikePlate(text))) {
+      const label = mode === 'code' || mode === 'ecode' ? 'Typed the sign-in code (not recorded)'
+        : mode === 'name' ? 'Typed their name (not recorded)'
+          : mode === 'email' || /@/.test(text) ? 'Typed an email address (not recorded)'
+            : mode === 'mobile' || /^[\d\s+-]{10,}$/.test(text) ? `Typed a mobile number ${text.replace(/\D/g, '').slice(-10).replace(/^(\d{2})\d{6}(\d{2})$/, '$1••••••$2')}`
+              : `Typed “${text.slice(0, 70)}”`;
+      interaction('typed', label);
+    }
     // A vehicle number typed while we ask for the mobile: keep it, check it after sign-in.
     if (mode === 'mobile' && !/^[\d\s+-]+$/.test(text) && looksLikePlate(text)) {
       const reg = cleanPlate(text);
@@ -944,12 +979,16 @@ export default function Chat() {
       journey({ step: 'viewing', section: paidCard ? `full report · ${reg}` : `vehicle card · ${reg}` });
       // The funnel's "search completed" (web admin, phase 4).
       interaction('view', `Saw ${paidCard ? 'the full report of' : 'the details of'} ${reg}`, { reg_no: reg });
+      if (out.quota) setQuota(out.quota);
       push({ from: 'bot', kind: 'vehicle', vehicle: out.vehicle, paid: paidCard, report: out.report || null,
              // Just signed in (check after sign-in): `me` here is still the moment before — trust the flag (2026-10-10).
-             price: out.price_paise, signedIn: Boolean(me) || signedIn, left: out.left_today });
+             // `renewal`: ₹11 for a vehicle bought before (2026-10-10).
+             price: out.price_paise, renewal: Boolean(out.renewal), signedIn: Boolean(me) || signedIn, left: out.left_today });
     } catch (e) {
       interaction('error', `Check of ${reg} failed: ${String(e.message).slice(0, 60)}`, { reg_no: reg });
-      bot(`⚠️ ${e.message}${again}`, { chips: ['another'] });
+      if (e.body?.quota) setQuota(e.body.quota);
+      // Out of checks for the month: buying a report unlocks more — so My vehicles is one tap away.
+      bot(`⚠️ ${e.message}${e.body?.reason ? '' : again}`, { chips: e.body?.reason === 'monthly' ? ['myVehicles', 'howWorks'] : ['another'] });
     } finally { setBusy(false); }
   }
 
@@ -1129,10 +1168,12 @@ export default function Chat() {
       }
       if (out.error || !out.vehicle) { bot(`⚠️ ${out.message || 'Could not open that vehicle.'}`); return; }
       push({ from: 'bot', kind: 'vehicle', vehicle: out.vehicle, paid: Boolean(out.vehicle.paid), report: out.report || null,
-             price: out.price_paise, signedIn: true });
+             price: out.price_paise, renewal: Boolean(out.renewal), signedIn: true });
       /* THE GST INVOICE TOO, right after paying (2026-10-07): this vehicle's newest
          invoice with its download button, waited for briefly while its PDF is made. */
       if (afterPayment) {
+        // A report bought adds checks this month — the count under the typing box follows (2026-10-10).
+        api.checksLeft().then(setQuota).catch(() => {});
         let inv = null;
         for (let i = 0; i < 8; i += 1) {
           const list = await api.invoices().catch(() => null);
@@ -1490,8 +1531,14 @@ export default function Chat() {
       <footer className="border-t border-black/5 bg-white/95 backdrop-blur" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="mx-auto max-w-2xl">
           {/* What to do next, always in sight: type this — or tap a button above (user, 2026-10-10). */}
-          <div data-test="compose-hint" className="flex items-center gap-1.5 px-4 pt-2 text-[12px] font-medium text-[#0a4f49]/70">
-            <span aria-hidden="true">⌨️</span><span>{hintText}</span>
+          <div className="flex items-center justify-between gap-2 px-4 pt-2 text-[12px] font-medium text-[#0a4f49]/70">
+            <span data-test="compose-hint" className="flex min-w-0 items-center gap-1.5"><span aria-hidden="true">⌨️</span><span className="truncate">{hintText}</span></span>
+            {/* Checks left, always in sight while signed in (2026-10-10). */}
+            {me && quota && !quota.unlimited && mode === 'plate' ? (
+              <span data-test="checks-left" className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold ${quota.today.left ? 'bg-[#e7f6ec] text-[#12813f]' : 'bg-[#fdecea] text-[#c62828]'}`}>
+                🔢 {quota.today.left ? L.left.hint(quota.today.left, quota.month ? quota.month.left : null) : L.left.none}
+              </span>
+            ) : null}
           </div>
           <form className="flex items-end gap-2 px-3 py-2" onSubmit={(e) => { e.preventDefault(); send(); }}>
             <div className="relative flex-1">
@@ -2863,7 +2910,7 @@ function SignedRcCard({ it, L, onFull, onAnother, fm, onStartFree }) {
       </div>
       <div className="mt-1.5 grid w-[92%] max-w-sm grid-cols-2 overflow-hidden rounded-2xl bg-white shadow-md">
         <button type="button" data-test="card-full" onClick={onFull} className="gp-shine bg-[#ffd84d] py-3 text-[14px] font-black text-[#0a4f49] active:brightness-95">
-          🔓 {L.fullReport(rupee(it.price))}
+          🔓 {it.renewal ? L.renewFor(rupee(it.price)) : L.fullReport(rupee(it.price))}
         </button>
         <button type="button" data-test="card-another" onClick={onAnother} className="py-3 text-[14px] font-bold text-[#0f766e] active:bg-black/5">🔍 {L.another}</button>
       </div>
@@ -2942,7 +2989,7 @@ function VehicleCardList({ it, L, onFull, onAnother, fm, onStartFree }) {
         ) : null}
         <div className="grid grid-cols-2 border-t border-black/5">
           <button type="button" data-test="card-full" onClick={onFull} className="gp-shine bg-[#ffd84d] py-3 text-[14px] font-black text-[#0a4f49] active:brightness-95">
-            {it.paid ? `📄 ${L.open}` : `🔓 ${L.fullReport(rupee(it.price))}`}
+            {it.paid ? `📄 ${L.open}` : `🔓 ${it.renewal ? L.renewFor(rupee(it.price)) : L.fullReport(rupee(it.price))}`}
           </button>
           <button type="button" data-test="card-another" onClick={onAnother} className="py-3 text-[14px] font-bold text-[#0f766e] active:bg-black/5">🔍 {L.another}</button>
         </div>

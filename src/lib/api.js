@@ -227,6 +227,8 @@ export const api = {
 
   /* Documents */
   reports: () => call('/reports'),
+  // Checks left today and this month (2026-10-10).
+  checksLeft: () => call('/checks/left'),
   invoices: () => call('/invoices'),
   reportPdf: (id, download) => pdf(`/reports/${id}/file`, download),
   invoicePdf: (id, download) => pdf(`/invoices/${id}/file`, download),
