@@ -228,7 +228,7 @@ export default function Home() {
             <p className="mt-1.5 max-w-2xl text-body">{t('home.report.sub')}</p>
           </Reveal>
           <div className="mt-6 grid gap-4 stagger sm:grid-cols-2 lg:grid-cols-3">
-            {['loan', 'blacklist', 'challans', 'insurance', 'docs', 'fastag', 'rc', 'alerts', 'gst'].map((k) => (
+            {['verdict', 'loan', 'blacklist', 'challans', 'insurance', 'docs', 'fastag', 'rc', 'alerts', 'gst'].map((k) => (
               <Item key={k} title={t(`home.item.${k}.t`, { days })} body={t(`home.item.${k}.b`)} />
             ))}
           </div>
