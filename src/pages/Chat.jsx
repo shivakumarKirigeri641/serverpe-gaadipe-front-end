@@ -239,6 +239,20 @@ const T = {
       bonus: (n) => `Every report you buy (₹19, or ₹11 to renew) adds *${n} more* this month.`,
       hint: (d, m) => `${d} checks left today${m != null ? ` · ${m} this month` : ''}`,
       none: 'No checks left now',
+      // The "Checks left" button and its answer (user, 2026-10-10).
+      menu: 'Checks left',
+      detail: (q) => [
+        `🔢 *Your vehicle checks*`,
+        '',
+        `• Today: *${q.today.left}* left of ${q.today.limit}`,
+        ...(q.month ? [`• This month: *${q.month.left}* left of ${q.month.limit}${q.month.bonus ? ` (${q.month.base} + ${q.month.bonus} from reports you bought)` : ''}`] : []),
+        '',
+        ...(q.month?.per_report ? [`💡 Every report you buy — ₹19, or ₹11 to renew — adds *${q.month.per_report} more checks* this month.`] : []),
+        `Checking the same vehicle again within an hour does not count.`,
+      ].join('\n'),
+      unlimited: '🔢 Your account has *no check limit*.',
+      bought: (n, left) => `🎉 Your purchase added *${n} more vehicle checks* this month — *${left}* left this month now.`,
+      buyNote: (n) => `Buying also adds ${n} more vehicle checks this month.`,
     },
     emailSent: (e) => `✓ Saved. A confirmation link was sent to *${e}* — tap it to get your reports and invoices there.`,
     emailSaved: '✓ Saved.', emailBad: 'That email address does not look right.',
@@ -448,6 +462,19 @@ const T = {
       bonus: (n) => `हर रिपोर्ट ख़रीदने पर (₹19, या रिन्यू के लिए ₹11) इस महीने *${n} जाँच और* मिलती हैं।`,
       hint: (d, m) => `आज ${d} जाँच बाकी${m != null ? ` · इस महीने ${m}` : ''}`,
       none: 'अभी कोई जाँच बाकी नहीं',
+      menu: 'बाकी जाँच',
+      detail: (q) => [
+        `🔢 *आपकी गाड़ी जाँच*`,
+        '',
+        `• आज: ${q.today.limit} में से *${q.today.left}* बाकी`,
+        ...(q.month ? [`• इस महीने: ${q.month.limit} में से *${q.month.left}* बाकी${q.month.bonus ? ` (${q.month.base} + ख़रीदी रिपोर्ट से ${q.month.bonus})` : ''}`] : []),
+        '',
+        ...(q.month?.per_report ? [`💡 हर रिपोर्ट ख़रीदने पर — ₹19, या रिन्यू के लिए ₹11 — इस महीने *${q.month.per_report} जाँच और* मिलती हैं।`] : []),
+        `एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता।`,
+      ].join('\n'),
+      unlimited: '🔢 आपके खाते पर *कोई जाँच सीमा नहीं* है।',
+      bought: (n, left) => `🎉 आपकी ख़रीद से इस महीने *${n} जाँच और* जुड़ गईं — अब इस महीने *${left}* बाकी।`,
+      buyNote: (n) => `ख़रीदने पर इस महीने ${n} गाड़ी जाँच और मिलती हैं।`,
     },
     emailSent: (e) => `✓ सहेजा गया। *${e}* पर पुष्टि लिंक भेजा गया — रिपोर्ट और बिल वहाँ पाने के लिए उसे टैप करें।`,
     emailSaved: '✓ सहेजा गया।', emailBad: 'यह ईमेल पता सही नहीं लगता।',
@@ -893,7 +920,7 @@ export default function Chat() {
       if (justSignedIn || !items.some((x) => x.kind === 'welcome')) {
         // Type a number, or tap — reply buttons like WhatsApp's (user, 2026-10-10, later the same day).
         push({ from: 'bot', kind: 'welcome', text: lines, last: s.last_vehicle,
-          chips: [...(s.vehicles ? ['myVehicles'] : []), ...(s.reports ? ['myReports'] : []), 'howWorks'] });
+          chips: [...(s.vehicles ? ['myVehicles'] : []), ...(s.reports ? ['myReports'] : []), ...(q && !q.unlimited ? ['checksLeft'] : []), 'howWorks'] });
       }
     } catch { /* the chat still works without it */ }
   }
@@ -1190,8 +1217,11 @@ export default function Chat() {
       /* THE GST INVOICE TOO, right after paying (2026-10-07): this vehicle's newest
          invoice with its download button, waited for briefly while its PDF is made. */
       if (afterPayment) {
-        // A report bought adds checks this month — the count under the typing box follows (2026-10-10).
-        api.checksLeft().then(setQuota).catch(() => {});
+        // A report bought adds checks this month — said in the chat, and the count above the typing box follows (2026-10-10).
+        api.checksLeft().then((q) => {
+          setQuota(q);
+          if (q && !q.unlimited && q.month?.per_report) setTimeout(() => bot(L.left.bought(q.month.per_report, q.month.left), { chips: ['checksLeft', 'another'] }), 2500);
+        }).catch(() => {});
         let inv = null;
         for (let i = 0; i < 8; i += 1) {
           const list = await api.invoices().catch(() => null);
@@ -1325,6 +1355,17 @@ export default function Chat() {
   function nextStep(chips = [], text = L.next) {
     bot(text, { pace: 450, chips: ['another', ...chips] });
   }
+  /* "How many checks do I have left?" — a button, a menu option and the count above
+     the typing box all answer it here (user, 2026-10-10). */
+  async function showChecksLeft({ fromMenu = false } = {}) {
+    if (fromMenu) setMenuOpen(false);
+    push({ from: 'me', kind: 'text', text: `🔢 ${L.left.menu}` });
+    try {
+      const q = await api.checksLeft();
+      setQuota(q);
+      bot(q.unlimited ? L.left.unlimited : L.left.detail(q), { pace: 400, chips: ['another', 'myVehicles'] });
+    } catch (e) { bot(`⚠️ ${e.message}`, { chips: ['another'] }); }
+  }
 
   async function doSignOut() {
     setMenuOpen(false);
@@ -1369,6 +1410,7 @@ export default function Chat() {
       return;
     }
     if (key === 'signIn') { startSignIn(); return; }
+    if (key === 'checksLeft') { showChecksLeft(); return; }
     if (key === 'myVehicles') { showList('vehicles'); return; }
     if (key === 'myReports') { showList('reports'); return; }
     if (key === 'invoices') { showList('invoices'); return; }
@@ -1382,7 +1424,7 @@ export default function Chat() {
     if (key.startsWith('open:')) { push({ from: 'me', kind: 'plate', text: prettyPlate(key.slice(5)) }); openVehicle(key.slice(5)); }
   }
   const chipLabel = (key) => (key.startsWith('open:') ? `🔓 ${prettyPlate(key.slice(5))}` : {
-    'lang:en': 'English', 'lang:hi': 'हिंदी',
+    'lang:en': 'English', 'lang:hi': 'हिंदी', checksLeft: `🔢 ${L.left.menu}`,
     howWorks: `❓ ${L.howWorks}`, another: `🔍 ${L.another}`, signIn: `🔐 ${L.signIn}`,
     myVehicles: `🚗 ${L.myVehicles}`, myReports: `📄 ${L.myReports}`, profile: `👤 ${L.profile}`, invoices: `🧾 ${L.invoices}`,
     sample: L.sample.chip, fullInfo: L.sample.more,
@@ -1484,7 +1526,9 @@ export default function Chat() {
             }
             if (it.kind === 'vehicle') {
               // Signed in now = never the "Sign in free…" line, whatever the card was saved with.
+              // bonus: "buying also adds N checks" under the buy button, for a customer with a monthly allowance.
               return <VehicleCard key={it.id} it={me ? { ...it, signedIn: true } : it} L={L} fm={fm} onStartFree={startFree}
+                bonus={me && quota && !quota.unlimited ? quota.month?.per_report || null : null}
                 onFull={() => (it.paid ? openVehicle(it.vehicle.reg_no) : fullReport(it.vehicle.reg_no, it.price))} onAnother={() => chip('another')} />;
             }
             if (it.kind === 'consent') {
@@ -1554,9 +1598,11 @@ export default function Chat() {
             <span data-test="compose-hint" className="flex min-w-0 items-center gap-1.5"><span aria-hidden="true">⌨️</span><span className="truncate">{hintText}</span></span>
             {/* Checks left, always in sight while signed in (2026-10-10). */}
             {me && quota && !quota.unlimited && mode === 'plate' ? (
-              <span data-test="checks-left" className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold ${quota.today.left ? 'bg-[#e7f6ec] text-[#12813f]' : 'bg-[#fdecea] text-[#c62828]'}`}>
-                🔢 {quota.today.left ? L.left.hint(quota.today.left, quota.month ? quota.month.left : null) : L.left.none}
-              </span>
+              // Tap it for the full answer (2026-10-10).
+              <button type="button" data-test="checks-left" onClick={() => showChecksLeft()} disabled={busy}
+                className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold active:scale-95 ${quota.today.left ? 'bg-[#e7f6ec] text-[#12813f]' : 'bg-[#fdecea] text-[#c62828]'}`}>
+                🔢 {quota.today.left ? L.left.hint(quota.today.left, quota.month ? quota.month.left : null) : L.left.none} ›
+              </button>
             ) : null}
           </div>
           <form className="flex items-end gap-2 px-3 py-2" onSubmit={(e) => { e.preventDefault(); send(); }}>
@@ -1583,6 +1629,7 @@ export default function Chat() {
           ['👤', L.profile, () => { setMenuOpen(false); showProfile(); }, 'profile'],
           ['✉️', L.mEmail, startEmail, 'email'],
           ['🚗', L.mHistory, () => { setMenuOpen(false); showList('vehicles'); }, 'vehicles'],
+          ['🔢', L.left.menu, () => showChecksLeft({ fromMenu: true }), 'checks'],
           ['📄', L.myReports, () => { setMenuOpen(false); showList('reports'); }, 'reports'],
           ['🧾', L.invoices, () => { setMenuOpen(false); showList('invoices'); }, 'invoices'],
           ['🔔', `${L.mNotify}${notifyState === 'on' ? ' ✓' : ''}`, notificationsMenu, 'notify'],
@@ -2841,7 +2888,7 @@ function FlipButton({ test, text, onClick, className = '' }) {
  * dates, challans, free monitoring, and what the ₹19 report adds. GaadiPe's own
  * design in the RC's order — deliberately not a copy of the Government's card.
  */
-function SignedRcCard({ it, L, onFull, onAnother, fm, onStartFree }) {
+function SignedRcCard({ it, L, onFull, onAnother, fm, onStartFree, bonus }) {
   const v = it.vehicle || {};
   const id = v.identity || {};
   const f = v.found || {};
@@ -2948,6 +2995,8 @@ function SignedRcCard({ it, L, onFull, onAnother, fm, onStartFree }) {
         </button>
         <button type="button" data-test="card-another" onClick={onAnother} className="py-3 text-[14px] font-bold text-[#0f766e] active:bg-black/5">🔍 {L.another}</button>
       </div>
+      {/* Buying also adds checks this month (user, 2026-10-10). */}
+      {bonus ? <div data-test="buy-note" className="mt-1 w-[92%] max-w-sm px-2 text-[11.5px] text-[#0a4f49]/75">🔢 {L.left.buyNote(bonus)}</div> : null}
     </div>
   );
 }
@@ -2959,7 +3008,7 @@ function VehicleCard(props) {
   return <VehicleCardList {...props} />;
 }
 
-function VehicleCardList({ it, L, onFull, onAnother, fm, onStartFree }) {
+function VehicleCardList({ it, L, onFull, onAnother, fm, onStartFree, bonus }) {
   // A signed-in check of a vehicle they own a report for comes back full: open it in the chat.
   const v = it.vehicle || {};
   const id = v.identity || {};
@@ -3027,6 +3076,7 @@ function VehicleCardList({ it, L, onFull, onAnother, fm, onStartFree }) {
           </button>
           <button type="button" data-test="card-another" onClick={onAnother} className="py-3 text-[14px] font-bold text-[#0f766e] active:bg-black/5">🔍 {L.another}</button>
         </div>
+        {bonus && !it.paid ? <div data-test="buy-note" className="border-t border-black/5 px-3 py-1.5 text-[11.5px] text-[#0a4f49]/75">🔢 {L.left.buyNote(bonus)}</div> : null}
       </div>
       {!it.signedIn && !it.paid && !identityOnly && (
         <div className="mt-1.5 max-w-[88%] rounded-xl bg-white/80 px-3 py-2 text-[12px] text-[#0a4f49] shadow-sm">
