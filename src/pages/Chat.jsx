@@ -194,7 +194,8 @@ const T = {
       monitorRow: '🔔 14 days of free automatic monitoring',
       monitorNote: 'for one vehicle — alerts before any document expires and when a new challan appears',
       offerShort: '🎁 *Sign in free:* 14 days of *free automatic monitoring* for one vehicle — then ₹19 for 28 days.',
-      optIn: 'Also send me occasional tips & offers by SMS (optional — change it any time in Profile)',
+      // The exact words recorded as consent (site/auth.js PROMO_CONSENT), 2026-10-10.
+      optIn: 'Optional: Send me offers and newsletters from GaadiPe (vehicle tips, new features and offers) by SMS and email. I can stop them any time in my Profile.',
     },
     // Feedback, asked at a few moments (2026-10-10) — all optional except on deactivating.
     fb: {
@@ -228,7 +229,7 @@ const T = {
     pendingAmt: (n, a) => `${n} pending · ${a}`, noChallans: 'No pending challans',
     daysLeft: (d) => (d < 0 ? `expired ${-d} days ago` : d === 0 ? 'expires today' : `${d} days left`),
     profileH: '👤 Your profile', mobileL: 'Mobile', nameL: 'Name', emailL: 'Email',
-    offers: 'Tips & offers by SMS / email', signOut: 'Sign out', signedOut: 'You are signed out. Send any vehicle number for a free check.',
+    offers: 'Offers & newsletters by SMS / email', signOut: 'Sign out', signedOut: 'You are signed out. Send any vehicle number for a free check.',
     vehicleBtn: 'Open',
     tapPlate: 'Tap a number to see its vehicle summary.',
     // Basic or paid, on each vehicle in My vehicles (user, 2026-10-10).
@@ -453,7 +454,7 @@ const T = {
       monitorRow: '🔔 14 दिन मुफ़्त ऑटोमैटिक निगरानी',
       monitorNote: 'एक गाड़ी के लिए — कोई दस्तावेज़ खत्म होने से पहले और नया चालान आने पर अलर्ट',
       offerShort: '🎁 *मुफ़्त साइन इन:* एक गाड़ी की 14 दिन *मुफ़्त ऑटोमैटिक निगरानी* — फिर ₹19 में 28 दिन।',
-      optIn: 'मुझे कभी-कभी SMS पर टिप्स और ऑफ़र भी भेजें (वैकल्पिक — प्रोफ़ाइल में कभी भी बदलें)',
+      optIn: 'वैकल्पिक: मुझे GaadiPe के ऑफ़र और न्यूज़लेटर (गाड़ी से जुड़ी टिप्स, नई सुविधाएँ और ऑफ़र) SMS और ईमेल पर भेजें। मैं इन्हें प्रोफ़ाइल में कभी भी बंद कर सकता/सकती हूँ।',
     },
     fb: {
       useful: 'क्या यह काम का था?', thanks: 'धन्यवाद — इससे हम GaadiPe को बेहतर बनाते हैं। 🙏',
@@ -486,7 +487,7 @@ const T = {
     pendingAmt: (n, a) => `${n} बाकी · ${a}`, noChallans: 'कोई चालान बाकी नहीं',
     daysLeft: (d) => (d < 0 ? `${-d} दिन पहले समाप्त` : d === 0 ? 'आज समाप्त' : `${d} दिन बाकी`),
     profileH: '👤 आपकी प्रोफ़ाइल', mobileL: 'मोबाइल', nameL: 'नाम', emailL: 'ईमेल',
-    offers: 'SMS / ईमेल पर टिप्स और ऑफ़र', signOut: 'साइन आउट', signedOut: 'आप साइन आउट हो गए। मुफ़्त जाँच के लिए कोई भी गाड़ी नंबर भेजें।',
+    offers: 'SMS / ईमेल पर ऑफ़र और न्यूज़लेटर', signOut: 'साइन आउट', signedOut: 'आप साइन आउट हो गए। मुफ़्त जाँच के लिए कोई भी गाड़ी नंबर भेजें।',
     vehicleBtn: 'खोलें',
     tapPlate: 'गाड़ी का सारांश देखने के लिए नंबर पर टैप करें।',
     tier: { paid: '★ पेड', free: '👁 मुफ़्त निगरानी', basic: 'बेसिक', till: (d) => `${d} तक`, renew: 'पहले ख़रीदी · ₹11 में रिन्यू', basicSub: 'मुफ़्त जानकारी' },
