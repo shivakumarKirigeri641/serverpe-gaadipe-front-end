@@ -254,7 +254,7 @@ const T = {
     emailNudge: '📧 *Highly recommended: add your name and email.*\n\nOur WhatsApp number is currently disabled by Meta due to technical concerns, so we cannot reach you there for now.\n\nWith a confirmed email you get *alerts about your vehicles* — a new challan, insurance or PUC about to expire — and your reports and invoices.',
     addEmail: 'Add my name & email', later: 'Later',
     askName: 'Great! First, your *name* — how should we address you?',
-    askEmail: (n) => `Thanks${n ? `, *${n}*` : ''}! Now your *email address* — I’ll send a link to confirm it is yours.`,
+    askEmail: (n) => `Thanks${n ? `, *${n}*` : ''}! Now your *email address* — I’ll send a *4-digit code* to confirm it is yours.`,
     badName: 'Please write your name — at least two letters, no numbers.',
     emailConfirm: (e) => `✓ Saved. A confirmation link is on its way to *${e}*.\n\nOpen your inbox (check *Spam* too) and tap *Confirm* — vehicle alerts start by email once it is confirmed.`,
     emailSame: (e) => `*${e}* is already saved.`,
@@ -270,8 +270,11 @@ const T = {
     transferHelp: 'Support checks every transfer and emails you the answer. Questions: support@gaadipe.in.',
     switched: (m) => `You are now signed in on *${m}*.`, transferSent: 'Your transfer request is with support — you will get an email when it is approved.',
     emailVerifiedNow: '✅ Your email is confirmed. Alerts, reports and invoices will come there.',
-    emailCodeSent: (e) => `📧 A 6-digit code is on its way to *${e}*.\n\nType it here to confirm your email (check *Spam* too). It works for 10 minutes.`,
-    badEmailCode: 'Please type the 6-digit code from the email.',
+    emailCodeSent: (e) => `📧 A *4-digit code* is on its way to *${e}*.\n\nType it here to confirm your email (check *Spam* too). It works for 10 minutes.`,
+    badEmailCode: 'Please type the 4-digit code from the email.',
+    // Email from the menu: asked and confirmed right here, with a 4-digit code (user, 2026-10-10).
+    askEmailOnly: (cur, ok) => `${cur ? `Your email now is *${cur}*${ok ? ' ✓' : ' (not confirmed yet)'}.\n\n` : ''}Type the *email address* for your reports, invoices and vehicle alerts — I’ll send a *4-digit code* to confirm it.`,
+    placeholderEmailCode: '4-digit code from the email',
     signOutH: '↪ Sign out?', signOutBody: 'You will need your mobile number and an SMS code to sign in again on this phone. Notifications to this phone stop; SMS and email alerts for your vehicles continue — to stop everything, deactivate your account.',
     signOutYes: 'Sign out', deactReasons: ['I don’t need GaadiPe any more', 'I sold my vehicle', 'Too expensive', 'I got wrong or old information', 'Privacy concerns', 'Other'],
     deactWhy: 'Why are you leaving?', deactOther: 'Tell us a little more', deactFresh: 'If you sign in again later, it will be a completely new, empty account — your old vehicles and reports will not come back.',
@@ -458,7 +461,7 @@ const T = {
     emailNudge: '📧 *ज़रूर करें: अपना नाम और ईमेल जोड़ें।*\n\nहमारा WhatsApp नंबर अभी Meta ने तकनीकी कारणों से बंद किया हुआ है, इसलिए फ़िलहाल हम आप तक वहाँ नहीं पहुँच सकते।\n\nकन्फ़र्म ईमेल से आपको *अपनी गाड़ियों के अलर्ट* मिलेंगे — नया चालान, बीमा या PUC खत्म होने वाला हो — और आपकी रिपोर्ट व इनवॉइस भी।',
     addEmail: 'नाम और ईमेल जोड़ें', later: 'बाद में',
     askName: 'बढ़िया! पहले अपना *नाम* लिखें — हम आपको किस नाम से बुलाएँ?',
-    askEmail: (n) => `धन्यवाद${n ? `, *${n}*` : ''}! अब अपना *ईमेल पता* लिखें — मैं उसे कन्फ़र्म करने का लिंक भेजूँगा।`,
+    askEmail: (n) => `धन्यवाद${n ? `, *${n}*` : ''}! अब अपना *ईमेल पता* लिखें — कन्फ़र्म करने के लिए मैं *4 अंकों का कोड* भेजूँगा।`,
     badName: 'कृपया अपना नाम लिखें — कम से कम दो अक्षर, कोई अंक नहीं।',
     emailConfirm: (e) => `✓ सेव हो गया। *${e}* पर कन्फ़र्म करने का लिंक भेजा जा रहा है।\n\nअपना इनबॉक्स खोलें (*Spam* भी देखें) और *Confirm* दबाएँ — कन्फ़र्म होते ही गाड़ियों के अलर्ट ईमेल पर आने लगेंगे।`,
     emailSame: (e) => `*${e}* पहले से सेव है।`,
@@ -474,8 +477,10 @@ const T = {
     transferHelp: 'सपोर्ट हर ट्रांसफ़र की जाँच करता है और आपको ईमेल पर जवाब देता है। सवाल: support@gaadipe.in',
     switched: (m) => `अब आप *${m}* पर साइन इन हैं।`, transferSent: 'आपका ट्रांसफ़र अनुरोध सपोर्ट के पास है — मंज़ूरी पर ईमेल आएगा।',
     emailVerifiedNow: '✅ आपके ईमेल की पुष्टि हो गई। अलर्ट, रिपोर्ट और इनवॉइस वहीं आएँगे।',
-    emailCodeSent: (e) => `📧 *${e}* पर 6 अंकों का कोड भेजा जा रहा है।\n\nईमेल की पुष्टि के लिए उसे यहाँ लिखें (*Spam* भी देखें)। कोड 10 मिनट तक चलेगा।`,
-    badEmailCode: 'कृपया ईमेल का 6 अंकों का कोड लिखें।',
+    emailCodeSent: (e) => `📧 *${e}* पर *4 अंकों का कोड* भेजा जा रहा है।\n\nईमेल की पुष्टि के लिए उसे यहाँ लिखें (*Spam* भी देखें)। कोड 10 मिनट तक चलेगा।`,
+    badEmailCode: 'कृपया ईमेल का 4 अंकों का कोड लिखें।',
+    askEmailOnly: (cur, ok) => `${cur ? `अभी आपका ईमेल *${cur}* है${ok ? ' ✓' : ' (अभी कन्फ़र्म नहीं)'}।\n\n` : ''}रिपोर्ट, बिल और गाड़ियों के अलर्ट के लिए अपना *ईमेल पता* लिखें — कन्फ़र्म करने के लिए मैं *4 अंकों का कोड* भेजूँगा।`,
+    placeholderEmailCode: 'ईमेल का 4 अंकों का कोड',
     signOutH: '↪ साइन आउट करें?', signOutBody: 'इस फ़ोन पर दोबारा साइन इन के लिए मोबाइल नंबर और SMS कोड लगेगा। इस फ़ोन पर नोटिफ़िकेशन बंद हो जाएँगे; आपकी गाड़ियों के SMS और ईमेल अलर्ट जारी रहेंगे — सब कुछ बंद करने के लिए खाता बंद करें।',
     signOutYes: 'साइन आउट', deactReasons: ['अब GaadiPe की ज़रूरत नहीं', 'मैंने गाड़ी बेच दी', 'बहुत महँगा', 'जानकारी गलत या पुरानी मिली', 'प्राइवेसी की चिंता', 'अन्य'],
     deactWhy: 'आप क्यों जा रहे हैं?', deactOther: 'थोड़ा और बताएँ', deactFresh: 'बाद में दोबारा साइन इन करने पर बिल्कुल नया, खाली खाता बनेगा — पुरानी गाड़ियाँ और रिपोर्ट वापस नहीं आएँगी।',
@@ -1108,6 +1113,16 @@ export default function Chat() {
     setTimeout(() => inputRef.current?.focus(), 50);
   }
 
+  /* EMAIL FROM THE MENU, IN THE CONVERSATION (user, 2026-10-10: "verify by sending a
+     4-digit code, all done in the profile conversation"): ask → code by email → typed here. */
+  function startEmail() {
+    setMenuOpen(false);
+    push({ from: 'me', kind: 'text', text: L.mEmail });
+    setPendingName(''); setMode('email');
+    bot(L.askEmailOnly(me?.email || '', Boolean(me?.email_verified)), { chips: ['later'] });
+    setTimeout(() => inputRef.current?.focus(), 50);
+  }
+
   function sendName(text) {
     const n = String(text).trim().replace(/\s+/g, ' ');
     push({ from: 'me', kind: 'text', text: n });
@@ -1126,7 +1141,7 @@ export default function Chat() {
       if (me?.email_verified && String(me.email).toLowerCase() === e) { setMode('plate'); bot(`${L.emailSame(e)} ${L.emailOk}`); return; }
       const out = await api.emailCode(e);
       setPendingEmail(e); setMode('ecode');
-      bot(L.emailCodeSent(e) + (out.dev ? '\n\n_(testing: the code is in the server log)_' : ''));
+      bot(L.emailCodeSent(e) + (out.dev ? '\n\n_(testing: the code is in the server log)_' : ''), { chips: ['later'] });
     } catch (err) {
       const b = err.body || {};
       if (b.error === 'bad_name') { setMode('name'); bot(`⚠️ ${err.message}`); return; }
@@ -1137,13 +1152,13 @@ export default function Chat() {
 
   async function sendEmailCode(text) {
     const code = String(text).replace(/\D/g, '');
-    push({ from: 'me', kind: 'text', text: '••••••' });
-    if (code.length !== 6) { bot(L.badEmailCode); return; }
+    push({ from: 'me', kind: 'text', text: '••••' });
+    if (code.length !== 4) { bot(L.badEmailCode); return; }
     setBusy(true); typing();
     try {
       const out = await api.emailVerify(pendingEmail, code);
       setMe?.(out.user); setMode('plate'); setPendingEmail('');
-      bot(L.emailVerifiedNow);
+      bot(L.emailVerifiedNow, { chips: ['another', 'myVehicles'] });
     } catch (err) { bot(`⚠️ ${err.message}`); }
     finally { setBusy(false); }
   }
@@ -1357,7 +1372,8 @@ export default function Chat() {
     if (key === 'profile') { showProfile(); return; }
     if (key === 'notifyOff') { notify.disable().then(() => { setNotifyState('off'); bot(L.notifyOffNow, { chips: ['another'] }); }); return; }
     if (key === 'addEmail') { push({ from: 'me', kind: 'text', text: L.addEmail }); startProfile(); return; }
-    if (key === 'later') { push({ from: 'me', kind: 'text', text: L.later }); bot(L.laterOk, { chips: ['another', 'myVehicles'] }); return; }
+    // "Later" also leaves the name / email / code step, back to vehicle numbers.
+    if (key === 'later') { push({ from: 'me', kind: 'text', text: L.later }); setMode('plate'); setPendingEmail(''); setPendingName(''); bot(L.laterOk, { chips: ['another', 'myVehicles'] }); return; }
     if (key === 'resendEmail') { push({ from: 'me', kind: 'text', text: L.resend }); resendLink(); return; }
     if (key.startsWith('useEmail:')) { push({ from: 'me', kind: 'text', text: key.slice(9) }); sendEmail(key.slice(9), { echo: false }); return; }
     if (key.startsWith('open:')) { push({ from: 'me', kind: 'plate', text: prettyPlate(key.slice(5)) }); openVehicle(key.slice(5)); }
@@ -1384,8 +1400,8 @@ export default function Chat() {
   const tapToo = mode === 'plate' && Boolean(lastBot && (lastBot.chips?.length
     || !['text', 'welcome', 'note', 'freeTerms', 'file'].includes(lastBot.kind)));
   // No language yet: only the two buttons — typing waits, so the terms line is read in the chosen language first.
-  const hintText = !chosen ? LANG_ASK.hint : (L.hint[mode === 'ecode' ? 'code' : mode] || L.hint.plate) + (tapToo ? L.hint.tap : '');
-  const placeholder = !chosen ? LANG_ASK.hint : { mobile: L.placeholderMobile, code: L.placeholderCode, ecode: L.placeholderCode, name: L.placeholderName, email: L.placeholderEmail }[mode] || L.placeholderPlate;
+  const hintText = !chosen ? LANG_ASK.hint : (mode === 'ecode' ? L.placeholderEmailCode : L.hint[mode] || L.hint.plate) + (tapToo ? L.hint.tap : '');
+  const placeholder = !chosen ? LANG_ASK.hint : { mobile: L.placeholderMobile, code: L.placeholderCode, ecode: L.placeholderEmailCode, name: L.placeholderName, email: L.placeholderEmail }[mode] || L.placeholderPlate;
   const typed = mode === 'name' || mode === 'email';   // free text: no capitals forced, no digit spacing
   const plateHint = mode === 'plate' && looksLikePlate(input);
 
@@ -1547,7 +1563,7 @@ export default function Chat() {
                 inputMode={mode === 'email' ? 'email' : mode === 'plate' || mode === 'name' ? 'text' : 'numeric'}
                 autoComplete={{ mobile: 'tel', code: 'one-time-code', ecode: 'one-time-code', name: 'name', email: 'email' }[mode] || 'off'}
                 autoCapitalize={mode === 'name' ? 'words' : mode === 'email' ? 'none' : undefined}
-                maxLength={{ code: 6, ecode: 6, name: 60, email: 160 }[mode] || 20} disabled={busy || !chosen}
+                maxLength={{ code: 6, ecode: 4, name: 60, email: 160 }[mode] || 20} disabled={busy || !chosen}
                 className={`w-full rounded-2xl border bg-[#f6f9f9] px-4 py-3 text-[15px] outline-none transition focus:border-[#0f766e] focus:bg-white ${mode === 'plate' ? 'uppercase tracking-wider' : typed ? '' : 'tracking-widest'} placeholder:normal-case placeholder:tracking-normal ${plateHint ? 'border-[#12a150]' : 'border-black/10'}`} />
               {plateHint && <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#12a150]">✓ {prettyPlate(input)}</span>}
             </div>
@@ -1562,7 +1578,7 @@ export default function Chat() {
       {menuOpen && (
         <Menu L={L} me={me} notifyState={notifyState} lang={lang} onClose={() => setMenuOpen(false)} items={me ? [
           ['👤', L.profile, () => { setMenuOpen(false); showProfile(); }, 'profile'],
-          ['✉️', L.mEmail, () => showCard('email', L.mEmail), 'email'],
+          ['✉️', L.mEmail, startEmail, 'email'],
           ['🚗', L.mHistory, () => { setMenuOpen(false); showList('vehicles'); }, 'vehicles'],
           ['📄', L.myReports, () => { setMenuOpen(false); showList('reports'); }, 'reports'],
           ['🧾', L.invoices, () => { setMenuOpen(false); showList('invoices'); }, 'invoices'],

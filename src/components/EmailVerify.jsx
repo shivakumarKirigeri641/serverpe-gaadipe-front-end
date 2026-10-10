@@ -4,7 +4,7 @@ import { useLang } from '../lib/i18n.jsx';
 
 /**
  * AN EMAIL, CONFIRMED WITH A CODE (user, 2026-10-07: "mail must be mandatory, with
- * verification, before pay"). Type the address → "Send code" → the six digits
+ * verification, before pay"). Type the address → "Send code" → the four digits (2026-10-10)
  * from the inbox → "Verify". The server checks the address can receive mail
  * first ("did you mean …@gmail.com?"). Used in the payment window and the Profile.
  *
@@ -13,10 +13,10 @@ import { useLang } from '../lib/i18n.jsx';
  *   onVerified(user)     the account, once confirmed
  */
 const W = {
-  en: { send: 'Send code', sending: 'Sending…', code: '6-digit code from the email', verify: 'Verify', verifying: 'Checking…',
+  en: { send: 'Send code', sending: 'Sending…', code: '4-digit code from the email', verify: 'Verify', verifying: 'Checking…',
     sent: (e) => `Code sent to ${e}. Check the inbox (and Spam).`, ok: '✅ Email confirmed', change: 'Change',
     use: (s) => `Use ${s}`, again: 'Send again', dev: 'Testing: the code is in the server’s log, not emailed.' },
-  hi: { send: 'कोड भेजें', sending: 'भेज रहे हैं…', code: 'ईमेल में आया 6 अंकों का कोड', verify: 'पुष्टि करें', verifying: 'जाँच रहे हैं…',
+  hi: { send: 'कोड भेजें', sending: 'भेज रहे हैं…', code: 'ईमेल में आया 4 अंकों का कोड', verify: 'पुष्टि करें', verifying: 'जाँच रहे हैं…',
     sent: (e) => `कोड ${e} पर भेजा गया। इनबॉक्स (और Spam) देखें।`, ok: '✅ ईमेल की पुष्टि हो गई', change: 'बदलें',
     use: (s) => `${s} रखें`, again: 'फिर भेजें', dev: 'टेस्टिंग: कोड सर्वर लॉग में है, ईमेल नहीं हुआ।' },
 };
@@ -64,9 +64,9 @@ export default function EmailVerify({ email, onEmail, verifiedEmail, onVerified,
       </div>
       {stage === 'code' ? (
         <div className="flex gap-2">
-          <input className={`${inputClass} min-w-0 flex-1 tracking-[0.3em]`} inputMode="numeric" autoComplete="one-time-code" maxLength={6}
+          <input className={`${inputClass} min-w-0 flex-1 tracking-[0.3em]`} inputMode="numeric" autoComplete="one-time-code" maxLength={4}
             value={code} data-test={`${dataTest}-code`} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} placeholder={w.code} />
-          <button type="button" data-test={`${dataTest}-verify`} disabled={busy || code.length !== 6} onClick={verify}
+          <button type="button" data-test={`${dataTest}-verify`} disabled={busy || code.length !== 4} onClick={verify}
             className="whitespace-nowrap rounded-xl bg-[#0f766e] px-3 text-[13px] font-bold text-white disabled:opacity-40">{busy ? w.verifying : w.verify}</button>
         </div>) : null}
       {note ? (
