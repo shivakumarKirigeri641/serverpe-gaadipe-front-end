@@ -141,7 +141,7 @@ const T = {
     profile: 'Profile',
     howWorks: 'What do I get?',
     // As the site is now (2026-10-10): the three levels, in plain words.
-    howAnswer: '*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 2 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, up to 10 vehicles a day (30 a month — every report you buy adds 5 more), and *14 days of free monitoring* for one vehicle.\n\n*Full report ₹19* (₹11 to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears.\n\n🔢 *Vehicle checks* — after sign-in, 10 a day and 30 a month. *The more you buy, the more you can check:* every report (₹19, or ₹11 to renew) adds *5 more checks* that month. Checking the same vehicle again within an hour does not count, and removing a vehicle from My vehicles does *not* give a check back. Tap *Checks left* any time.',
+    howAnswer: '*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 2 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, and *14 days of free monitoring* for one vehicle.\n\n*Full report ₹19* (₹11 to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears. *Every purchase also adds 5 more vehicle checks* that month.\n\n🔢 *Vehicle checks — the more you buy, the more you can check*\n• Signed in: *10 a day* and *30 a month*\n• *Every report you buy — ₹19, or ₹11 to renew — adds 5 more checks* that month\n• The same vehicle again within an hour does not count\n• Removing a vehicle from My vehicles does *not* give a check back\nTap *Checks left* any time to see yours.',
     // My subscriptions (user, 2026-10-10).
     subs: {
       menu: 'My subscriptions', title: '📋 My subscriptions',
@@ -287,7 +287,7 @@ const T = {
     // After sign-in, while the email is not confirmed — with the reason (user, 2026-10-10).
     emailNudge: '📧 *Please add and confirm your email.*\n\nThat is where we send:\n🔔 *alerts* about your vehicles — a new challan, insurance or PUC about to expire\n📄 your *full reports*\n🧾 your *GST invoices*\n\nIt takes a minute: a *4-digit code* by email.',
     emailNudgeHave: (e) => `📧 *Please confirm your email* — *${e}*.\n\nThat is where we send:\n🔔 *alerts* about your vehicles — a new challan, insurance or PUC about to expire\n📄 your *full reports*\n🧾 your *GST invoices*\n\nTap below and type the *4-digit code* we email you.`,
-    verifyEmail: 'Confirm my email', addEmailOnly: 'Add my email',
+    verifyEmail: 'Confirm my email', addEmailOnly: 'Add my email', resendCode: 'Send the code again',
     addEmail: 'Add my name & email', later: 'Later',
     askName: 'Great! First, your *name* — how should we address you?',
     askEmail: (n) => `Thanks${n ? `, *${n}*` : ''}! Now your *email address* — I’ll send a *4-digit code* to confirm it is yours.`,
@@ -395,7 +395,7 @@ const T = {
     myReports: 'मेरी रिपोर्ट',
     profile: 'प्रोफ़ाइल',
     howWorks: 'मुझे क्या मिलेगा?',
-    howAnswer: '*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 2 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, दिन में 10 गाड़ियाँ (महीने में 30 — हर ख़रीदी रिपोर्ट पर 5 और), और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ₹19* (ख़रीदी हुई गाड़ी का रिन्यू ₹11) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे।\n\n🔢 *गाड़ी जाँच* — साइन इन के बाद दिन में 10 और महीने में 30। *जितना ख़रीदेंगे, उतना ज़्यादा जाँच सकेंगे:* हर रिपोर्ट (₹19, या रिन्यू के लिए ₹11) पर उस महीने *5 जाँच और* मिलती हैं। एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता, और मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती। कभी भी *बाकी जाँच* दबाएँ।',
+    howAnswer: '*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 2 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ₹19* (ख़रीदी हुई गाड़ी का रिन्यू ₹11) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे। *हर ख़रीद पर उस महीने 5 गाड़ी जाँच और* मिलती हैं।\n\n🔢 *गाड़ी जाँच — जितना ख़रीदेंगे, उतना ज़्यादा जाँच सकेंगे*\n• साइन इन करके: *दिन में 10* और *महीने में 30*\n• *हर रिपोर्ट ख़रीदने पर — ₹19, या रिन्यू के लिए ₹11 — उस महीने 5 जाँच और*\n• एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता\n• मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती\nअपनी बाकी जाँच देखने के लिए कभी भी *बाकी जाँच* दबाएँ।',
     subs: {
       menu: 'मेरी सदस्यता', title: '📋 मेरी सदस्यता',
       none: 'अभी कोई निगरानी नहीं। पूरी रिपोर्ट ख़रीदें (₹19) — इसमें 28 दिन की निगरानी शामिल है — या जाँची हुई किसी गाड़ी पर 14 दिन मुफ़्त निगरानी शुरू करें।',
@@ -526,7 +526,7 @@ const T = {
     helpBody: '*support@gaadipe.in* पर लिखें — हम एक दिन में जवाब देते हैं। अपना मोबाइल नंबर और (अगर हो) गाड़ी नंबर ज़रूर लिखें।',
     emailNudge: '📧 *कृपया अपना ईमेल जोड़ें और कन्फ़र्म करें।*\n\nवहीं हम भेजते हैं:\n🔔 आपकी गाड़ियों के *अलर्ट* — नया चालान, बीमा या PUC खत्म होने वाला हो\n📄 आपकी *पूरी रिपोर्ट*\n🧾 आपके *GST बिल*\n\nबस एक मिनट: ईमेल पर *4 अंकों का कोड*।',
     emailNudgeHave: (e) => `📧 *कृपया अपना ईमेल कन्फ़र्म करें* — *${e}*।\n\nवहीं हम भेजते हैं:\n🔔 आपकी गाड़ियों के *अलर्ट* — नया चालान, बीमा या PUC खत्म होने वाला हो\n📄 आपकी *पूरी रिपोर्ट*\n🧾 आपके *GST बिल*\n\nनीचे दबाएँ और ईमेल पर आया *4 अंकों का कोड* लिखें।`,
-    verifyEmail: 'मेरा ईमेल कन्फ़र्म करें', addEmailOnly: 'मेरा ईमेल जोड़ें',
+    verifyEmail: 'मेरा ईमेल कन्फ़र्म करें', addEmailOnly: 'मेरा ईमेल जोड़ें', resendCode: 'कोड फिर से भेजें',
     addEmail: 'नाम और ईमेल जोड़ें', later: 'बाद में',
     askName: 'बढ़िया! पहले अपना *नाम* लिखें — हम आपको किस नाम से बुलाएँ?',
     askEmail: (n) => `धन्यवाद${n ? `, *${n}*` : ''}! अब अपना *ईमेल पता* लिखें — कन्फ़र्म करने के लिए मैं *4 अंकों का कोड* भेजूँगा।`,
@@ -1008,7 +1008,7 @@ export default function Chat() {
     push({ from: 'me', kind: 'text', text });
     bot(lang === 'hi'
       ? 'मैं गाड़ी नंबर समझता हूँ — जैसे *KA01AB1234*। या नीचे से कोई विकल्प चुनें।'
-      : 'I understand vehicle numbers — like *KA01AB1234*. Or pick an option below.', { chips: me ? ['howWorks'] : ['signIn'] });
+      : 'I understand vehicle numbers — like *KA01AB1234*. Or pick an option below.', { chips: me ? ['myVehicles', 'mySubs', 'checksLeft', 'howWorks'] : ['sample', 'howWorks', 'signIn'] });
   }
 
   async function check(raw, { signedIn = false } = {}) {
@@ -1181,8 +1181,8 @@ export default function Chat() {
 
   function startProfile() {
     const first = String(me?.name || '').split(/\s+/)[0];
-    if (me?.name) { setPendingName(''); setMode('email'); bot(L.askEmail(first)); }
-    else { setMode('name'); bot(L.askName); }
+    if (me?.name) { setPendingName(''); setMode('email'); bot(L.askEmail(first), { chips: ['later'] }); }
+    else { setMode('name'); bot(L.askName, { chips: ['later'] }); }
     setTimeout(() => inputRef.current?.focus(), 50);
   }
 
@@ -1201,7 +1201,7 @@ export default function Chat() {
     push({ from: 'me', kind: 'text', text: n });
     if (!/^[\p{L}\p{M}][\p{L}\p{M} .'-]{1,59}$/u.test(n)) { bot(L.badName); return; }
     setPendingName(n); setMode('email');
-    bot(L.askEmail(n.split(' ')[0]));
+    bot(L.askEmail(n.split(' ')[0]), { chips: ['later'] });
   }
 
   async function sendEmail(text, { echo = true } = {}) {
@@ -1211,7 +1211,7 @@ export default function Chat() {
     try {
       // The name is saved first; the email is confirmed with a code typed right here (2026-10-07).
       if (pendingName) { const o = await api.saveMe({ name: pendingName }); setMe?.(o.user); setPendingName(''); }
-      if (me?.email_verified && String(me.email).toLowerCase() === e) { setMode('plate'); bot(`${L.emailSame(e)} ${L.emailOk}`); return; }
+      if (me?.email_verified && String(me.email).toLowerCase() === e) { setMode('plate'); bot(`${L.emailSame(e)} ${L.emailOk}`, { chips: ['another', 'myVehicles'] }); return; }
       const out = await api.emailCode(e);
       setPendingEmail(e); setMode('ecode');
       bot(L.emailCodeSent(e) + (out.dev ? '\n\n_(testing: the code is in the server log)_' : ''), { chips: ['later'] });
@@ -1232,13 +1232,13 @@ export default function Chat() {
       const out = await api.emailVerify(pendingEmail, code);
       setMe?.(out.user); setMode('plate'); setPendingEmail('');
       bot(L.emailVerifiedNow, { chips: ['another', 'myVehicles'] });
-    } catch (err) { bot(`⚠️ ${err.message}`); }
+    } catch (err) { bot(`⚠️ ${err.message}`, { chips: ['resendCode', 'later'] }); }
     finally { setBusy(false); }
   }
 
   async function resendLink() {
-    try { const out = await api.resendEmail(); bot(out.already ? L.emailOk : L.resent); }
-    catch (e) { bot(`⚠️ ${e.message}`); }
+    try { const out = await api.resendEmail(); bot(out.already ? L.emailOk : L.resent, { chips: ['another', 'myVehicles'] }); }
+    catch (e) { bot(`⚠️ ${e.message}`, { chips: ['another'] }); }
   }
 
   /* ────────────── the account, inside the conversation (no other pages) ── */
@@ -1254,7 +1254,7 @@ export default function Chat() {
         await new Promise((r) => setTimeout(r, 2500));
         out = await api.vehicle(reg).catch(() => out);
       }
-      if (out.error || !out.vehicle) { bot(`⚠️ ${out.message || 'Could not open that vehicle.'}`); return; }
+      if (out.error || !out.vehicle) { bot(`⚠️ ${out.message || 'Could not open that vehicle.'}`, { chips: ['another', 'myVehicles'] }); return; }
       push({ from: 'bot', kind: 'vehicle', vehicle: out.vehicle, paid: Boolean(out.vehicle.paid), report: out.report || null,
              price: out.price_paise, renewal: Boolean(out.renewal), signedIn: true });
       /* THE GST INVOICE TOO, right after paying (2026-10-07): this vehicle's newest
@@ -1274,7 +1274,7 @@ export default function Chat() {
         }
         if (inv) push({ from: 'bot', kind: 'invoices', rows: [inv] });
       }
-    } catch (e) { bot(`⚠️ ${e.message}`); } finally { setBusy(false); }
+    } catch (e) { bot(`⚠️ ${e.message}`, { chips: ['another', 'myVehicles'] }); } finally { setBusy(false); }
   }
 
   async function showList(kind) {
@@ -1308,7 +1308,7 @@ export default function Chat() {
     try {
       const { blob, filename } = await (kind === 'invoice' ? api.invoicePdf(row.id, true) : api.reportPdf(row.id, true));
       saveBlob(blob, filename);
-    } catch (e) { bot(`⚠️ ${e.message}`); }
+    } catch (e) { bot(`⚠️ ${e.message}`, { chips: [kind === 'invoice' ? 'invoices' : 'myReports', 'another'] }); }
   }
 
   /* ── the ⋮ menu's own cards ── */
@@ -1338,10 +1338,10 @@ export default function Chat() {
     try {
       const out = await api.startFreeMonitor(reg);
       setFm((s) => ({ ...(s || {}), eligible: false, used: { reg_no: out.reg_no, ends_at: out.ends_at, active: true } }));
-      bot(L.fm.started(prettyPlate(out.reg_no), day(out.ends_at)));
+      bot(L.fm.started(prettyPlate(out.reg_no), day(out.ends_at)), { chips: ['mySubs', 'another'] });
       if (notifyState !== 'on') push({ from: 'bot', kind: 'notify' });
     } catch (e) {
-      bot(`⚠️ ${e.message}`);
+      bot(`⚠️ ${e.message}`, { chips: ['mySubs', 'another'] });
       api.freeMonitor().then(setFm).catch(() => {});
     }
   }
@@ -1351,7 +1351,7 @@ export default function Chat() {
       await notify.disable().catch(() => {});
       resetNote.current = `⏏ ${L.signOutAllDone(out.ended || 1)}`;
       await signOut().catch(() => {});
-    } catch (e) { bot(`⚠️ ${e.message}`); }
+    } catch (e) { bot(`⚠️ ${e.message}`, { chips: ['another'] }); }
   }
   async function saveEmail(email) {
     const e = String(email || '').trim();
@@ -1373,14 +1373,15 @@ export default function Chat() {
       // The screen resets to a fresh welcome when the sign-in ends (the effect on `me`), with this note on top.
       resetNote.current = `✅ ${out.message || 'Your account is deactivated.'}`;
       await signOut().catch(() => {});
-    } catch (e) { bot(`⚠️ ${e.message}`); }
+    } catch (e) { bot(`⚠️ ${e.message}`, { chips: ['another'] }); }
   }
   async function allowNotifications() {
     try {
       const s = await notify.enable();
       setNotifyState(s);
-      bot(s === 'on' ? L.notifyOn : s === 'blocked' ? L.notifyBlocked : s === 'unsupported' ? L.notifyUnsupported : L.notifyOffNow);
-    } catch (e) { bot(`⚠️ ${e.message}`); }
+      bot(s === 'on' ? L.notifyOn : s === 'blocked' ? L.notifyBlocked : s === 'unsupported' ? L.notifyUnsupported : L.notifyOffNow,
+        { chips: me ? ['another', 'mySubs'] : ['another'] });
+    } catch (e) { bot(`⚠️ ${e.message}`, { chips: ['another'] }); }
   }
   async function notificationsMenu() {
     setMenuOpen(false);
@@ -1445,7 +1446,7 @@ export default function Chat() {
       return;
     }
     // "What do I get?" lives with the signed-in options now (user, 2026-10-08: the welcome already says it all).
-    if (key === 'howWorks') { push({ from: 'me', kind: 'text', text: L.howWorks }); bot(L.howAnswer, { chips: me ? ['another'] : ['sample', 'signIn'] }); return; }
+    if (key === 'howWorks') { push({ from: 'me', kind: 'text', text: L.howWorks }); bot(L.howAnswer, { chips: me ? ['another', 'checksLeft', 'mySubs'] : ['sample', 'signIn'] }); return; }
     // The sample report on a made-up vehicle, and the full description (2026-10-08).
     if (key === 'sample') {
       journey({ step: 'welcome', section: 'sample report' });
@@ -1477,6 +1478,8 @@ export default function Chat() {
     if (key === 'profile') { showProfile(); return; }
     if (key === 'notifyOff') { notify.disable().then(() => { setNotifyState('off'); bot(L.notifyOffNow, { chips: ['another'] }); }); return; }
     if (key === 'addEmail') { push({ from: 'me', kind: 'text', text: L.addEmail }); startProfile(); return; }
+    // A wrong or expired email code: a new one to the same address.
+    if (key === 'resendCode') { push({ from: 'me', kind: 'text', text: L.resendCode }); sendEmail(pendingEmail || me?.email || '', { echo: false }); return; }
     // Confirm the email on file now (the code goes at once), or add one — name first if there is none.
     if (key === 'verifyEmail') {
       if (me?.email && !me.email_verified) { push({ from: 'me', kind: 'text', text: L.verifyEmail }); sendEmail(me.email, { echo: false }); return; }
@@ -1497,7 +1500,7 @@ export default function Chat() {
     howWorks: `❓ ${L.howWorks}`, another: `🔍 ${L.another}`, signIn: `🔐 ${L.signIn}`,
     myVehicles: `🚗 ${L.myVehicles}`, myReports: `📄 ${L.myReports}`, profile: `👤 ${L.profile}`, invoices: `🧾 ${L.invoices}`,
     sample: L.sample.chip, fullInfo: L.sample.more,
-    notifyOff: `🔕 ${L.turnOff}`, addEmail: `📧 ${L.addEmail}`, verifyEmail: `✉️ ${me?.email && !me.email_verified ? L.verifyEmail : L.addEmailOnly}`, later: `⏰ ${L.later}`, resendEmail: `↻ ${L.resend}`,
+    notifyOff: `🔕 ${L.turnOff}`, addEmail: `📧 ${L.addEmail}`, verifyEmail: `✉️ ${me?.email && !me.email_verified ? L.verifyEmail : L.addEmailOnly}`, resendCode: `↻ ${L.resendCode}`, later: `⏰ ${L.later}`, resendEmail: `↻ ${L.resend}`,
   }[key] || (key.startsWith('useEmail:') ? `✓ ${L.didYouMean(key.slice(9))}` : key));
 
   // The payment window opens over the chat; paying returns to /chat?paid=REG.
@@ -1637,18 +1640,18 @@ export default function Chat() {
             if (it.kind === 'signoutall') return <SignOutCard key={it.id} L={L} title={L.signOutAllH} body={L.signOutAllBody} onConfirm={doSignOutAll} onCancel={() => bot(L.cancelled, { chips: ['another', 'myVehicles'] })} />;
             if (it.kind === 'feedback') {
               return <FeedbackCard key={it.id} L={L} mode={it.mode || 'stars'} title={it.title}
-                onSend={(rating, message) => { sendFeedback(rating, it.src || 'menu', it.reg, message); bot(L.fb.thanks); }} />;
+                onSend={(rating, message) => { sendFeedback(rating, it.src || 'menu', it.reg, message); bot(L.fb.thanks, { chips: me ? ['another', 'myVehicles'] : ['another'] }); }} />;
             }
             if (it.kind === 'terms') return <TermsLine key={it.id} L={L} optIn={offersOptIn} onOptIn={me ? null : setOffersOptIn} />;
             if (it.kind === 'freeTerms') return me ? null : <FreeTermsLine key={it.id} L={L} />;
-            if (it.kind === 'notify') return <NotifyCard key={it.id} L={L} state={notifyState} onAllow={allowNotifications} onLater={() => bot(lang === 'hi' ? 'ठीक है। मेनू ⋮ → नोटिफ़िकेशन से कभी भी चालू करें।' : 'OK. Turn them on any time from the menu ⋮ → Notifications.')} />;
+            if (it.kind === 'notify') return <NotifyCard key={it.id} L={L} state={notifyState} onAllow={allowNotifications} onLater={() => bot(lang === 'hi' ? 'ठीक है। मेनू ⋮ → नोटिफ़िकेशन से कभी भी चालू करें।' : 'OK. Turn them on any time from the menu ⋮ → Notifications.', { chips: me ? ['another', 'myVehicles'] : ['another'] })} />;
             if (it.kind === 'help') return <CardShell key={it.id} title={L.helpH}><div className="text-[13.5px] text-[#0b2e2b]"><Text text={L.helpBody} /></div>
               <a href="mailto:support@gaadipe.in" className="mt-2 inline-block rounded-full bg-[#0f766e] px-3 py-1.5 text-[12px] font-bold text-white">✉️ support@gaadipe.in</a></CardShell>;
             if (it.kind === 'profile') {
               return <ProfileCard key={it.id} user={me ? { ...it.user, ...me } : it.user} L={L}
                 onPromo={async (agree) => { const out = await api.setPromoConsent(agree); setMe?.(out.user); return out.user; }}
                 onSaveName={async (name) => { const out = await api.saveMe({ name }); setMe?.(out.user); return out; }}
-                onVerified={(u) => { setMe?.(u); bot(L.emailVerifiedNow); }}
+                onVerified={(u) => { setMe?.(u); bot(L.emailVerifiedNow, { chips: ['another', 'myVehicles'] }); }}
                 onSwitched={async (out) => {
                   // Signed in on the new number: its own (fresh) conversation, and a word on what happened.
                   resetNote.current = `📱 ${L.switched(prettyMobile(out.user?.mobile))}${out.transfer_request_id ? `\n\n${L.transferSent}` : ''}`;
