@@ -47,9 +47,9 @@ const T = {
       + 'Free check after sign-in · full report *₹19* with PDF.\n'
       + '*Sign in with your mobile to start* 👇',
     // The free check before sign-in (2026-10-08, migration 142).
+    // The opening for a first-time visitor (user, 2026-10-10): just "type a number" — no buttons, no sign-in.
     helloFree: 'Namaste! 🙏 I’m *GaadiPe* — I read any Indian vehicle’s record from Government data.\n'
-      + '*Type any vehicle number below* 👇 and I’ll tell you its make and model *free*, no sign-in (the exact variant shows after you sign in).\n'
-      + 'Want everything — insurance, PUC, challans, loan, owners? Full report *₹19*.',
+      + '*Type a vehicle number below* 👇 — like *KA01AB1234* — and I’ll show you the vehicle, *free*.',
     free: {
       // GaadiPe talking (user, 2026-10-08: "make the conversation look like GaadiPe replying, attractive").
       ask: (r) => `Great — let’s look up *${r}* 🔎\nOne quick thing before I do:`,
@@ -237,8 +237,7 @@ const T = {
       + 'साइन इन के बाद मुफ़्त जाँच · पूरी रिपोर्ट *₹19* में, PDF के साथ।\n'
       + '*शुरू करने के लिए मोबाइल से साइन इन करें* 👇',
     helloFree: 'नमस्ते! 🙏 मैं *GaadiPe* हूँ — सरकारी डेटा से किसी भी भारतीय गाड़ी का रिकॉर्ड पढ़ता हूँ।\n'
-      + '*नीचे कोई भी गाड़ी नंबर लिखें* 👇 — मैं उसकी कंपनी और मॉडल *मुफ़्त* बताऊँगा, बिना साइन इन (सटीक वेरिएंट साइन इन के बाद दिखेगा)।\n'
-      + 'सब कुछ चाहिए — इंश्योरेंस, PUC, चालान, लोन, मालिक? पूरी रिपोर्ट *₹19*।',
+      + '*नीचे कोई भी गाड़ी नंबर लिखें* 👇 — जैसे *KA01AB1234* — मैं गाड़ी की जानकारी *मुफ़्त* दिखाऊँगा।',
     free: {
       ask: (r) => `बढ़िया — *${r}* देखते हैं 🔎\nउससे पहले एक छोटी सी बात:`,
       foundIntro: (r) => `यह रहा! ✨ सरकारी रिकॉर्ड में *${r}* के बारे में:`,
@@ -563,7 +562,7 @@ export default function Chat() {
       const note = resetNote.current; resetNote.current = null;
       const hello = signInRequired ? 'helloShort' : 'helloFree';
       setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note ? `${note}\n\n${L[hello]}` : L[hello],
-        chips: signInRequired ? ['sample', 'fullInfo'] : ['sample', 'fullInfo', 'signIn'] },
+        chips: signInRequired ? ['sample', 'fullInfo'] : [] },
         { id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: T[lang === 'hi' ? 'en' : 'hi'][hello] },
         // Signed out with sign-in required: straight back to the mobile number, policies first (2026-10-08).
         ...(signInRequired ? [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'terms' }] : [])]);
@@ -708,7 +707,8 @@ export default function Chat() {
       }
     } else if (!me) {
       // The free check is on (check_sign_in_required false, migration 142): type a number, see make & model.
-      bot(L.helloFree, { pace: 650, chips: ['sample', 'fullInfo', 'signIn'] });
+      // No buttons (user, 2026-10-10: "showing sign in feels awkward") — just type a number.
+      bot(L.helloFree, { pace: 650 });
       bot(T[lang === 'hi' ? 'en' : 'hi'].helloFree, { pace: 700 });
     }
     /* LOCAL DEVELOPMENT ONLY (?demo=full): the full-report card with sample data,
@@ -772,7 +772,8 @@ export default function Chat() {
           '', L.askVehicle].filter((x) => x !== null).join('\n')
         : L.welcomeNew;
       if (justSignedIn || !items.some((x) => x.kind === 'welcome')) {
-        push({ from: 'bot', kind: 'welcome', text: lines, last: s.last_vehicle, chips: ['another', 'myVehicles', 'myReports', 'howWorks'] });
+        // No quick buttons for a signed-in customer (user, 2026-10-10) — the Menu has them all.
+        push({ from: 'bot', kind: 'welcome', text: lines, last: s.last_vehicle, chips: [] });
       }
     } catch { /* the chat still works without it */ }
   }
@@ -1211,8 +1212,11 @@ export default function Chat() {
   }
 
   // Nothing until the saved sign-in is known — "Sign in" must never flash for someone signed in.
-  const quick = !ready ? [] : me
-    ? [...(me.email_verified ? [] : ['addEmail']), 'another', 'myVehicles', 'myReports', 'invoices', 'howWorks', 'profile'] : ['signIn'];
+  /* NO QUICK-BUTTON ROW (user, 2026-10-10: "on welcome, no need to show quick options —
+     just ask them to type the vehicle number"). Signed in, the Menu holds every option;
+     a visitor simply types a number, and signing in is offered where it means something
+     (the back of the free check's card). */
+  const quick = [];
   const placeholder = { mobile: L.placeholderMobile, code: L.placeholderCode, ecode: L.placeholderCode, name: L.placeholderName, email: L.placeholderEmail }[mode] || L.placeholderPlate;
   const typed = mode === 'name' || mode === 'email';   // free text: no capitals forced, no digit spacing
   const plateHint = mode === 'plate' && looksLikePlate(input);
@@ -1347,7 +1351,7 @@ export default function Chat() {
       {/* Quick actions and the composer, above the keyboard. */}
       <footer className="border-t border-black/5 bg-white/95 backdrop-blur" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="mx-auto max-w-2xl">
-          <div className="flex gap-2 overflow-x-auto px-3 pt-2 [scrollbar-width:none]">
+          <div className={`flex gap-2 overflow-x-auto px-3 [scrollbar-width:none] ${quick.length ? 'pt-2' : 'hidden'}`}>
             {quick.map((k) => (
               <button key={k} type="button" data-test={`quick-${k}`} onClick={() => chip(k)}
                 className="shrink-0 rounded-full border border-[#0f766e]/20 bg-[#0f766e]/5 px-3 py-1.5 text-xs font-semibold text-[#0a4f49] active:scale-95">
