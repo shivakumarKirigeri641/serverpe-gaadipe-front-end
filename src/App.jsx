@@ -5,6 +5,7 @@ import { api, WEB_LOGIN } from './lib/api';
 import { startSession, pageView, watchWhatsAppLinks, startHeartbeat, journey } from './lib/track';
 import EmailPrompt from './components/EmailCard.jsx';
 import ClickTracker from './components/ClickTracker.jsx';
+import HangingNotice from './components/HangingNotice.jsx';
 import Home from './pages/Home.jsx';
 import Policy from './pages/Policy.jsx';
 import Support from './pages/Support.jsx';
@@ -100,6 +101,8 @@ export default function App() {
     <PageViews />
     <EmailPrompt />
     <ClickTracker />
+    {/* On every page, the chat too (2026-10-10): GaadiPe is on the web, WhatsApp is gone. */}
+    <HangingNotice />
     <Routes>
       <Route path="/" element={<Home />} />
       {/* The chat (2026-10-07): free check without signing in; full-screen, installable. */}

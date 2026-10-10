@@ -278,3 +278,11 @@
 @media (max-width: 640px) {
   .wrap { padding-left: 1rem; padding-right: 1rem; }
 }
+
+/* The hanging notice (2026-10-10): swings in from its nail, then sways now and then. */
+@keyframes hang-swing { 0% { transform: rotate(-9deg); } 22% { transform: rotate(6deg); } 44% { transform: rotate(-3.5deg); } 66% { transform: rotate(2deg); } 84% { transform: rotate(-1deg); } 100% { transform: rotate(0); } }
+@keyframes hang-sway { 0%, 80%, 100% { transform: rotate(0); } 86% { transform: rotate(2.2deg); } 93% { transform: rotate(-1.6deg); } }
+.hang-sign { transform-origin: 50% 0; }
+.hang-swing { animation: hang-swing 2.4s ease-out both, hang-sway 9s ease-in-out 2.4s infinite; }
+.hang-sway { animation: hang-sway 9s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .hang-swing, .hang-sway { animation: none; } }

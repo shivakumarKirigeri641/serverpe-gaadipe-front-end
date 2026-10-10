@@ -112,6 +112,8 @@ const T = {
     signedIn: '✅ You’re signed in.',
     welcomeBack: (n) => `🎉 Welcome back${n ? `, *${n}*` : ''}!`,
     welcomeNew: '👋 Welcome to GaadiPe! Send any vehicle number to begin.',
+    // In the welcome too (user, 2026-10-10), with the hanging notice: WhatsApp is gone.
+    webNote: '📢 _GaadiPe now serves you here on the web — our WhatsApp account was disabled. Alerts reach you by browser notifications, email and SMS._',
     askVehicle: '🔍 Type a vehicle number below to check it now — like *KA01AB1234*.',
     // Its own reply after the welcome and the terms line (user, 2026-10-10).
     typeNow: '👇 *Type a vehicle number below* — like *KA01AB1234*.\nOr tap a button.',
@@ -383,6 +385,7 @@ const T = {
     signedIn: '✅ आप साइन इन हो गए हैं।',
     welcomeBack: (n) => `🎉 वापसी पर स्वागत है${n ? `, *${n}*` : ''}!`,
     welcomeNew: '👋 GaadiPe में स्वागत है! शुरू करने के लिए कोई भी गाड़ी नंबर भेजें।',
+    webNote: '📢 _GaadiPe अब यहीं वेब पर आपकी सेवा करता है — हमारा WhatsApp अकाउंट बंद कर दिया गया। अलर्ट ब्राउज़र नोटिफ़िकेशन, ईमेल और SMS से आते हैं।_',
     askVehicle: '🔍 जाँच के लिए नीचे कोई भी गाड़ी नंबर लिखें — जैसे *KA01AB1234*।',
     typeNow: '👇 *नीचे गाड़ी नंबर लिखें* — जैसे *KA01AB1234*।\nया कोई बटन दबाएँ।',
     hint: { plate: 'गाड़ी नंबर लिखें', tap: ' — या ऊपर कोई बटन दबाएँ', mobile: 'अपना 10 अंकों का मोबाइल नंबर लिखें',
@@ -746,7 +749,7 @@ export default function Chat() {
       setMode(signInRequired ? 'mobile' : 'plate');
       const note = resetNote.current; resetNote.current = null;
       const hello = signInRequired ? 'helloShort' : 'helloFree';
-      setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note ? `${note}\n\n${L[hello]}` : L[hello],
+      setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: `${note ? `${note}\n\n` : ''}${L[hello]}\n\n${L.webNote}`,
         chips: signInRequired ? ['sample', 'fullInfo'] : [] },
         // Only the chosen language now (2026-10-10) — no second copy in the other one.
         // Signed out with sign-in required: straight back to the mobile number, policies first (2026-10-08).
@@ -896,7 +899,7 @@ export default function Chat() {
       // whose check asks for the sign-in itself.
       // In the language chosen in the chat (2026-10-10) — once, not in both.
       // A sample report and the full text one tap away (2026-10-08).
-      bot(L.helloShort, { pace: 650, chips: ['sample', 'fullInfo'] });
+      bot(`${L.helloShort}\n\n${L.webNote}`, { pace: 650, chips: ['sample', 'fullInfo'] });
       // (/login and ?signin=1 land here too: the same opening, asked once.)
       if (!(reg && looksLikePlate(reg))) startSignIn(null, { quiet: true });
     } else if (!me && (params.get('signin') || params.get('open') || params.get('next') || signingSaved())) {
@@ -906,7 +909,7 @@ export default function Chat() {
          number, please" (user, 2026-10-08). After the code was sent, straight
          back to "type the code". */
       const saved = signingSaved();
-      bot(L.helloShort, { pace: 650, chips: ['sample', 'fullInfo'] });
+      bot(`${L.helloShort}\n\n${L.webNote}`, { pace: 650, chips: ['sample', 'fullInfo'] });
       startSignIn(null, { quiet: true });
       if (saved?.stage === 'code' && /^[6-9]\d{9}$/.test(saved.mobile || '')) {
         setMobile(saved.mobile); setMode('code');
@@ -915,7 +918,7 @@ export default function Chat() {
     } else if (!me) {
       // The free check is on (check_sign_in_required false, migration 142): type a number, see make & model.
       // No buttons (user, 2026-10-10: "showing sign in feels awkward") — just type a number.
-      bot(L.helloFree, { pace: 650 });
+      bot(`${L.helloFree}\n\n${L.webNote}`, { pace: 650 });
       // Agreeing by entering a number: the line under the welcome (no "Agree & check" button).
       setTimeout(() => push({ from: 'bot', kind: 'freeTerms' }), 1500);
       // Then its own reply: "Type in a vehicle number now." (user, 2026-10-10) — with
@@ -988,8 +991,8 @@ export default function Chat() {
             s.reports ? `• ${L.reports(s.reports)}` : null] : []),
           ...leftLines,
           // Once signed in, ask for the next number (2026-10-08).
-          '', L.askVehicle].filter((x) => x !== null).join('\n')
-        : [L.welcomeNew, ...leftLines].join('\n');
+          '', L.askVehicle, '', L.webNote].filter((x) => x !== null).join('\n')
+        : [L.welcomeNew, ...leftLines, '', L.webNote].join('\n');
       if (justSignedIn || !items.some((x) => x.kind === 'welcome')) {
         // Type a number, or tap — reply buttons like WhatsApp's (user, 2026-10-10, later the same day).
         push({ from: 'bot', kind: 'welcome', text: lines, last: s.last_vehicle,
