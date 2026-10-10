@@ -6,6 +6,7 @@ import { useSession } from '../lib/session';
 import { useLang } from '../lib/i18n.jsx';
 import BuyDialog from '../components/BuyDialog.jsx';
 import * as notify from '../lib/notify';
+import * as install from '../lib/install';
 import { journey, interaction, scrollSource, onEnded } from '../lib/track';
 import EmailVerify from '../components/EmailVerify.jsx';
 import { saveBlob } from '../components/ui.jsx';
@@ -289,6 +290,17 @@ const T = {
     emailNudgeHave: (e) => `📧 *Please confirm your email* — *${e}*.\n\nThat is where we send:\n🔔 *alerts* about your vehicles — a new challan, insurance or PUC about to expire\n📄 your *full reports*\n🧾 your *GST invoices*\n\nTap below and type the *4-digit code* we email you.`,
     verifyEmail: 'Confirm my email', addEmailOnly: 'Add my email', resendCode: 'Send the code again',
     elsewhere: 'You signed in on another device, so you were signed out here. Sign in again to use GaadiPe on this one.',
+    // "Install the app" (2026-10-10).
+    inst: {
+      menu: 'Install the app',
+      ask: '📲 *Get GaadiPe on your home screen* — opens in one tap like an app, straight into your vehicles and alerts. No Play Store, almost no space.',
+      install: 'Install GaadiPe', gotIt: 'Got it',
+      ios1: 'Tap the *Share* button', ios2: 'Choose *Add to Home Screen*', ios3: 'Tap *Add* — GaadiPe is on your home screen',
+      already: '✅ GaadiPe is already installed on this phone.',
+      desktop: 'Open your browser\'s menu (*⋮* or *⋯*) and tap *Install app* or *Add to Home screen*. On a computer, there is also an install icon at the right of the address bar.',
+      thanks: '🎉 GaadiPe is on your home screen now — open it from there any time.',
+      laterOk: 'OK — you can install it any time from the Menu → Install the app.',
+    },
     addEmail: 'Add my name & email', later: 'Later',
     askName: 'Great! First, your *name* — how should we address you?',
     askEmail: (n) => `Thanks${n ? `, *${n}*` : ''}! Now your *email address* — I’ll send a *4-digit code* to confirm it is yours.`,
@@ -529,6 +541,16 @@ const T = {
     emailNudgeHave: (e) => `📧 *कृपया अपना ईमेल कन्फ़र्म करें* — *${e}*।\n\nवहीं हम भेजते हैं:\n🔔 आपकी गाड़ियों के *अलर्ट* — नया चालान, बीमा या PUC खत्म होने वाला हो\n📄 आपकी *पूरी रिपोर्ट*\n🧾 आपके *GST बिल*\n\nनीचे दबाएँ और ईमेल पर आया *4 अंकों का कोड* लिखें।`,
     verifyEmail: 'मेरा ईमेल कन्फ़र्म करें', addEmailOnly: 'मेरा ईमेल जोड़ें', resendCode: 'कोड फिर से भेजें',
     elsewhere: 'आपने किसी दूसरे डिवाइस पर साइन इन किया, इसलिए यहाँ से साइन आउट हो गए। इस डिवाइस पर GaadiPe इस्तेमाल करने के लिए फिर से साइन इन करें।',
+    inst: {
+      menu: 'ऐप इंस्टॉल करें',
+      ask: '📲 *GaadiPe को होम स्क्रीन पर रखें* — ऐप की तरह एक टैप में खुलेगा, सीधे आपकी गाड़ियों और अलर्ट पर। Play Store नहीं, लगभग कोई जगह नहीं।',
+      install: 'GaadiPe इंस्टॉल करें', gotIt: 'समझ गया',
+      ios1: '*Share* बटन दबाएँ', ios2: '*Add to Home Screen* चुनें', ios3: '*Add* दबाएँ — GaadiPe आपकी होम स्क्रीन पर',
+      already: '✅ GaadiPe इस फ़ोन पर पहले से इंस्टॉल है।',
+      desktop: 'अपने ब्राउज़र का मेनू (*⋮* या *⋯*) खोलें और *Install app* या *Add to Home screen* दबाएँ। कंप्यूटर पर एड्रेस बार के दाईं ओर इंस्टॉल आइकन भी होता है।',
+      thanks: '🎉 GaadiPe अब आपकी होम स्क्रीन पर है — वहीं से कभी भी खोलें।',
+      laterOk: 'ठीक है — मेनू → ऐप इंस्टॉल करें से कभी भी इंस्टॉल करें।',
+    },
     addEmail: 'नाम और ईमेल जोड़ें', later: 'बाद में',
     askName: 'बढ़िया! पहले अपना *नाम* लिखें — हम आपको किस नाम से बुलाएँ?',
     askEmail: (n) => `धन्यवाद${n ? `, *${n}*` : ''}! अब अपना *ईमेल पता* लिखें — कन्फ़र्म करने के लिए मैं *4 अंकों का कोड* भेजूँगा।`,
@@ -564,7 +586,8 @@ const T = {
 const STORE = 'gp.chat.u.';
 const OLD_STORE = 'gp.chat.v1';
 const loadFor = (userId) => {
-  try { return JSON.parse(localStorage.getItem(`${STORE}${userId}`) || '[]').filter((x) => x.kind !== 'typing'); } catch { return []; }
+  // An install offer is never brought back from an earlier visit — it is offered fresh, or not at all (2026-10-10).
+  try { return JSON.parse(localStorage.getItem(`${STORE}${userId}`) || '[]').filter((x) => x.kind !== 'typing' && x.kind !== 'install'); } catch { return []; }
 };
 const USED = 'gp.chat.used';
 const uid = () => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
@@ -1169,6 +1192,8 @@ export default function Chat() {
       const ns = await notify.resume().catch(() => 'unsupported');
       setNotifyState(ns);
       if (ns === 'off') push({ from: 'bot', kind: 'notify' });
+      // "Install the app" right after signing in — never when installed, or put off in the last 14 days.
+      if (install.shouldOffer()) push({ from: 'bot', kind: 'install', pace: 900 });
       if (pendingReg) {
         // The number typed before signing in is checked now, without asking again (2026-10-08).
         const reg = pendingReg;
@@ -1659,6 +1684,10 @@ export default function Chat() {
             }
             if (it.kind === 'terms') return <TermsLine key={it.id} L={L} optIn={offersOptIn} onOptIn={me ? null : setOffersOptIn} />;
             if (it.kind === 'freeTerms') return me ? null : <FreeTermsLine key={it.id} L={L} />;
+            if (it.kind === 'install') {
+              return <InstallCard key={it.id} L={L} onResult={(out) => bot(out === 'accepted' ? L.inst.thanks : out === 'ios_shown' ? L.next : L.inst.laterOk,
+                { chips: me ? ['another', 'myVehicles'] : ['another'] })} />;
+            }
             if (it.kind === 'notify') return <NotifyCard key={it.id} L={L} state={notifyState} onAllow={allowNotifications} onLater={() => bot(lang === 'hi' ? 'ठीक है। मेनू ⋮ → नोटिफ़िकेशन से कभी भी चालू करें।' : 'OK. Turn them on any time from the menu ⋮ → Notifications.', { chips: me ? ['another', 'myVehicles'] : ['another'] })} />;
             if (it.kind === 'help') return <CardShell key={it.id} title={L.helpH}><div className="text-[13.5px] text-[#0b2e2b]"><Text text={L.helpBody} /></div>
               <a href="mailto:support@gaadipe.in" className="mt-2 inline-block rounded-full bg-[#0f766e] px-3 py-1.5 text-[12px] font-bold text-white">✉️ support@gaadipe.in</a></CardShell>;
@@ -1727,6 +1756,8 @@ export default function Chat() {
           ['🌐', L.mLang, switchLang, 'lang'],
           ['💡', L.howWorks, () => { setMenuOpen(false); chip('howWorks'); }, 'how'],
           ['❓', L.mHelp, () => showCard('help', L.mHelp), 'help'],
+          // Not when opened as the installed app (2026-10-10).
+          ...(install.standalone() ? [] : [['📲', L.inst.menu, () => showCard('install', L.inst.menu), 'install']]),
           ['📜', L.mTerms, () => { setMenuOpen(false); window.open('/terms', '_blank', 'noopener'); push({ from: 'me', kind: 'text', text: L.mTerms }); nextStep(me ? ['myVehicles'] : ['howWorks']); }, 'terms'],
           ['📝', L.mFeedback, () => showCard('feedback', L.mFeedback, { mode: 'stars', src: 'menu', title: L.fb.menuH }), 'feedback'],
           ['↪', L.signOut, () => showCard('signout', L.signOut), 'signout', 'warn'],
@@ -1736,6 +1767,7 @@ export default function Chat() {
           ['🔐', L.signIn, () => { setMenuOpen(false); startSignIn(); }, 'signin'],
           ['🌐', L.mLang, switchLang, 'lang'],
           ['✉️', L.mHelp, () => showCard('help', L.mHelp), 'help'],
+          ...(install.standalone() ? [] : [['📲', L.inst.menu, () => showCard('install', L.inst.menu), 'install']]),
           ['📝', L.mFeedback, () => showCard('feedback', L.mFeedback, { mode: 'stars', src: 'menu', title: L.fb.menuH }), 'feedback'],
           ['📜', L.mTerms, () => { setMenuOpen(false); window.open('/terms', '_blank', 'noopener'); push({ from: 'me', kind: 'text', text: L.mTerms }); nextStep(me ? ['myVehicles'] : ['howWorks']); }, 'terms'],
         ]} />
@@ -2169,6 +2201,59 @@ function NotifyCard({ L, state, onAllow, onLater }) {
           <button type="button" data-test="notify-later" disabled={done} onClick={() => { setDone(true); onLater(); }}
             className="py-3 text-[13.5px] font-bold text-[#0f766e] disabled:opacity-50">{L.notNow}</button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/*
+ * "INSTALL THE APP" (user, 2026-10-10: the browser's own pop-up is rare — never on
+ * iPhone — so we offer it: after sign-in, and from the menu). Android/Chrome: our
+ * button opens the real install dialog. iPhone: the Share → Add to Home Screen steps.
+ * Never offered once installed (lib/install.js).
+ */
+function InstallCard({ L, onResult }) {
+  const [, tick] = useState(0);
+  useEffect(() => install.onChange(() => tick((x) => x + 1)), []);
+  const [done, setDone] = useState(false);
+  const how = install.mode();
+  const I = L.inst;
+  const go = async () => {
+    setDone(true);
+    const out = await install.promptInstall();
+    onResult(out);
+  };
+  return (
+    <div className="gp-pop flex flex-col items-start" data-test="install-card">
+      <div className="w-[94%] max-w-md overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
+        <div className="flex items-start gap-3 p-3.5">
+          <img src="/icon-192.png" alt="" className="h-11 w-11 shrink-0 rounded-xl shadow-sm" />
+          <div className="text-[13.5px] leading-snug text-[#0b2e2b]">
+            <Text text={!how ? (install.standalone() ? I.already : I.desktop) : I.ask} />
+            {how === 'ios' ? (
+              <ol className="mt-2 space-y-1.5 text-[13px]">
+                <li className="flex items-center gap-2"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#e3f2ef] text-[11px] font-black text-[#0a6c5f]">1</span>
+                  <span><Text text={I.ios1} /> <svg viewBox="0 0 24 24" className="mb-0.5 inline h-4 w-4 text-[#0a84ff]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-label="Share"><path d="M12 3v12M7 8l5-5 5 5" /><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg></span></li>
+                <li className="flex items-center gap-2"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#e3f2ef] text-[11px] font-black text-[#0a6c5f]">2</span><span><Text text={I.ios2} /></span></li>
+                <li className="flex items-center gap-2"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#e3f2ef] text-[11px] font-black text-[#0a6c5f]">3</span><span><Text text={I.ios3} /></span></li>
+              </ol>
+            ) : null}
+          </div>
+        </div>
+        {how ? (
+          <div className="grid grid-cols-2 border-t border-black/5">
+            {how === 'prompt' ? (
+              <button type="button" data-test="install-go" disabled={done} onClick={go}
+                className="gp-shine bg-[#ffd84d] py-3 text-[13.5px] font-black text-[#0a4f49] disabled:opacity-50">📲 {I.install}</button>
+            ) : (
+              // "Got it" on iPhone also means "don't show again for a while" — they have the steps now.
+              <button type="button" data-test="install-ok" disabled={done} onClick={() => { setDone(true); install.later(); onResult('ios_shown'); }}
+                className="bg-[#ffd84d] py-3 text-[13.5px] font-black text-[#0a4f49] disabled:opacity-50">✓ {I.gotIt}</button>
+            )}
+            <button type="button" data-test="install-later" disabled={done} onClick={() => { setDone(true); install.later(); onResult('later'); }}
+              className="py-3 text-[13.5px] font-bold text-[#0f766e] disabled:opacity-50">{L.notNow}</button>
+          </div>
+        ) : null}
       </div>
     </div>
   );
