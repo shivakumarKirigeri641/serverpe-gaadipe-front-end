@@ -106,7 +106,7 @@ const T = {
     waDivider: 'Your WhatsApp chat with GaadiPe',
     nowHere: 'Now on gaadipe.in',
     loadEarlier: 'Load earlier messages',
-    signInMore: 'Sign in free to see every validity date and how many challans, and to save your checks. Full report ₹19.',
+    signInMore: 'Sign in free to see every validity date and the challans — and get 14 days of free monitoring for one vehicle. Then ₹19 for 28 days.',
     fullReport: (p) => `Full report ${p}`,
     another: 'Check another',
     signIn: 'Sign in',
@@ -130,7 +130,30 @@ const T = {
       weight: 'Weight', rcStatus: 'RC status', rto: 'RTO', dates: 'Validity',
       challans: (n) => (n ? `🚨 ${n} pending challan${n === 1 ? '' : 's'} — offences and amounts in the full report` : '✅ No pending challans'),
       locked: 'In the ₹19 full report', verdictH: 'Verdict — before you pay',
+      challansAmt: (n, amt) => (n ? `🚨 ${n} pending challan${n === 1 ? '' : 's'}${amt ? ` · ${amt} in all` : ''} — each one in the full report` : '✅ No pending challans'),
     },
+    // Free monitoring for one vehicle (2026-10-10, site/freeMonitor.js).
+    fm: {
+      offer: '🎁 *Sign in free* and get *14 days of free monitoring* for one vehicle — alerts before insurance, PUC, road tax or fitness expire, and when a new challan appears. Then ₹19 for 28 days.',
+      start: '🆓 Monitor free for 14 days',
+      startNote: 'Alerts by SMS, email and notification. Nothing to pay; nothing renews by itself.',
+      started: (reg, until) => `✅ Free monitoring is on for *${reg}* until *${until}*. We will tell you before any document expires and when a new challan appears.`,
+      used: (reg) => `Your free monitoring has been used${reg ? ` (${reg})` : ''}. Monitoring is ₹19 for 28 days per vehicle — the full report included.`,
+      flip: '↻ See what sign-in shows', flipBack: '↺ Back to the vehicle',
+      optIn: 'Also send me occasional tips & offers by SMS (optional — change it any time in Profile)',
+    },
+    // Feedback, asked at a few moments (2026-10-10) — all optional except on deactivating.
+    fb: {
+      useful: 'Was this useful?', thanks: 'Thank you — it helps us improve GaadiPe. 🙏',
+      rateH: 'How useful was the report?', rateMore: 'What else should the report show? (optional)',
+      freeEndH: 'What stopped you from continuing?', freeEndReasons: ['Too expensive', 'I don’t need it now', 'The alerts were not useful', 'I sold the vehicle', 'Something else'],
+      menuH: 'Tell us how to make GaadiPe better', more: 'Anything else? (optional)', send: 'Send',
+    },
+    mFeedback: 'Give feedback', mSignOutAll: 'Sign out of all devices',
+    signOutAllH: '⏏ Sign out of all devices?',
+    signOutAllBody: 'Every phone and computer signed in to this account is signed out, and their notifications stop. You will need an SMS code to sign in again.',
+    signOutAllDone: (n) => `Signed out of ${n} device${n === 1 ? '' : 's'}.`,
+    deactPaid: (list) => `You still have monitoring running: ${list}. Deactivating ends it now, and it is not refunded.`,
     open: 'Open report',
     trust: '🔒 Official Government records · Secure payments · Data protected',
     online: 'online',
@@ -204,7 +227,7 @@ const T = {
     emailVerifiedNow: '✅ Your email is confirmed. Alerts, reports and invoices will come there.',
     emailCodeSent: (e) => `📧 A 6-digit code is on its way to *${e}*.\n\nType it here to confirm your email (check *Spam* too). It works for 10 minutes.`,
     badEmailCode: 'Please type the 6-digit code from the email.',
-    signOutH: '↪ Sign out?', signOutBody: 'You will need your mobile number and an SMS code to sign in again on this phone. Notifications to this phone stop.',
+    signOutH: '↪ Sign out?', signOutBody: 'You will need your mobile number and an SMS code to sign in again on this phone. Notifications to this phone stop; SMS and email alerts for your vehicles continue — to stop everything, deactivate your account.',
     signOutYes: 'Sign out', deactReasons: ['I don’t need GaadiPe any more', 'I sold my vehicle', 'Too expensive', 'I got wrong or old information', 'Privacy concerns', 'Other'],
     deactWhy: 'Why are you leaving?', deactOther: 'Tell us a little more', deactFresh: 'If you sign in again later, it will be a completely new, empty account — your old vehicles and reports will not come back.',
   },
@@ -267,7 +290,7 @@ const T = {
     waDivider: 'GaadiPe के साथ आपकी WhatsApp चैट',
     nowHere: 'अब gaadipe.in पर',
     loadEarlier: 'पुराने संदेश देखें',
-    signInMore: 'हर वैधता की तारीख और कितने चालान देखने और अपनी जाँच सेव करने के लिए मुफ़्त साइन इन करें। पूरी रिपोर्ट ₹19।',
+    signInMore: 'हर वैधता की तारीख और चालान देखने के लिए मुफ़्त साइन इन करें — और एक गाड़ी की 14 दिन मुफ़्त निगरानी पाएँ। फिर ₹19 में 28 दिन।',
     fullReport: (p) => `पूरी रिपोर्ट ${p}`,
     another: 'दूसरी गाड़ी',
     signIn: 'साइन इन',
@@ -287,7 +310,28 @@ const T = {
       weight: 'वज़न', rcStatus: 'RC स्थिति', rto: 'RTO', dates: 'वैधता',
       challans: (n) => (n ? `🚨 ${n} चालान बाकी — अपराध और राशि पूरी रिपोर्ट में` : '✅ कोई चालान बाकी नहीं'),
       locked: '₹19 की पूरी रिपोर्ट में', verdictH: 'फ़ैसला — पैसे देने से पहले',
+      challansAmt: (n, amt) => (n ? `🚨 ${n} चालान बाकी${amt ? ` · कुल ${amt}` : ''} — हर चालान पूरी रिपोर्ट में` : '✅ कोई चालान बाकी नहीं'),
     },
+    fm: {
+      offer: '🎁 *मुफ़्त साइन इन* करें और एक गाड़ी की *14 दिन मुफ़्त निगरानी* पाएँ — इंश्योरेंस, PUC, रोड टैक्स या फिटनेस खत्म होने से पहले और नया चालान आने पर अलर्ट। फिर ₹19 में 28 दिन।',
+      start: '🆓 14 दिन मुफ़्त निगरानी',
+      startNote: 'SMS, ईमेल और नोटिफ़िकेशन से अलर्ट। कुछ नहीं देना; अपने-आप कुछ रिन्यू नहीं होता।',
+      started: (reg, until) => `✅ *${reg}* की मुफ़्त निगरानी *${until}* तक चालू है। कोई दस्तावेज़ खत्म होने से पहले और नया चालान आने पर हम बताएँगे।`,
+      used: (reg) => `आपकी मुफ़्त निगरानी इस्तेमाल हो चुकी है${reg ? ` (${reg})` : ''}। निगरानी हर गाड़ी के लिए 28 दिन ₹19 में है — पूरी रिपोर्ट के साथ।`,
+      flip: '↻ साइन इन पर क्या दिखेगा', flipBack: '↺ गाड़ी पर वापस',
+      optIn: 'मुझे कभी-कभी SMS पर टिप्स और ऑफ़र भी भेजें (वैकल्पिक — प्रोफ़ाइल में कभी भी बदलें)',
+    },
+    fb: {
+      useful: 'क्या यह काम का था?', thanks: 'धन्यवाद — इससे हम GaadiPe को बेहतर बनाते हैं। 🙏',
+      rateH: 'रिपोर्ट कितनी काम की थी?', rateMore: 'रिपोर्ट में और क्या होना चाहिए? (वैकल्पिक)',
+      freeEndH: 'आगे जारी रखने से आपको क्या रोका?', freeEndReasons: ['बहुत महँगा', 'अभी ज़रूरत नहीं', 'अलर्ट काम के नहीं थे', 'मैंने गाड़ी बेच दी', 'कुछ और'],
+      menuH: 'GaadiPe को बेहतर बनाने के लिए बताएँ', more: 'और कुछ? (वैकल्पिक)', send: 'भेजें',
+    },
+    mFeedback: 'सुझाव दें', mSignOutAll: 'सभी डिवाइस से साइन आउट',
+    signOutAllH: '⏏ सभी डिवाइस से साइन आउट करें?',
+    signOutAllBody: 'इस खाते में साइन इन हर फ़ोन और कंप्यूटर साइन आउट हो जाएगा और उनके नोटिफ़िकेशन बंद हो जाएँगे। दोबारा साइन इन के लिए SMS कोड लगेगा।',
+    signOutAllDone: (n) => `${n} डिवाइस से साइन आउट हो गए।`,
+    deactPaid: (list) => `आपकी निगरानी अभी चल रही है: ${list}। खाता बंद करने पर यह अभी खत्म हो जाएगी, और पैसे वापस नहीं होंगे।`,
     open: 'रिपोर्ट खोलें',
     trust: '🔒 आधिकारिक सरकारी रिकॉर्ड · सुरक्षित भुगतान · डेटा सुरक्षित',
     online: 'ऑनलाइन',
@@ -359,7 +403,7 @@ const T = {
     emailVerifiedNow: '✅ आपके ईमेल की पुष्टि हो गई। अलर्ट, रिपोर्ट और इनवॉइस वहीं आएँगे।',
     emailCodeSent: (e) => `📧 *${e}* पर 6 अंकों का कोड भेजा जा रहा है।\n\nईमेल की पुष्टि के लिए उसे यहाँ लिखें (*Spam* भी देखें)। कोड 10 मिनट तक चलेगा।`,
     badEmailCode: 'कृपया ईमेल का 6 अंकों का कोड लिखें।',
-    signOutH: '↪ साइन आउट करें?', signOutBody: 'इस फ़ोन पर दोबारा साइन इन के लिए मोबाइल नंबर और SMS कोड लगेगा। इस फ़ोन पर नोटिफ़िकेशन बंद हो जाएँगे।',
+    signOutH: '↪ साइन आउट करें?', signOutBody: 'इस फ़ोन पर दोबारा साइन इन के लिए मोबाइल नंबर और SMS कोड लगेगा। इस फ़ोन पर नोटिफ़िकेशन बंद हो जाएँगे; आपकी गाड़ियों के SMS और ईमेल अलर्ट जारी रहेंगे — सब कुछ बंद करने के लिए खाता बंद करें।',
     signOutYes: 'साइन आउट', deactReasons: ['अब GaadiPe की ज़रूरत नहीं', 'मैंने गाड़ी बेच दी', 'बहुत महँगा', 'जानकारी गलत या पुरानी मिली', 'प्राइवेसी की चिंता', 'अन्य'],
     deactWhy: 'आप क्यों जा रहे हैं?', deactOther: 'थोड़ा और बताएँ', deactFresh: 'बाद में दोबारा साइन इन करने पर बिल्कुल नया, खाली खाता बनेगा — पुरानी गाड़ियाँ और रिपोर्ट वापस नहीं आएँगी।',
   },
@@ -477,7 +521,12 @@ export default function Chat() {
     return () => clearTimeout(t);
   }, [me]);
   const [notifyState, setNotifyState] = useState('unknown');
+  // Free monitoring for one vehicle (2026-10-10): can they start it, and for which vehicle it runs.
+  const [fm, setFm] = useState(null);
+  // Offers by SMS — optional, never pre-ticked, asked under the Terms line at sign-in (2026-10-10).
+  const [offersOptIn, setOffersOptIn] = useState(false);
   useEffect(() => { notify.state().then(setNotifyState).catch(() => setNotifyState('unsupported')); }, [me]);
+  useEffect(() => { if (me) api.freeMonitor().then(setFm).catch(() => setFm(null)); else setFm(null); }, [me]);
   const listRef = useRef(null);
   const inputRef = useRef(null);
   const greeted = useRef(false);
@@ -493,7 +542,7 @@ export default function Chat() {
     if (!me?.id || loadedFor.current !== me.id) return;   // a visitor's conversation is never kept
     const keep = items.filter((x) => x.kind !== 'typing').map((x) => {
       if (x.kind === 'vehicle' && x.paid) return { ...x, kind: 'text', from: 'bot', text: `📄 *${x.vehicle?.reg_no}* — full report`, chips: [`open:${x.vehicle?.reg_no}`], vehicle: undefined };
-      if (['profile', 'reports', 'invoices', 'vehicles', 'email', 'deactivate', 'notify', 'help', 'welcome', 'terms'].includes(x.kind)) return null;
+      if (['profile', 'reports', 'invoices', 'vehicles', 'email', 'deactivate', 'notify', 'help', 'welcome', 'terms', 'feedback', 'signoutall'].includes(x.kind)) return null;
       return x;
     }).filter(Boolean);
     try { localStorage.setItem(`${STORE}${me.id}`, JSON.stringify(keep.slice(-60))); } catch { /* private mode */ }
@@ -692,10 +741,20 @@ export default function Chat() {
     }
     // Back from paying (?paid=REG): the report opens right here in the chat.
     const paid = cleanPlate(params.get('paid'));
+    // From the "free monitoring ends" reminder (?from=free_end): one tap on why, if they do not continue.
+    const fromFreeEnd = params.get('from') === 'free_end';
     if ((reg && looksLikePlate(reg)) || paid) {
-      const rest = new URLSearchParams(params); rest.delete('reg'); rest.delete('paid'); setParams(rest, { replace: true });
-      if (paid && me) setTimeout(() => { journey({ step: 'paid', section: `full report · ${paid}` }); bot(L.paidThanks(prettyPlate(paid))); openVehicle(paid, { afterPayment: true }); }, 600);
+      const rest = new URLSearchParams(params); rest.delete('reg'); rest.delete('paid'); rest.delete('from'); setParams(rest, { replace: true });
+      if (paid && me) {
+        setTimeout(() => { journey({ step: 'paid', section: `full report · ${paid}` }); bot(L.paidThanks(prettyPlate(paid))); openVehicle(paid, { afterPayment: true }); }, 600);
+        // How useful was the report? Asked once per vehicle (2026-10-10).
+        const key = `gp.rated.${paid}`;
+        let asked = false; try { asked = Boolean(localStorage.getItem(key)); localStorage.setItem(key, '1'); } catch { /* private mode */ }
+        if (!asked) setTimeout(() => push({ from: 'bot', kind: 'feedback', mode: 'stars', src: 'report', reg: paid, title: L.fb.rateH }), 5000);
+      }
       else if (reg) setTimeout(() => check(reg), 300);
+      // The vehicle first (with "continue for ₹19"), then the one-tap "why not" below it.
+      if (fromFreeEnd && me && reg) setTimeout(() => push({ from: 'bot', kind: 'feedback', mode: 'reasons', src: 'free_end', reg, title: L.fb.freeEndH }), 3500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, me, noticeReady]);
@@ -874,7 +933,7 @@ export default function Chat() {
     if (code.length < 4) { interaction('error', 'Sign-in code too short'); bot(L.badCode); return; }
     setBusy(true); typing();
     try {
-      const out = await api.verifyCode(mobile, code, false, false, termsOk);
+      const out = await api.verifyCode(mobile, code, false, offersOptIn, termsOk);
       if (!out.ok) { bot(`⚠️ ${out.message}`); return; }
       await signIn(out.token, out.user);
       // Their earlier conversation (saved on this device) first, then this visit's messages.
@@ -1028,10 +1087,35 @@ export default function Chat() {
   }
 
   /* ── the ⋮ menu's own cards ── */
-  function showCard(kind, label) {
+  function showCard(kind, label, extra = {}) {
     setMenuOpen(false);
     push({ from: 'me', kind: 'text', text: label });
-    push({ from: 'bot', kind });
+    push({ from: 'bot', kind, ...extra });
+  }
+  /* Feedback (2026-10-10): where it was asked (src) and which vehicle — to the admin's Feedback page. */
+  function sendFeedback(rating, src, reg, message = '') {
+    api.feedback({ rating, message, src, reg_no: reg || undefined, mobile: me?.mobile || undefined, name: me?.name || undefined })
+      .catch(() => {});
+  }
+  /* Free monitoring for one vehicle (site/freeMonitor.js). */
+  async function startFree(reg) {
+    try {
+      const out = await api.startFreeMonitor(reg);
+      setFm((s) => ({ ...(s || {}), eligible: false, used: { reg_no: out.reg_no, ends_at: out.ends_at, active: true } }));
+      bot(L.fm.started(prettyPlate(out.reg_no), day(out.ends_at)));
+      if (notifyState !== 'on') push({ from: 'bot', kind: 'notify' });
+    } catch (e) {
+      bot(`⚠️ ${e.message}`);
+      api.freeMonitor().then(setFm).catch(() => {});
+    }
+  }
+  async function doSignOutAll() {
+    try {
+      const out = await api.signOutAll();
+      await notify.disable().catch(() => {});
+      resetNote.current = `⏏ ${L.signOutAllDone(out.ended || 1)}`;
+      await signOut().catch(() => {});
+    } catch (e) { bot(`⚠️ ${e.message}`); }
   }
   async function saveEmail(email) {
     const e = String(email || '').trim();
@@ -1201,14 +1285,16 @@ export default function Chat() {
               return <FullCard key={it.id} it={it} L={L} onDownload={() => it.report && download('report', it.report)} onAnother={() => chip('another')} />;
             }
             if (it.kind === 'vehicle') {
-              return <VehicleCard key={it.id} it={it} L={L} onFull={() => (it.paid ? openVehicle(it.vehicle.reg_no) : fullReport(it.vehicle.reg_no, it.price))} onAnother={() => chip('another')} />;
+              return <VehicleCard key={it.id} it={it} L={L} fm={fm} onStartFree={startFree}
+                onFull={() => (it.paid ? openVehicle(it.vehicle.reg_no) : fullReport(it.vehicle.reg_no, it.price))} onAnother={() => chip('another')} />;
             }
             if (it.kind === 'consent') {
               return <ConsentCard key={it.id} it={it} L={L} busy={busy} onAgree={() => freeCheck(it.reg, it.id)} />;
             }
             if (it.kind === 'freeVehicle') {
               return <FreeVehicleCard key={it.id} it={it} L={L}
-                onBuy={() => fullReport(it.vehicle.reg_no, it.price)} onSignIn={() => startSignIn()} />;
+                onBuy={() => fullReport(it.vehicle.reg_no, it.price)} onSignIn={() => startSignIn()}
+                onFeedback={(rating, reg) => sendFeedback(rating, 'first_check', reg)} />;
             }
             if (it.kind === 'sample') {
               return <FullCard key={it.id} it={{ vehicle: sampleVehicle(), sample: true }} L={L}
@@ -1233,7 +1319,12 @@ export default function Chat() {
             if (it.kind === 'email') return <EmailCard key={it.id} L={L} current={me?.email} onSave={saveEmail} />;
             if (it.kind === 'deactivate') return <DeactivateCard key={it.id} L={L} onConfirm={deactivate} onCancel={() => bot(L.cancelled)} />;
             if (it.kind === 'signout') return <SignOutCard key={it.id} L={L} onConfirm={doSignOut} onCancel={() => bot(L.cancelled)} />;
-            if (it.kind === 'terms') return <TermsLine key={it.id} L={L} />;
+            if (it.kind === 'signoutall') return <SignOutCard key={it.id} L={L} title={L.signOutAllH} body={L.signOutAllBody} onConfirm={doSignOutAll} onCancel={() => bot(L.cancelled)} />;
+            if (it.kind === 'feedback') {
+              return <FeedbackCard key={it.id} L={L} mode={it.mode || 'stars'} title={it.title}
+                onSend={(rating, message) => { sendFeedback(rating, it.src || 'menu', it.reg, message); bot(L.fb.thanks); }} />;
+            }
+            if (it.kind === 'terms') return <TermsLine key={it.id} L={L} optIn={offersOptIn} onOptIn={me ? null : setOffersOptIn} />;
             if (it.kind === 'notify') return <NotifyCard key={it.id} L={L} state={notifyState} onAllow={allowNotifications} onLater={() => bot(lang === 'hi' ? 'ठीक है। मेनू ⋮ → नोटिफ़िकेशन से कभी भी चालू करें।' : 'OK. Turn them on any time from the menu ⋮ → Notifications.')} />;
             if (it.kind === 'help') return <CardShell key={it.id} title={L.helpH}><div className="text-[13.5px] text-[#0b2e2b]"><Text text={L.helpBody} /></div>
               <a href="mailto:support@gaadipe.in" className="mt-2 inline-block rounded-full bg-[#0f766e] px-3 py-1.5 text-[12px] font-bold text-white">✉️ support@gaadipe.in</a></CardShell>;
@@ -1295,12 +1386,15 @@ export default function Chat() {
           ['💡', L.howWorks, () => { setMenuOpen(false); chip('howWorks'); }, 'how'],
           ['❓', L.mHelp, () => showCard('help', L.mHelp), 'help'],
           ['📜', L.mTerms, () => { setMenuOpen(false); window.open('/terms', '_blank', 'noopener'); }, 'terms'],
+          ['📝', L.mFeedback, () => showCard('feedback', L.mFeedback, { mode: 'stars', src: 'menu', title: L.fb.menuH }), 'feedback'],
           ['↪', L.signOut, () => showCard('signout', L.signOut), 'signout', 'warn'],
+          ['⏏', L.mSignOutAll, () => showCard('signoutall', L.mSignOutAll), 'signoutall', 'warn'],
           ['⛔', L.mDeactivate, () => showCard('deactivate', L.mDeactivate), 'deactivate', 'danger'],
         ] : [
           ['🔐', L.signIn, () => { setMenuOpen(false); startSignIn(); }, 'signin'],
           ['🌐', L.mLang, () => { setMenuOpen(false); setLang(lang === 'hi' ? 'en' : 'hi'); }, 'lang'],
           ['✉️', L.mHelp, () => showCard('help', L.mHelp), 'help'],
+          ['📝', L.mFeedback, () => showCard('feedback', L.mFeedback, { mode: 'stars', src: 'menu', title: L.fb.menuH }), 'feedback'],
           ['📜', L.mTerms, () => { setMenuOpen(false); window.open('/terms', '_blank', 'noopener'); }, 'terms'],
         ]} />
       )}
@@ -1375,14 +1469,20 @@ function EmailCard({ L, current, onSave }) {
    tick and left — "no need to tick & go"). One small line under the welcome,
    with the three policies a tap away. Signing in is the agreement; the server
    records it at every sign-in (consent_accepted, method sign_in). */
-function TermsLine({ L }) {
+function TermsLine({ L, optIn, onOptIn }) {
   const link = (href, label) => <a href={href} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#0f766e] underline">{label}</a>;
   const t = L.termsByUse;
   return (
-    <div className="anim-up flex">
+    <div className="anim-up flex flex-col items-start">
       <p data-test="terms-notice" className="ml-1 max-w-[88%] px-1 text-[11.5px] leading-relaxed text-black/55">
         🔒 {t[0]} {link('/terms', t[1])}, {link('/privacy', t[2])} {t[3]} {link('/refund', t[4])}{/[.।]$/.test(t[4]) ? '' : '.'}
       </p>
+      {onOptIn ? (
+        <label className="ml-1 mt-1 flex max-w-[88%] items-start gap-2 px-1 text-[11.5px] leading-snug text-black/60">
+          <input type="checkbox" data-test="offers-optin" className="mt-0.5 h-3.5 w-3.5 accent-[#0f766e]" checked={Boolean(optIn)} onChange={(e) => onOptIn(e.target.checked)} />
+          <span>{L.fm.optIn}</span>
+        </label>
+      ) : null}
     </div>
   );
 }
@@ -1473,7 +1573,9 @@ function PublicFacts({ v, L }) {
           ))}
         </div>
       )}
-      <div className={`text-[13px] font-semibold ${f.challans_pending ? 'text-[#c62828]' : 'text-[#12813f]'}`}>{L.pub.challans(f.challans_pending || 0)}</div>
+      <div className={`text-[13px] font-semibold ${f.challans_pending ? 'text-[#c62828]' : 'text-[#12813f]'}`}>
+        {L.pub.challansAmt(f.challans_pending || 0, f.challans_amount_paise ? inr(f.challans_amount_paise) : null)}
+      </div>
       {v.locked?.length > 0 && (
         <div className="rounded-xl bg-[#f3f7f6] p-2.5">
           <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[#0f766e]">🔒 {L.pub.locked}</div>
@@ -1501,13 +1603,33 @@ function Verdict({ lines, L }) {
   );
 }
 
-/* The free check's answer: make, model name (variant hidden) and fuel — then the ₹19 offer. */
-function FreeVehicleCard({ it, L, onBuy, onSignIn }) {
+/*
+ * THE FREE CHECK AS AN RC CARD (user, 2026-10-10). The FRONT is the vehicle — make,
+ * model and variant, class and fuel, the owner masked, the RTO — with the ₹19
+ * report. FLIP it (tap the button, or swipe sideways) and the BACK shows what
+ * signing in adds, blurred, with "Sign in free to see" and the 14-day free
+ * monitoring offer. The blurred values are dummies: nothing about this vehicle is
+ * in the page to be un-blurred.
+ */
+function FreeVehicleCard({ it, L, onBuy, onSignIn, onFeedback }) {
   const v = it.vehicle || {};
   const id = v.identity || {};
+  const [back, setBack] = useState(false);
+  const [voted, setVoted] = useState(false);
+  const touchX = useRef(null);
+  const face = 'col-start-1 row-start-1 overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md [backface-visibility:hidden]';
   return (
     <div className="anim-up flex flex-col items-start">
-      <div className="w-[92%] max-w-sm overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md">
+      <div className="w-[92%] max-w-sm [perspective:1200px]"
+        onTouchStart={(e) => { touchX.current = e.touches[0].clientX; }}
+        onTouchEnd={(e) => {
+          const dx = e.changedTouches[0].clientX - (touchX.current ?? e.changedTouches[0].clientX);
+          if (Math.abs(dx) > 50) setBack((b) => !b);
+          touchX.current = null;
+        }}>
+        <div className={`grid transition-transform duration-500 [transform-style:preserve-3d] ${back ? '[transform:rotateY(180deg)]' : ''}`}>
+      {/* ── the front: the vehicle ── */}
+      <div className={face} aria-hidden={back} data-test="rc-front">
         <div className="bg-gradient-to-br from-[#0f766e] to-[#0a4f49] p-3.5 text-white">
           <div className="flex items-center justify-between gap-3">
             <span className="rounded-md border-2 border-black bg-white px-2.5 py-0.5 font-mono text-[17px] font-black tracking-[2px] text-black shadow">{prettyPlate(v.reg_no)}</span>
@@ -1522,11 +1644,19 @@ function FreeVehicleCard({ it, L, onBuy, onSignIn }) {
         </div>
         {/* The RTO, from the number (2026-10-10, like CarInfo). */}
         {v.rto ? <RtoLine rto={v.rto} L={L} /> : null}
-        {/*
-          WHAT SIGNING IN SHOWS, BLURRED (user, 2026-10-10: "remove the sign-in button —
-          show what is blurred and 'sign in to see'"). The labels are real; the values
-          are dummies, so nothing about this vehicle is in the page to be un-blurred.
-        */}
+        <button type="button" data-test="rc-flip" onClick={() => setBack(true)}
+          className="w-full border-b border-black/5 bg-[#f3f7f6] py-2.5 text-[13px] font-bold text-[#0f766e] active:bg-[#e6f0ee]">{L.fm.flip}</button>
+        <div className="px-3.5 py-2.5 text-[12.5px] leading-relaxed text-[#0b2e2b]"><Text text={L.free.inReport} /></div>
+        <button type="button" data-test="free-buy" onClick={onBuy}
+          className="gp-shine w-full bg-[#ffd84d] py-3 text-[14.5px] font-black text-[#0a4f49] active:brightness-95">{L.free.buy(rupee(it.price))}</button>
+      </div>
+
+      {/* ── the back: what signing in adds, blurred ── */}
+      <div className={`${face} [transform:rotateY(180deg)]`} aria-hidden={!back} data-test="rc-back">
+        <div className="flex items-center justify-between gap-3 bg-gradient-to-br from-[#0a4f49] to-[#0f766e] p-3 text-white">
+          <span className="rounded-md border-2 border-black bg-white px-2 py-0.5 font-mono text-[15px] font-black tracking-[2px] text-black shadow">{prettyPlate(v.reg_no)}</span>
+          <span className="text-[11px] font-semibold text-white/85">🔐 {L.free.unlockNote}</span>
+        </div>
         <div className="relative border-b border-black/5 px-3.5 py-2.5">
           <div className="select-none space-y-1.5" aria-hidden="true" style={{ filter: 'blur(4px)' }}>
             {L.free.blurRows.map((k, i) => (
@@ -1536,25 +1666,38 @@ function FreeVehicleCard({ it, L, onBuy, onSignIn }) {
               </div>
             ))}
           </div>
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-white/40 px-4 text-center">
-            <button type="button" data-test="free-signin" onClick={onSignIn}
+          <div className="absolute inset-0 grid place-items-center bg-white/40 px-4">
+            <button type="button" data-test="free-signin" onClick={onSignIn} tabIndex={back ? 0 : -1}
               className="gp-shine rounded-full bg-[#0f766e] px-4 py-2 text-[13.5px] font-black text-white shadow-md active:brightness-95">{L.free.unlock}</button>
-            <span className="text-[11.5px] font-semibold text-[#0a4f49]">{L.free.unlockNote}</span>
           </div>
         </div>
-        <div className="px-3.5 py-2.5 text-[12.5px] leading-relaxed text-[#0b2e2b]"><Text text={L.free.inReport} /></div>
-        <button type="button" data-test="free-buy" onClick={onBuy}
-          className="gp-shine w-full bg-[#ffd84d] py-3 text-[14.5px] font-black text-[#0a4f49] active:brightness-95">{L.free.buy(rupee(it.price))}</button>
+        <div className="bg-[#fff8e1] px-3.5 py-2.5 text-[12.5px] leading-relaxed text-[#5c4300]"><Text text={L.fm.offer} /></div>
+        <button type="button" data-test="rc-flip-back" onClick={() => setBack(false)} tabIndex={back ? 0 : -1}
+          className="w-full py-2.5 text-[13px] font-bold text-[#0f766e] active:bg-black/5">{L.fm.flipBack}</button>
+      </div>
+        </div>
+      </div>
+
+      {/* Was the free check useful? One tap (2026-10-10) — feedback for the admin. */}
+      <div className="mt-1.5 flex items-center gap-2 rounded-xl bg-white/80 px-3 py-1.5 text-[12px] text-[#0a4f49] shadow-sm">
+        {voted ? <span>{L.fb.thanks}</span> : (
+          <>
+            <span>{L.fb.useful}</span>
+            <button type="button" data-test="fb-up" aria-label="Yes" onClick={() => { setVoted(true); onFeedback?.(5, v.reg_no); }} className="rounded-full px-1.5 text-[16px] active:scale-90">👍</button>
+            <button type="button" data-test="fb-down" aria-label="No" onClick={() => { setVoted(true); onFeedback?.(1, v.reg_no); }} className="rounded-full px-1.5 text-[16px] active:scale-90">👎</button>
+          </>
+        )}
       </div>
     </div>
   );
 }
 
-function SignOutCard({ L, onConfirm, onCancel }) {
+/* Sign out — of this device, or (title/body given, 2026-10-10) of every device. */
+function SignOutCard({ L, onConfirm, onCancel, title, body }) {
   const [done, setDone] = useState(false);
   return (
-    <CardShell title={L.signOutH}>
-      <p className="text-[13px] leading-relaxed text-black/70">{L.signOutBody}</p>
+    <CardShell title={title || L.signOutH}>
+      <p className="text-[13px] leading-relaxed text-black/70">{body || L.signOutBody}</p>
       <div className="mt-2 flex gap-2">
         <button type="button" data-test="signout-confirm" disabled={done} onClick={() => { setDone(true); onConfirm(); }}
           className="flex-1 rounded-xl bg-[#b26a00] py-2.5 text-[13px] font-bold text-white disabled:opacity-50">↪ {L.signOutYes}</button>
@@ -1565,12 +1708,55 @@ function SignOutCard({ L, onConfirm, onCancel }) {
   );
 }
 
+/*
+ * FEEDBACK (user, 2026-10-10: "we need feedback so that I can improve GaadiPe").
+ *   stars    1–5 and an optional line (the menu, after a report)
+ *   reasons  one tap on a reason and an optional line (free monitoring ended unpaid)
+ * Sent with where it was asked and the vehicle; read on the web admin's Feedback page.
+ */
+function FeedbackCard({ L, mode = 'stars', title, onSend }) {
+  const [stars, setStars] = useState(0);
+  const [reason, setReason] = useState('');
+  const [more, setMore] = useState('');
+  const [done, setDone] = useState(false);
+  const reasons = L.fb.freeEndReasons;
+  const ready = mode === 'reasons' ? Boolean(reason) : stars > 0;
+  return (
+    <CardShell title={title || (mode === 'reasons' ? L.fb.freeEndH : L.fb.menuH)}>
+      {mode === 'reasons' ? (
+        <div className="space-y-1">
+          {reasons.map((r) => (
+            <label key={r} className="flex items-center gap-2 text-[13px] text-[#0b2e2b]">
+              <input type="radio" name="fb-reason" className="h-4 w-4 accent-[#0f766e]" checked={reason === r} disabled={done} onChange={() => setReason(r)} />{r}
+            </label>))}
+        </div>
+      ) : (
+        <div className="flex gap-1.5" role="radiogroup" aria-label="rating">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <button key={n} type="button" data-test={`fb-star-${n}`} disabled={done} onClick={() => setStars(n)} aria-label={`${n}`}
+              className={`text-[26px] leading-none transition-transform active:scale-90 ${n <= stars ? 'text-[#f5b301]' : 'text-black/20'}`}>★</button>
+          ))}
+        </div>
+      )}
+      <textarea value={more} onChange={(e) => setMore(e.target.value)} rows={2} maxLength={600} disabled={done}
+        placeholder={mode === 'stars' && title === L.fb.rateH ? L.fb.rateMore : L.fb.more}
+        className="mt-2 w-full rounded-xl border border-black/10 bg-[#f6f9f9] px-3 py-2 text-[13px] outline-none focus:border-[#0f766e]" />
+      <button type="button" data-test="fb-send" disabled={done || !ready}
+        onClick={() => { setDone(true); onSend(mode === 'reasons' ? 3 : stars, [reason, more.trim()].filter(Boolean).join(' — ')); }}
+        className="mt-2 w-full rounded-xl bg-[#0f766e] py-2.5 text-[13px] font-bold text-white disabled:opacity-50">{done ? '✓' : L.fb.send}</button>
+    </CardShell>
+  );
+}
+
 /* DEACTIVATE (user, 2026-10-07): a warning, a reason (required), and the truth —
    signing in again later starts a fresh, empty account. */
 function DeactivateCard({ L, onConfirm, onCancel }) {
   const [pick, setPick] = useState('');
   const [more, setMore] = useState('');
   const [done, setDone] = useState(false);
+  // Monitoring still running ends now, and is not refunded — said before they confirm (2026-10-10).
+  const [running, setRunning] = useState([]);
+  useEffect(() => { api.deactivateCheck().then((r) => setRunning(r.monitoring || [])).catch(() => {}); }, []);
   const other = pick === L.deactReasons[L.deactReasons.length - 1];
   const reason = [pick, more.trim()].filter(Boolean).join(' — ');
   const ok = pick && (!other || more.trim().length >= 3);
@@ -1578,6 +1764,11 @@ function DeactivateCard({ L, onConfirm, onCancel }) {
     <CardShell title={L.deactH}>
       <p className="text-[13px] leading-relaxed text-black/70">{L.deactBody}</p>
       <p className="mt-2 rounded-lg bg-[#fdecec] px-3 py-2 text-[12.5px] font-semibold text-[#912018]">⚠️ {L.deactFresh}</p>
+      {running.length > 0 && (
+        <p className="mt-2 rounded-lg bg-[#fff4e0] px-3 py-2 text-[12.5px] font-semibold text-[#8f5600]" data-test="deactivate-paid">
+          ⏳ {L.deactPaid(running.map((m) => `${prettyPlate(m.reg_no)} (${m.days_left} day${m.days_left === 1 ? '' : 's'})`).join(', '))}
+        </p>
+      )}
       <div className="mt-2 text-[12px] font-bold text-[#0b2e2b]">{L.deactWhy}</div>
       <div className="mt-1 space-y-1">
         {L.deactReasons.map((r) => (
@@ -2365,7 +2556,7 @@ function FileLine({ item }) {
 }
 
 /** The vehicle as a card — the free view, honest about what is locked. */
-function VehicleCard({ it, L, onFull, onAnother }) {
+function VehicleCard({ it, L, onFull, onAnother, fm, onStartFree }) {
   // A signed-in check of a vehicle they own a report for comes back full: open it in the chat.
   const v = it.vehicle || {};
   const id = v.identity || {};
@@ -2414,6 +2605,19 @@ function VehicleCard({ it, L, onFull, onAnother }) {
             </>
           )}
         </div>
+        {/* FREE MONITORING FOR ONE VEHICLE (2026-10-10): offered while they have not used it;
+            on this vehicle once it runs. */}
+        {!it.paid && fm?.used?.active && fm.used.reg_no === v.reg_no ? (
+          <div className="border-t border-black/5 bg-[#e7f6ec] px-3.5 py-2.5 text-[12.5px] font-semibold text-[#12813f]" data-test="fm-running">
+            ✅ {L.fm.started(prettyPlate(v.reg_no), day(fm.used.ends_at)).replace(/\*/g, '')}
+          </div>
+        ) : !it.paid && fm?.eligible ? (
+          <div className="border-t border-black/5 bg-[#fff8e1] px-3.5 py-2.5">
+            <button type="button" data-test="fm-start" onClick={() => onStartFree?.(v.reg_no)}
+              className="gp-shine w-full rounded-xl bg-[#0f766e] py-2.5 text-[14px] font-black text-white active:brightness-95">{L.fm.start}</button>
+            <div className="mt-1 text-center text-[11.5px] text-[#5c4300]">{L.fm.startNote}</div>
+          </div>
+        ) : null}
         <div className="grid grid-cols-2 border-t border-black/5">
           <button type="button" data-test="card-full" onClick={onFull} className="gp-shine bg-[#ffd84d] py-3 text-[14px] font-black text-[#0a4f49] active:brightness-95">
             {it.paid ? `📄 ${L.open}` : `🔓 ${L.fullReport(rupee(it.price))}`}

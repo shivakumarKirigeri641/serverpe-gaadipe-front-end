@@ -162,6 +162,11 @@ export const api = {
   me: () => call('/me'),
   saveMe: (body) => call('/me', { method: 'PUT', body }),
   deactivate: (reason) => call('/me/deactivate', { method: 'POST', body: { reason } }),
+  // Website + SMS (2026-10-10): paid days before deactivating, sign out everywhere, free monitoring.
+  deactivateCheck: () => call('/me/deactivate-check'),
+  signOutAll: () => call('/session/all', { method: 'DELETE' }),
+  freeMonitor: () => call('/monitor/free'),
+  startFreeMonitor: (regNo) => call('/monitor/free', { method: 'POST', body: { reg_no: regNo } }),
   resendEmail: () => call('/me/email/resend', { method: 'POST', body: {} }),
   // An email confirmed with a code; a new mobile number confirmed with its code (2026-10-07).
   emailCode: (email) => call('/me/email/code', { method: 'POST', body: { email } }),
