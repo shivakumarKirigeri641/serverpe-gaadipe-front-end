@@ -229,6 +229,8 @@ export const api = {
   reports: () => call('/reports'),
   // Checks left today and this month (2026-10-10).
   checksLeft: () => call('/checks/left'),
+  // My subscriptions: monitoring, its dates, the next alert (2026-10-10).
+  subscriptions: () => call('/subscriptions'),
   invoices: () => call('/invoices'),
   reportPdf: (id, download) => pdf(`/reports/${id}/file`, download),
   invoicePdf: (id, download) => pdf(`/invoices/${id}/file`, download),

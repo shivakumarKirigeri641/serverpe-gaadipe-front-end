@@ -141,7 +141,24 @@ const T = {
     profile: 'Profile',
     howWorks: 'What do I get?',
     // As the site is now (2026-10-10): the three levels, in plain words.
-    howAnswer: '*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 2 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, up to 10 vehicles a day (30 a month — every report you buy adds 5 more), and *14 days of free monitoring* for one vehicle.\n\n*Full report ₹19* (₹11 to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears.',
+    howAnswer: '*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 2 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, up to 10 vehicles a day (30 a month — every report you buy adds 5 more), and *14 days of free monitoring* for one vehicle.\n\n*Full report ₹19* (₹11 to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears.\n\n🔢 *Vehicle checks* — after sign-in, 10 a day and 30 a month. *The more you buy, the more you can check:* every report (₹19, or ₹11 to renew) adds *5 more checks* that month. Checking the same vehicle again within an hour does not count, and removing a vehicle from My vehicles does *not* give a check back. Tap *Checks left* any time.',
+    // My subscriptions (user, 2026-10-10).
+    subs: {
+      menu: 'My subscriptions', title: '📋 My subscriptions',
+      none: 'No monitoring yet. Buy a full report (₹19) — it includes 28 days of monitoring — or start the free 14 days on a vehicle you checked.',
+      paid: '★ PAID · 28 days', free: '👁 FREE · 14 days', ended: 'ENDED',
+      ends: (d, n) => `Monitoring ends *${d}*${n != null ? ` · ${n} day${n === 1 ? '' : 's'} left` : ''}`,
+      endedOn: (d) => `Monitoring ended ${d}`, stopped: 'Monitoring stopped', stoppedBadge: 'STOPPED',
+      docs: { insurance_upto: 'Insurance', pucc_upto: 'PUC', tax_upto: 'Road tax', fitness_upto: 'Fitness', permit_upto: 'Permit' },
+      alertWhat: (a, docName) => (a.kind === 'ending' ? 'monitoring ends soon (renewal reminder)' : `${docName} expires in ${a.days} day${a.days === 1 ? '' : 's'}`),
+      nextAlert: (d, h, w) => `🔔 Next alert: *${d}*, from ${h > 12 ? h - 12 : h} ${h >= 12 ? 'pm' : 'am'} — ${w}`,
+      noAlert: '🔔 No alert due before monitoring ends.',
+      nextCheck: (t) => `🔍 Next check for new challans: ${t}`, dueNow: 'due now',
+      nextDoc: (l, d) => `📅 Next to expire: ${l} on ${d}`,
+      pdf: (d) => `📄 Report PDF downloadable till ${d}`,
+      renew: (p) => `🔄 Renew 28 days · ${p}`, buy: (p) => `🔓 Full report + 28 days · ${p}`,
+      checks: (d, m) => `🔢 Checks left: *${d}* today${m != null ? ` · *${m}* this month` : ''} — every report bought adds more.`,
+    },
     attention: (n) => (n ? `⚠️ *${n} thing${n === 1 ? '' : 's'} need attention*` : '✅ *Nothing needs attention*'),
     /* Honest about what signing in gives (user, 2026-10-08: "this fools the
        user — the details are ₹19"). Signing in is free and keeps the vehicle and
@@ -375,7 +392,23 @@ const T = {
     myReports: 'मेरी रिपोर्ट',
     profile: 'प्रोफ़ाइल',
     howWorks: 'मुझे क्या मिलेगा?',
-    howAnswer: '*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 2 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, दिन में 10 गाड़ियाँ (महीने में 30 — हर ख़रीदी रिपोर्ट पर 5 और), और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ₹19* (ख़रीदी हुई गाड़ी का रिन्यू ₹11) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे।',
+    howAnswer: '*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 2 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, दिन में 10 गाड़ियाँ (महीने में 30 — हर ख़रीदी रिपोर्ट पर 5 और), और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ₹19* (ख़रीदी हुई गाड़ी का रिन्यू ₹11) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे।\n\n🔢 *गाड़ी जाँच* — साइन इन के बाद दिन में 10 और महीने में 30। *जितना ख़रीदेंगे, उतना ज़्यादा जाँच सकेंगे:* हर रिपोर्ट (₹19, या रिन्यू के लिए ₹11) पर उस महीने *5 जाँच और* मिलती हैं। एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता, और मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती। कभी भी *बाकी जाँच* दबाएँ।',
+    subs: {
+      menu: 'मेरी सदस्यता', title: '📋 मेरी सदस्यता',
+      none: 'अभी कोई निगरानी नहीं। पूरी रिपोर्ट ख़रीदें (₹19) — इसमें 28 दिन की निगरानी शामिल है — या जाँची हुई किसी गाड़ी पर 14 दिन मुफ़्त निगरानी शुरू करें।',
+      paid: '★ पेड · 28 दिन', free: '👁 मुफ़्त · 14 दिन', ended: 'समाप्त',
+      ends: (d, n) => `निगरानी *${d}* को समाप्त${n != null ? ` · ${n} दिन बाकी` : ''}`,
+      endedOn: (d) => `निगरानी ${d} को समाप्त हुई`, stopped: 'निगरानी रोक दी गई', stoppedBadge: 'रुकी हुई',
+      docs: { insurance_upto: 'बीमा', pucc_upto: 'PUC', tax_upto: 'रोड टैक्स', fitness_upto: 'फ़िटनेस', permit_upto: 'परमिट' },
+      alertWhat: (a, docName) => (a.kind === 'ending' ? 'निगरानी जल्द समाप्त (रिन्यू की याद)' : `${docName} ${a.days} दिन में समाप्त`),
+      nextAlert: (d, h, w) => `🔔 अगला अलर्ट: *${d}*, शाम ${h > 12 ? h - 12 : h} बजे से — ${w}`,
+      noAlert: '🔔 निगरानी समाप्त होने से पहले कोई अलर्ट नहीं।',
+      nextCheck: (t) => `🔍 नए चालान की अगली जाँच: ${t}`, dueNow: 'अभी होने वाली',
+      nextDoc: (l, d) => `📅 अगला समाप्त होने वाला: ${l}, ${d}`,
+      pdf: (d) => `📄 रिपोर्ट PDF ${d} तक डाउनलोड करें`,
+      renew: (p) => `🔄 28 दिन रिन्यू · ${p}`, buy: (p) => `🔓 पूरी रिपोर्ट + 28 दिन · ${p}`,
+      checks: (d, m) => `🔢 बाकी जाँच: आज *${d}*${m != null ? ` · इस महीने *${m}*` : ''} — हर ख़रीदी रिपोर्ट पर और मिलती हैं।`,
+    },
     attention: (n) => (n ? `⚠️ *${n} चीज़ों पर ध्यान चाहिए*` : '✅ *कुछ भी बाकी नहीं*'),
     identityOnly: (p) => '✅ *गाड़ी सरकारी रिकॉर्ड में मिल गई।*\n\nइसे अपने खाते में सेव करने और और गाड़ियाँ जाँचने के लिए मोबाइल से *मुफ़्त साइन इन* करें।\n\n*पूरी रिपोर्ट* — इंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, चालान, लोन, ब्लैकलिस्ट और कितने मालिक — *' + p + '* में, PDF और GST बिल के साथ।',
     expired: 'समाप्त', dueSoon: 'जल्द', challans: 'बाकी चालान',
@@ -1243,7 +1276,7 @@ export default function Chat() {
       const out = await (kind === 'vehicles' ? api.vehicles() : kind === 'reports' ? api.reports() : api.invoices());
       // Expired reports are left out (the server too) — "remove completely" (user, 2026-10-10).
       const rows = (out.rows || []).filter((r) => kind !== 'reports' || !r.valid_until || new Date(r.valid_until) > new Date());
-      const others = { vehicles: ['myReports'], reports: ['myVehicles', 'invoices'], invoices: ['myReports'] }[kind];
+      const others = { vehicles: ['mySubs', 'myReports'], reports: ['myVehicles', 'invoices'], invoices: ['myReports'] }[kind];
       if (!rows.length) { bot({ vehicles: L.noVehicles, reports: L.noReports, invoices: L.noInvoices }[kind], { chips: ['another', ...others] }); return; }
       push({ from: 'bot', kind, rows });
       nextStep(others);
@@ -1355,6 +1388,22 @@ export default function Chat() {
   function nextStep(chips = [], text = L.next) {
     bot(text, { pace: 450, chips: ['another', ...chips] });
   }
+  /* MY SUBSCRIPTIONS (user, 2026-10-10): each monitored vehicle with its plan, end date,
+     next alert (date and time), next challan check, next document to expire, the PDF's
+     window and the renewal price — and the checks left. */
+  async function showSubscriptions({ fromMenu = false } = {}) {
+    if (fromMenu) setMenuOpen(false);
+    journey({ step: 'reports', section: 'my subscriptions' });
+    push({ from: 'me', kind: 'text', text: L.subs.menu });
+    setBusy(true); typing();
+    try {
+      const out = await api.subscriptions();
+      if (out.checks) setQuota(out.checks);
+      if (!out.rows?.length) { bot(L.subs.none, { chips: ['another', 'myVehicles', 'checksLeft'] }); return; }
+      push({ from: 'bot', kind: 'subs', rows: out.rows, checks: out.checks || null });
+      nextStep(['checksLeft', 'myVehicles']);
+    } catch (e) { bot(`⚠️ ${e.message}`, { chips: ['another'] }); } finally { setBusy(false); }
+  }
   /* "How many checks do I have left?" — a button, a menu option and the count above
      the typing box all answer it here (user, 2026-10-10). */
   async function showChecksLeft({ fromMenu = false } = {}) {
@@ -1411,6 +1460,7 @@ export default function Chat() {
     }
     if (key === 'signIn') { startSignIn(); return; }
     if (key === 'checksLeft') { showChecksLeft(); return; }
+    if (key === 'mySubs') { showSubscriptions(); return; }
     if (key === 'myVehicles') { showList('vehicles'); return; }
     if (key === 'myReports') { showList('reports'); return; }
     if (key === 'invoices') { showList('invoices'); return; }
@@ -1424,7 +1474,7 @@ export default function Chat() {
     if (key.startsWith('open:')) { push({ from: 'me', kind: 'plate', text: prettyPlate(key.slice(5)) }); openVehicle(key.slice(5)); }
   }
   const chipLabel = (key) => (key.startsWith('open:') ? `🔓 ${prettyPlate(key.slice(5))}` : {
-    'lang:en': 'English', 'lang:hi': 'हिंदी', checksLeft: `🔢 ${L.left.menu}`,
+    'lang:en': 'English', 'lang:hi': 'हिंदी', checksLeft: `🔢 ${L.left.menu}`, mySubs: `📋 ${L.subs.menu}`,
     howWorks: `❓ ${L.howWorks}`, another: `🔍 ${L.another}`, signIn: `🔐 ${L.signIn}`,
     myVehicles: `🚗 ${L.myVehicles}`, myReports: `📄 ${L.myReports}`, profile: `👤 ${L.profile}`, invoices: `🧾 ${L.invoices}`,
     sample: L.sample.chip, fullInfo: L.sample.more,
@@ -1556,6 +1606,9 @@ export default function Chat() {
                   setItems((cur) => cur.map((x) => (x.kind === 'vehicles' ? { ...x, rows: x.rows.filter((r) => r.reg_no !== reg) } : x)));
                 }} />;
             }
+            if (it.kind === 'subs') {
+              return <SubsCard key={it.id} rows={it.rows} checks={it.checks} L={L} onRenew={(reg, price) => fullReport(reg, price)} />;
+            }
             if (it.kind === 'reports' || it.kind === 'invoices') {
               return <DocsList key={it.id} kind={it.kind} rows={it.rows} L={L} onDownload={(row) => download(it.kind === 'invoices' ? 'invoice' : 'report', row)} />;
             }
@@ -1629,6 +1682,7 @@ export default function Chat() {
           ['👤', L.profile, () => { setMenuOpen(false); showProfile(); }, 'profile'],
           ['✉️', L.mEmail, startEmail, 'email'],
           ['🚗', L.mHistory, () => { setMenuOpen(false); showList('vehicles'); }, 'vehicles'],
+          ['📋', L.subs.menu, () => showSubscriptions({ fromMenu: true }), 'subs'],
           ['🔢', L.left.menu, () => showChecksLeft({ fromMenu: true }), 'checks'],
           ['📄', L.myReports, () => { setMenuOpen(false); showList('reports'); }, 'reports'],
           ['🧾', L.invoices, () => { setMenuOpen(false); showList('invoices'); }, 'invoices'],
@@ -2249,6 +2303,58 @@ const Row = ({ k, v, tone }) => (
  * what it is underneath; a tap opens its RC card (RcViewer). Paid ones wear a
  * small gold "REPORT" tag.
  */
+/*
+ * MY SUBSCRIPTIONS (user, 2026-10-10). One block per monitored vehicle: the plan
+ * badge, when monitoring ends, the next alert (its day, from the evening send time),
+ * the next check for new challans, the next document to expire, the PDF's window,
+ * and a renew button at this customer's price. Checks left on top.
+ */
+function SubsCard({ rows, checks, L, onRenew }) {
+  const S = L.subs;
+  const when = (iso) => {
+    if (!iso) return null;
+    if (new Date(iso) <= new Date()) return S.dueNow;
+    return new Date(iso).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+  };
+  return (
+    <div className="anim-up flex flex-col items-start">
+      <div className="w-[94%] max-w-md overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md" data-test="subs">
+        <div className="bg-gradient-to-r from-[#0a4f49] to-[#0f766e] px-3.5 py-2.5 text-[14px] font-black text-white">{S.title}</div>
+        {checks && !checks.unlimited ? (
+          <div className="border-b border-black/5 bg-[#f4faf8] px-3.5 py-2 text-[12.5px] text-[#0b2e2b]"><Text text={S.checks(checks.today.left, checks.month ? checks.month.left : null)} /></div>
+        ) : null}
+        <div className="divide-y divide-black/5">
+          {rows.map((s) => (
+            <div key={s.reg_no} className="px-3.5 py-3" data-test={`sub-${s.reg_no}`}>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-md border-2 border-black bg-white px-2 py-0.5 font-mono text-[14px] font-black tracking-[1.5px] text-black">{prettyPlate(s.reg_no)}</span>
+                <span className={`rounded-full px-2 py-0.5 text-[10px] font-black ${!s.active ? 'bg-black/5 text-black/55' : s.plan === 'paid' ? 'bg-[#ffd84d] text-[#0a4f49]' : 'bg-[#e3f2ef] text-[#0a6c5f]'}`}>
+                  {!s.active ? (s.stopped ? S.stoppedBadge : S.ended) : s.plan === 'paid' ? S.paid : S.free}
+                </span>
+              </div>
+              <div className="mt-1 truncate text-[12.5px] font-semibold text-[#0b2e2b]">{[s.maker, s.model].filter(Boolean).join(' ') || '—'}</div>
+              <div className="mt-1.5 space-y-1 text-[12.5px] leading-snug text-[#0b2e2b]">
+                <div><Text text={s.active ? S.ends(day(s.ends_at), s.days_left) : s.stopped ? S.stopped : S.endedOn(day(s.ends_at))} /></div>
+                {/* Worded here, in the chosen language, from the server's codes. */}
+                {s.active ? <div><Text text={s.next_alert ? S.nextAlert(day(s.next_alert.date), s.next_alert.from_hour, S.alertWhat(s.next_alert, S.docs[s.next_alert.doc] || s.next_alert.doc)) : S.noAlert} /></div> : null}
+                {s.active && s.next_check_at ? <div>{S.nextCheck(when(s.next_check_at))}</div> : null}
+                {s.next_document ? <div>{S.nextDoc(S.docs[s.next_document.doc] || s.next_document.label, day(s.next_document.date))}</div> : null}
+                {s.report_until ? <div>{S.pdf(day(s.report_until))}</div> : null}
+              </div>
+              {s.renew_paise ? (
+                <button type="button" data-test={`sub-renew-${s.reg_no}`} onClick={() => onRenew(s.reg_no, s.renew_paise)}
+                  className="gp-shine mt-2 w-full rounded-xl bg-[#ffd84d] py-2 text-[13px] font-black text-[#0a4f49] active:brightness-95">
+                  {s.renewal ? S.renew(rupee(s.renew_paise)) : S.buy(rupee(s.renew_paise))}
+                </button>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function VehiclesList({ rows, L, onOpen, onRemove, onRemoved }) {
   const [asking, setAsking] = useState(null);     // the row whose bin was tapped
   const [leaving, setLeaving] = useState(null);   // reg_no sliding out
