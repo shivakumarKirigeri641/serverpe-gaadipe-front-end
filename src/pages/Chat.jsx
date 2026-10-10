@@ -284,7 +284,10 @@ const T = {
     helpH: '❓ Help & support',
     helpBody: 'Write to *support@gaadipe.in* — we reply within a day. Tell us your mobile number and the vehicle number, if it is about one.',
     // Name and email (2026-10-07): highly recommended while WhatsApp is disabled.
-    emailNudge: '📧 *Highly recommended: add your name and email.*\n\nOur WhatsApp number is currently disabled by Meta due to technical concerns, so we cannot reach you there for now.\n\nWith a confirmed email you get *alerts about your vehicles* — a new challan, insurance or PUC about to expire — and your reports and invoices.',
+    // After sign-in, while the email is not confirmed — with the reason (user, 2026-10-10).
+    emailNudge: '📧 *Please add and confirm your email.*\n\nThat is where we send:\n🔔 *alerts* about your vehicles — a new challan, insurance or PUC about to expire\n📄 your *full reports*\n🧾 your *GST invoices*\n\nIt takes a minute: a *4-digit code* by email.',
+    emailNudgeHave: (e) => `📧 *Please confirm your email* — *${e}*.\n\nThat is where we send:\n🔔 *alerts* about your vehicles — a new challan, insurance or PUC about to expire\n📄 your *full reports*\n🧾 your *GST invoices*\n\nTap below and type the *4-digit code* we email you.`,
+    verifyEmail: 'Confirm my email', addEmailOnly: 'Add my email',
     addEmail: 'Add my name & email', later: 'Later',
     askName: 'Great! First, your *name* — how should we address you?',
     askEmail: (n) => `Thanks${n ? `, *${n}*` : ''}! Now your *email address* — I’ll send a *4-digit code* to confirm it is yours.`,
@@ -521,7 +524,9 @@ const T = {
     notifyOffNow: 'इस फ़ोन पर नोटिफ़िकेशन बंद हैं।', turnOff: 'बंद करें', notifyIsOn: '🔔 इस फ़ोन पर नोटिफ़िकेशन *पहले से चालू हैं* — आपकी गाड़ियों की जानकारी हम यहीं देंगे।',
     helpH: '❓ मदद और सहायता',
     helpBody: '*support@gaadipe.in* पर लिखें — हम एक दिन में जवाब देते हैं। अपना मोबाइल नंबर और (अगर हो) गाड़ी नंबर ज़रूर लिखें।',
-    emailNudge: '📧 *ज़रूर करें: अपना नाम और ईमेल जोड़ें।*\n\nहमारा WhatsApp नंबर अभी Meta ने तकनीकी कारणों से बंद किया हुआ है, इसलिए फ़िलहाल हम आप तक वहाँ नहीं पहुँच सकते।\n\nकन्फ़र्म ईमेल से आपको *अपनी गाड़ियों के अलर्ट* मिलेंगे — नया चालान, बीमा या PUC खत्म होने वाला हो — और आपकी रिपोर्ट व इनवॉइस भी।',
+    emailNudge: '📧 *कृपया अपना ईमेल जोड़ें और कन्फ़र्म करें।*\n\nवहीं हम भेजते हैं:\n🔔 आपकी गाड़ियों के *अलर्ट* — नया चालान, बीमा या PUC खत्म होने वाला हो\n📄 आपकी *पूरी रिपोर्ट*\n🧾 आपके *GST बिल*\n\nबस एक मिनट: ईमेल पर *4 अंकों का कोड*।',
+    emailNudgeHave: (e) => `📧 *कृपया अपना ईमेल कन्फ़र्म करें* — *${e}*।\n\nवहीं हम भेजते हैं:\n🔔 आपकी गाड़ियों के *अलर्ट* — नया चालान, बीमा या PUC खत्म होने वाला हो\n📄 आपकी *पूरी रिपोर्ट*\n🧾 आपके *GST बिल*\n\nनीचे दबाएँ और ईमेल पर आया *4 अंकों का कोड* लिखें।`,
+    verifyEmail: 'मेरा ईमेल कन्फ़र्म करें', addEmailOnly: 'मेरा ईमेल जोड़ें',
     addEmail: 'नाम और ईमेल जोड़ें', later: 'बाद में',
     askName: 'बढ़िया! पहले अपना *नाम* लिखें — हम आपको किस नाम से बुलाएँ?',
     askEmail: (n) => `धन्यवाद${n ? `, *${n}*` : ''}! अब अपना *ईमेल पता* लिखें — कन्फ़र्म करने के लिए मैं *4 अंकों का कोड* भेजूँगा।`,
@@ -1142,7 +1147,7 @@ export default function Chat() {
       bot(L.signedIn);
       await welcome({ justSignedIn: true });
       // Highly recommended while WhatsApp is disabled: a confirmed email is how alerts reach them.
-      if (!out.user?.email_verified) { emailNudge(); markNudged(out.user?.id); }
+      if (!out.user?.email_verified) { emailNudge(out.user); markNudged(out.user?.id); }
       // Signed in from an old account address: on to where they were going.
       const after = afterSignIn.current; afterSignIn.current = null;
       if (after?.next) { navigate(after.next); return; }
@@ -1162,7 +1167,12 @@ export default function Chat() {
 
   /* ──────── name and email (2026-10-07): highly recommended while WhatsApp is off ── */
 
-  function emailNudge() { push({ from: 'bot', kind: 'text', text: L.emailNudge, chips: ['addEmail', 'later'] }); }
+  /* Not confirmed yet: why it matters, and one tap — the code is emailed at once if the
+     address is already on file (user, 2026-10-10). `u` is the account just signed in. */
+  function emailNudge(u = me) {
+    const e = u?.email || '';
+    push({ from: 'bot', kind: 'text', text: e ? L.emailNudgeHave(e) : L.emailNudge, chips: ['verifyEmail', 'later'] });
+  }
   /* Signed in already and still no confirmed email: reminded once a day on this device, not every visit. */
   const NUDGE = (id) => `gp.emailNudge.${id}`;
   const todayIst = () => new Date(Date.now() + 5.5 * 3600e3).toISOString().slice(0, 10);
@@ -1467,6 +1477,15 @@ export default function Chat() {
     if (key === 'profile') { showProfile(); return; }
     if (key === 'notifyOff') { notify.disable().then(() => { setNotifyState('off'); bot(L.notifyOffNow, { chips: ['another'] }); }); return; }
     if (key === 'addEmail') { push({ from: 'me', kind: 'text', text: L.addEmail }); startProfile(); return; }
+    // Confirm the email on file now (the code goes at once), or add one — name first if there is none.
+    if (key === 'verifyEmail') {
+      if (me?.email && !me.email_verified) { push({ from: 'me', kind: 'text', text: L.verifyEmail }); sendEmail(me.email, { echo: false }); return; }
+      push({ from: 'me', kind: 'text', text: L.addEmailOnly });
+      if (!me?.name) { startProfile(); return; }
+      setPendingName(''); setMode('email'); bot(L.askEmailOnly('', false), { chips: ['later'] });
+      setTimeout(() => inputRef.current?.focus(), 50);
+      return;
+    }
     // "Later" also leaves the name / email / code step, back to vehicle numbers.
     if (key === 'later') { push({ from: 'me', kind: 'text', text: L.later }); setMode('plate'); setPendingEmail(''); setPendingName(''); bot(L.laterOk, { chips: ['another', 'myVehicles'] }); return; }
     if (key === 'resendEmail') { push({ from: 'me', kind: 'text', text: L.resend }); resendLink(); return; }
@@ -1478,7 +1497,7 @@ export default function Chat() {
     howWorks: `❓ ${L.howWorks}`, another: `🔍 ${L.another}`, signIn: `🔐 ${L.signIn}`,
     myVehicles: `🚗 ${L.myVehicles}`, myReports: `📄 ${L.myReports}`, profile: `👤 ${L.profile}`, invoices: `🧾 ${L.invoices}`,
     sample: L.sample.chip, fullInfo: L.sample.more,
-    notifyOff: `🔕 ${L.turnOff}`, addEmail: `📧 ${L.addEmail}`, later: `⏰ ${L.later}`, resendEmail: `↻ ${L.resend}`,
+    notifyOff: `🔕 ${L.turnOff}`, addEmail: `📧 ${L.addEmail}`, verifyEmail: `✉️ ${me?.email && !me.email_verified ? L.verifyEmail : L.addEmailOnly}`, later: `⏰ ${L.later}`, resendEmail: `↻ ${L.resend}`,
   }[key] || (key.startsWith('useEmail:') ? `✓ ${L.didYouMean(key.slice(9))}` : key));
 
   // The payment window opens over the chat; paying returns to /chat?paid=REG.
