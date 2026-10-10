@@ -225,9 +225,11 @@ const T = {
       lockedH: 'Dates, challans, loan & owners', lockedP: 'are in the full report — with a PDF and GST invoice.',
       unlock: (p) => `🔓 Full report ${p}`, fresh: (d) => `Saved record · ${d}`, attention: (n) => (n ? `⚠️ ${n} need attention` : '✅ Nothing flagged in the free check') },
     menuHint: 'Your vehicles, reports, invoices, profile and settings are all here.', gotIt: 'Got it',
-    menu: 'Menu', mEmail: 'Email for reports', mNotify: 'Notifications', mLang: 'हिंदी में देखें', mHelp: 'Help & support',
+    menu: 'Menu', mEmail: 'Email for reports & alerts', mNotify: 'Notifications', mLang: 'हिंदी में देखें', mHelp: 'Help & support',
     mTerms: 'Terms & privacy', mDeactivate: 'Deactivate my account', mHistory: 'Vehicle history',
-    emailH: '✉️ Email for your reports and invoices', emailPh: 'you@example.com', save: 'Save',
+    emailH: '✉️ Email for your reports, invoices and vehicle alerts', emailPh: 'you@example.com', save: 'Save',
+    // After every menu option: what can be done next (user, 2026-10-10: "on every tap of options, give replying buttons").
+    next: 'What next? Type a vehicle number, or tap below.', langNow: 'Okay — English from now on. 👍',
     emailSent: (e) => `✓ Saved. A confirmation link was sent to *${e}* — tap it to get your reports and invoices there.`,
     emailSaved: '✓ Saved.', emailBad: 'That email address does not look right.',
     deactH: '⛔ Deactivate my account',
@@ -237,7 +239,7 @@ const T = {
     allow: 'Allow notifications', notNow: 'Not now', notifyOn: '✅ Notifications are on for this phone. Tapping one opens this chat.',
     notifyBlocked: 'Notifications are blocked for gaadipe.in in your browser settings. Allow them there to get alerts.',
     notifyUnsupported: 'This browser cannot show notifications here. On iPhone, add GaadiPe to your Home Screen (Share → Add to Home Screen) and open it from there.',
-    notifyOffNow: 'Notifications are off for this phone.', turnOff: 'Turn off', notifyIsOn: '🔔 Notifications are on for this phone.',
+    notifyOffNow: 'Notifications are off for this phone.', turnOff: 'Turn off', notifyIsOn: '🔔 Notifications are *already on* for this phone — we’ll tell you here about your vehicles.',
     helpH: '❓ Help & support',
     helpBody: 'Write to *support@gaadipe.in* — we reply within a day. Tell us your mobile number and the vehicle number, if it is about one.',
     // Name and email (2026-10-07): highly recommended while WhatsApp is disabled.
@@ -422,9 +424,10 @@ const T = {
       lockedH: 'तारीखें, चालान, लोन और मालिक', lockedP: 'पूरी रिपोर्ट में हैं — PDF और GST बिल के साथ।',
       unlock: (p) => `🔓 पूरी रिपोर्ट ${p}`, fresh: (d) => `सहेजा रिकॉर्ड · ${d}`, attention: (n) => (n ? `⚠️ ${n} चीज़ों पर ध्यान चाहिए` : '✅ मुफ़्त जाँच में कुछ नहीं मिला') },
     menuHint: 'आपकी गाड़ियाँ, रिपोर्ट, बिल, प्रोफ़ाइल और सेटिंग्स — सब यहाँ हैं।', gotIt: 'ठीक है',
-    menu: 'मेनू', mEmail: 'रिपोर्ट के लिए ईमेल', mNotify: 'नोटिफ़िकेशन', mLang: 'View in English', mHelp: 'मदद और सहायता',
+    menu: 'मेनू', mEmail: 'रिपोर्ट और अलर्ट के लिए ईमेल', mNotify: 'नोटिफ़िकेशन', mLang: 'View in English', mHelp: 'मदद और सहायता',
     mTerms: 'नियम और गोपनीयता', mDeactivate: 'मेरा खाता बंद करें', mHistory: 'गाड़ियों का इतिहास',
-    emailH: '✉️ आपकी रिपोर्ट और बिल के लिए ईमेल', emailPh: 'you@example.com', save: 'सहेजें',
+    emailH: '✉️ आपकी रिपोर्ट, बिल और गाड़ियों के अलर्ट के लिए ईमेल', emailPh: 'you@example.com', save: 'सहेजें',
+    next: 'आगे क्या? गाड़ी नंबर लिखें, या नीचे कोई बटन दबाएँ।', langNow: 'ठीक है — अब से हिंदी में। 👍',
     emailSent: (e) => `✓ सहेजा गया। *${e}* पर पुष्टि लिंक भेजा गया — रिपोर्ट और बिल वहाँ पाने के लिए उसे टैप करें।`,
     emailSaved: '✓ सहेजा गया।', emailBad: 'यह ईमेल पता सही नहीं लगता।',
     deactH: '⛔ मेरा खाता बंद करें',
@@ -434,7 +437,7 @@ const T = {
     allow: 'नोटिफ़िकेशन की अनुमति दें', notNow: 'अभी नहीं', notifyOn: '✅ इस फ़ोन पर नोटिफ़िकेशन चालू हैं। टैप करने पर यही चैट खुलेगी।',
     notifyBlocked: 'ब्राउज़र सेटिंग में gaadipe.in के नोटिफ़िकेशन बंद हैं। अलर्ट पाने के लिए वहाँ अनुमति दें।',
     notifyUnsupported: 'यह ब्राउज़र यहाँ नोटिफ़िकेशन नहीं दिखा सकता। iPhone पर GaadiPe को होम स्क्रीन पर जोड़ें (Share → Add to Home Screen) और वहीं से खोलें।',
-    notifyOffNow: 'इस फ़ोन पर नोटिफ़िकेशन बंद हैं।', turnOff: 'बंद करें', notifyIsOn: '🔔 इस फ़ोन पर नोटिफ़िकेशन चालू हैं।',
+    notifyOffNow: 'इस फ़ोन पर नोटिफ़िकेशन बंद हैं।', turnOff: 'बंद करें', notifyIsOn: '🔔 इस फ़ोन पर नोटिफ़िकेशन *पहले से चालू हैं* — आपकी गाड़ियों की जानकारी हम यहीं देंगे।',
     helpH: '❓ मदद और सहायता',
     helpBody: '*support@gaadipe.in* पर लिखें — हम एक दिन में जवाब देते हैं। अपना मोबाइल नंबर और (अगर हो) गाड़ी नंबर ज़रूर लिखें।',
     emailNudge: '📧 *ज़रूर करें: अपना नाम और ईमेल जोड़ें।*\n\nहमारा WhatsApp नंबर अभी Meta ने तकनीकी कारणों से बंद किया हुआ है, इसलिए फ़िलहाल हम आप तक वहाँ नहीं पहुँच सकते।\n\nकन्फ़र्म ईमेल से आपको *अपनी गाड़ियों के अलर्ट* मिलेंगे — नया चालान, बीमा या PUC खत्म होने वाला हो — और आपकी रिपोर्ट व इनवॉइस भी।',
@@ -1149,10 +1152,13 @@ export default function Chat() {
     setBusy(true); typing();
     try {
       const out = await (kind === 'vehicles' ? api.vehicles() : kind === 'reports' ? api.reports() : api.invoices());
-      const rows = out.rows || [];
-      if (!rows.length) { bot({ vehicles: L.noVehicles, reports: L.noReports, invoices: L.noInvoices }[kind], { chips: ['another'] }); return; }
+      // Expired reports are left out (the server too) — "remove completely" (user, 2026-10-10).
+      const rows = (out.rows || []).filter((r) => kind !== 'reports' || !r.valid_until || new Date(r.valid_until) > new Date());
+      const others = { vehicles: ['myReports'], reports: ['myVehicles', 'invoices'], invoices: ['myReports'] }[kind];
+      if (!rows.length) { bot({ vehicles: L.noVehicles, reports: L.noReports, invoices: L.noInvoices }[kind], { chips: ['another', ...others] }); return; }
       push({ from: 'bot', kind, rows });
-    } catch (e) { bot(`⚠️ ${e.message}`); } finally { setBusy(false); }
+      nextStep(others);
+    } catch (e) { bot(`⚠️ ${e.message}`, { chips: ['another'] }); } finally { setBusy(false); }
   }
 
   async function showProfile() {
@@ -1162,7 +1168,8 @@ export default function Chat() {
     try {
       const out = await api.me();
       push({ from: 'bot', kind: 'profile', user: out.user || out });
-    } catch (e) { bot(`⚠️ ${e.message}`); } finally { setBusy(false); }
+      nextStep(['myVehicles', 'myReports']);
+    } catch (e) { bot(`⚠️ ${e.message}`, { chips: ['another'] }); } finally { setBusy(false); }
   }
 
   async function download(kind, row) {
@@ -1177,6 +1184,17 @@ export default function Chat() {
     setMenuOpen(false);
     push({ from: 'me', kind: 'text', text: label });
     push({ from: 'bot', kind, ...extra });
+    // Buttons below an information card; a card that asks to confirm (sign out, deactivate) keeps only its own.
+    const after = { email: me ? ['profile'] : null, help: ['howWorks'], feedback: [] }[kind];
+    if (after) nextStep(after);
+  }
+  // The language from the menu: said in the new language, with buttons (2026-10-10).
+  function switchLang() {
+    setMenuOpen(false);
+    const to = lang === 'hi' ? 'en' : 'hi';
+    push({ from: 'me', kind: 'text', text: to === 'hi' ? 'हिंदी' : 'English' });
+    setLang(to);
+    bot(T[to].langNow, { pace: 400, chips: ['another', ...(me ? ['myVehicles'] : ['howWorks'])] });
   }
   /* Feedback (2026-10-10): where it was asked (src) and which vehicle — to the admin's Feedback page. */
   function sendFeedback(rating, src, reg, message = '') {
@@ -1209,7 +1227,7 @@ export default function Chat() {
     try {
       const out = await api.saveMe({ email: e });
       setMe?.(out.user);
-      bot(out.email_confirmation_sent ? L.emailConfirm(e) : L.emailSaved);
+      bot(out.email_confirmation_sent ? L.emailConfirm(e) : L.emailSaved, { chips: ['another', 'myVehicles'] });
       return true;
     } catch (err) {
       bot(`⚠️ ${err.message}`, { chips: err.body?.suggestion ? [`useEmail:${err.body.suggestion}`] : [] });
@@ -1235,12 +1253,18 @@ export default function Chat() {
   async function notificationsMenu() {
     setMenuOpen(false);
     push({ from: 'me', kind: 'text', text: L.mNotify });
-    const s = await notify.state().catch(() => 'unsupported');
+    // Already allowed on this phone: "already on", never the ask again (notify.resume, 2026-10-10).
+    const s = await notify.resume().catch(() => 'unsupported');
     setNotifyState(s);
-    if (s === 'on') bot(L.notifyIsOn, { chips: ['notifyOff'] });
-    else if (s === 'blocked') bot(L.notifyBlocked);
-    else if (s === 'unsupported') bot(L.notifyUnsupported);
+    if (s === 'on') bot(L.notifyIsOn, { chips: ['another', 'notifyOff'] });
+    else if (s === 'blocked') bot(L.notifyBlocked, { chips: ['another'] });
+    else if (s === 'unsupported') bot(L.notifyUnsupported, { chips: ['another'] });
     else push({ from: 'bot', kind: 'notify' });
+  }
+  /* After a menu option: what can be done next, as buttons (user, 2026-10-10: "on every
+     tap of options, give replying tappable buttons"). "Check another" always first. */
+  function nextStep(chips = [], text = L.next) {
+    bot(text, { pace: 450, chips: ['another', ...chips] });
   }
 
   async function doSignOut() {
@@ -1290,9 +1314,9 @@ export default function Chat() {
     if (key === 'myReports') { showList('reports'); return; }
     if (key === 'invoices') { showList('invoices'); return; }
     if (key === 'profile') { showProfile(); return; }
-    if (key === 'notifyOff') { notify.disable().then(() => { setNotifyState('off'); bot(L.notifyOffNow); }); return; }
+    if (key === 'notifyOff') { notify.disable().then(() => { setNotifyState('off'); bot(L.notifyOffNow, { chips: ['another'] }); }); return; }
     if (key === 'addEmail') { push({ from: 'me', kind: 'text', text: L.addEmail }); startProfile(); return; }
-    if (key === 'later') { push({ from: 'me', kind: 'text', text: L.later }); bot(L.laterOk); return; }
+    if (key === 'later') { push({ from: 'me', kind: 'text', text: L.later }); bot(L.laterOk, { chips: ['another', 'myVehicles'] }); return; }
     if (key === 'resendEmail') { push({ from: 'me', kind: 'text', text: L.resend }); resendLink(); return; }
     if (key.startsWith('useEmail:')) { push({ from: 'me', kind: 'text', text: key.slice(9) }); sendEmail(key.slice(9), { echo: false }); return; }
     if (key.startsWith('open:')) { push({ from: 'me', kind: 'plate', text: prettyPlate(key.slice(5)) }); openVehicle(key.slice(5)); }
@@ -1348,7 +1372,7 @@ export default function Chat() {
           </div>
           {/* Hindi / English in one tap (user, 2026-10-08: "I don't see the Hindi toggle") — it
               was only inside the menu. Shows the language it switches TO. */}
-          <button type="button" data-test="lang-toggle" onClick={() => setLang(lang === 'hi' ? 'en' : 'hi')}
+          <button type="button" data-test="lang-toggle" onClick={() => (chosen ? switchLang() : setLang(lang === 'hi' ? 'en' : 'hi'))}
             aria-label={lang === 'hi' ? 'Switch to English' : 'हिंदी में बदलें'}
             className="flex items-center gap-1 rounded-full border border-white/40 bg-white/10 px-2.5 py-1 text-[12px] font-bold hover:bg-white/25 active:scale-95">
             <span aria-hidden="true">🌐</span>{lang === 'hi' ? 'EN' : 'हिंदी'}
@@ -1432,9 +1456,9 @@ export default function Chat() {
               return <DocsList key={it.id} kind={it.kind} rows={it.rows} L={L} onDownload={(row) => download(it.kind === 'invoices' ? 'invoice' : 'report', row)} />;
             }
             if (it.kind === 'email') return <EmailCard key={it.id} L={L} current={me?.email} onSave={saveEmail} />;
-            if (it.kind === 'deactivate') return <DeactivateCard key={it.id} L={L} onConfirm={deactivate} onCancel={() => bot(L.cancelled)} />;
-            if (it.kind === 'signout') return <SignOutCard key={it.id} L={L} onConfirm={doSignOut} onCancel={() => bot(L.cancelled)} />;
-            if (it.kind === 'signoutall') return <SignOutCard key={it.id} L={L} title={L.signOutAllH} body={L.signOutAllBody} onConfirm={doSignOutAll} onCancel={() => bot(L.cancelled)} />;
+            if (it.kind === 'deactivate') return <DeactivateCard key={it.id} L={L} onConfirm={deactivate} onCancel={() => bot(L.cancelled, { chips: ['another', 'myVehicles'] })} />;
+            if (it.kind === 'signout') return <SignOutCard key={it.id} L={L} onConfirm={doSignOut} onCancel={() => bot(L.cancelled, { chips: ['another', 'myVehicles'] })} />;
+            if (it.kind === 'signoutall') return <SignOutCard key={it.id} L={L} title={L.signOutAllH} body={L.signOutAllBody} onConfirm={doSignOutAll} onCancel={() => bot(L.cancelled, { chips: ['another', 'myVehicles'] })} />;
             if (it.kind === 'feedback') {
               return <FeedbackCard key={it.id} L={L} mode={it.mode || 'stars'} title={it.title}
                 onSend={(rating, message) => { sendFeedback(rating, it.src || 'menu', it.reg, message); bot(L.fb.thanks); }} />;
@@ -1496,20 +1520,20 @@ export default function Chat() {
           ['📄', L.myReports, () => { setMenuOpen(false); showList('reports'); }, 'reports'],
           ['🧾', L.invoices, () => { setMenuOpen(false); showList('invoices'); }, 'invoices'],
           ['🔔', `${L.mNotify}${notifyState === 'on' ? ' ✓' : ''}`, notificationsMenu, 'notify'],
-          ['🌐', L.mLang, () => { setMenuOpen(false); setLang(lang === 'hi' ? 'en' : 'hi'); }, 'lang'],
+          ['🌐', L.mLang, switchLang, 'lang'],
           ['💡', L.howWorks, () => { setMenuOpen(false); chip('howWorks'); }, 'how'],
           ['❓', L.mHelp, () => showCard('help', L.mHelp), 'help'],
-          ['📜', L.mTerms, () => { setMenuOpen(false); window.open('/terms', '_blank', 'noopener'); }, 'terms'],
+          ['📜', L.mTerms, () => { setMenuOpen(false); window.open('/terms', '_blank', 'noopener'); push({ from: 'me', kind: 'text', text: L.mTerms }); nextStep(me ? ['myVehicles'] : ['howWorks']); }, 'terms'],
           ['📝', L.mFeedback, () => showCard('feedback', L.mFeedback, { mode: 'stars', src: 'menu', title: L.fb.menuH }), 'feedback'],
           ['↪', L.signOut, () => showCard('signout', L.signOut), 'signout', 'warn'],
           ['⏏', L.mSignOutAll, () => showCard('signoutall', L.mSignOutAll), 'signoutall', 'warn'],
           ['⛔', L.mDeactivate, () => showCard('deactivate', L.mDeactivate), 'deactivate', 'danger'],
         ] : [
           ['🔐', L.signIn, () => { setMenuOpen(false); startSignIn(); }, 'signin'],
-          ['🌐', L.mLang, () => { setMenuOpen(false); setLang(lang === 'hi' ? 'en' : 'hi'); }, 'lang'],
+          ['🌐', L.mLang, switchLang, 'lang'],
           ['✉️', L.mHelp, () => showCard('help', L.mHelp), 'help'],
           ['📝', L.mFeedback, () => showCard('feedback', L.mFeedback, { mode: 'stars', src: 'menu', title: L.fb.menuH }), 'feedback'],
-          ['📜', L.mTerms, () => { setMenuOpen(false); window.open('/terms', '_blank', 'noopener'); }, 'terms'],
+          ['📜', L.mTerms, () => { setMenuOpen(false); window.open('/terms', '_blank', 'noopener'); push({ from: 'me', kind: 'text', text: L.mTerms }); nextStep(me ? ['myVehicles'] : ['howWorks']); }, 'terms'],
         ]} />
       )}
 

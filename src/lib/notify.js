@@ -38,6 +38,7 @@ export async function enable({ title = '🔔 GaadiPe alerts are on', body = 'We�
   if (!supported()) return 'unsupported';
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') return permission === 'denied' ? 'blocked' : 'off';
+  setOff(false);
   const reg = await registration();
   const { key } = await api.pushKey();
   const sub = (await reg.pushManager.getSubscription())
@@ -48,8 +49,37 @@ export async function enable({ title = '🔔 GaadiPe alerts are on', body = 'We�
   return 'on';
 }
 
+/* Turned off here (the "Turn off" button, sign-out, deactivation): remembered, so
+   resume() never switches them back on by itself. */
+const OFF = 'gp.notify.off';
+function setOff(v) { try { if (v) localStorage.setItem(OFF, '1'); else localStorage.removeItem(OFF); } catch { /* private mode */ } }
+function isOff() { try { return localStorage.getItem(OFF) === '1'; } catch { return false; } }
+
+/**
+ * "Are they on?" from the Notifications menu (user, 2026-10-10: "if already on,
+ * say it's already on"). The phone already said yes (permission granted) and it
+ * was never turned off here: the subscription is made sure of — re-made if the
+ * browser dropped it, and told to GaadiPe again (an upsert) — without asking again
+ * and without a sample notification. Otherwise just the state.
+ */
+export async function resume() {
+  if (!supported()) return 'unsupported';
+  if (Notification.permission !== 'granted' || isOff()) return state();
+  try {
+    const reg = await registration();
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      const { key } = await api.pushKey();
+      sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(key) });
+    }
+    await api.pushSubscribe(sub.toJSON());
+    return 'on';
+  } catch { return state(); }
+}
+
 export async function disable() {
   if (!supported()) return;
+  setOff(true);
   const reg = await navigator.serviceWorker.getRegistration();
   const sub = reg && await reg.pushManager.getSubscription();
   if (!sub) return;
