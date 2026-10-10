@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom';
 import { useLang } from '../lib/i18n.jsx';
 
 /**
@@ -13,7 +14,9 @@ import { useLang } from '../lib/i18n.jsx';
  */
 export default function LanguageGate() {
   const { chosen, setLang } = useLang();
-  if (chosen) return null;
+  const { pathname } = useLocation();
+  // The chat asks in its own conversation, after the welcome (user, 2026-10-10).
+  if (chosen || pathname.startsWith('/chat')) return null;
 
   return (
     <div className="anim-in fixed inset-0 z-[80] flex items-center justify-center bg-ink/50 px-4 backdrop-blur-sm">

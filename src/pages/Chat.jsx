@@ -26,6 +26,13 @@ import { saveBlob } from '../components/ui.jsx';
  * verified (the sign-in answers every number the same).
  */
 
+/* Asked before a language is chosen, so in both at once (2026-10-10). */
+const LANG_ASK = {
+  hello: '👋 Welcome to *GaadiPe*!\nGaadiPe में आपका स्वागत है!',
+  which: 'Which language would you like to chat in?\nआप किस भाषा में बात करना चाहेंगे?',
+  hint: 'Tap a language above · ऊपर भाषा चुनें',
+};
+
 const T = {
   en: {
     /* ONE FREE LOOK FIRST (user, 2026-10-08: visitors came to type a vehicle
@@ -133,7 +140,7 @@ const T = {
     profile: 'Profile',
     howWorks: 'What do I get?',
     // As the site is now (2026-10-10): the three levels, in plain words.
-    howAnswer: '*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 3 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, up to 10 vehicles a day, and *14 days of free monitoring* for one vehicle.\n\n*Full report ₹19* — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears.',
+    howAnswer: '*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 2 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, up to 10 vehicles a day, and *14 days of free monitoring* for one vehicle.\n\n*Full report ₹19* — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears.',
     attention: (n) => (n ? `⚠️ *${n} thing${n === 1 ? '' : 's'} need attention*` : '✅ *Nothing needs attention*'),
     /* Honest about what signing in gives (user, 2026-10-08: "this fools the
        user — the details are ₹19"). Signing in is free and keeps the vehicle and
@@ -150,10 +157,10 @@ const T = {
       locked: 'In the ₹19 full report', verdictH: 'Verdict — before you pay',
       challansAmt: (n, amt) => (n ? `🚨 ${n} pending challan${n === 1 ? '' : 's'}${amt ? ` · ${amt} in all` : ''} — each one in the full report` : '✅ No pending challans'),
     },
-    // The signed-in RC card (2026-10-10).
-    rc: {
+    // The signed-in RC card (2026-10-10). `src`, not `rc`: `rc` is the My vehicles viewer below.
+    src: {
       head: 'Vehicle record', backTitle: 'Validity, challans & alerts',
-      flip: '↻ Flip for validity, challans & alerts', clear: '✓ All clear',
+      flip: 'Swipe or tap — validity, challans & alerts', clear: '✓ All clear',
       attention: (n) => `⚠ ${n} need${n === 1 ? 's' : ''} attention`,
     },
     // Free monitoring for one vehicle (2026-10-10, site/freeMonitor.js).
@@ -163,7 +170,7 @@ const T = {
       startNote: 'Alerts by SMS, email and notification. Nothing to pay; nothing renews by itself.',
       started: (reg, until) => `✅ Free monitoring is on for *${reg}* until *${until}*. We will tell you before any document expires and when a new challan appears.`,
       used: (reg) => `Your free monitoring has been used${reg ? ` (${reg})` : ''}. Monitoring is ₹19 for 28 days per vehicle — the full report included.`,
-      flip: '↻ See what sign-in shows', flipBack: '↺ Back to the vehicle',
+      flip: 'Swipe or tap — see what sign-in shows', flipBack: '↺ Back to the vehicle',
       backTitle: 'Sign in free and you will see:',
       monitorRow: '🔔 14 days of free automatic monitoring',
       monitorNote: 'for one vehicle — alerts before any document expires and when a new challan appears',
@@ -338,7 +345,7 @@ const T = {
     myReports: 'मेरी रिपोर्ट',
     profile: 'प्रोफ़ाइल',
     howWorks: 'मुझे क्या मिलेगा?',
-    howAnswer: '*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 3 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, दिन में 10 गाड़ियाँ, और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ₹19* — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे।',
+    howAnswer: '*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 2 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, दिन में 10 गाड़ियाँ, और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ₹19* — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे।',
     attention: (n) => (n ? `⚠️ *${n} चीज़ों पर ध्यान चाहिए*` : '✅ *कुछ भी बाकी नहीं*'),
     identityOnly: (p) => '✅ *गाड़ी सरकारी रिकॉर्ड में मिल गई।*\n\nइसे अपने खाते में सेव करने और और गाड़ियाँ जाँचने के लिए मोबाइल से *मुफ़्त साइन इन* करें।\n\n*पूरी रिपोर्ट* — इंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, चालान, लोन, ब्लैकलिस्ट और कितने मालिक — *' + p + '* में, PDF और GST बिल के साथ।',
     expired: 'समाप्त', dueSoon: 'जल्द', challans: 'बाकी चालान',
@@ -351,9 +358,9 @@ const T = {
       locked: '₹19 की पूरी रिपोर्ट में', verdictH: 'फ़ैसला — पैसे देने से पहले',
       challansAmt: (n, amt) => (n ? `🚨 ${n} चालान बाकी${amt ? ` · कुल ${amt}` : ''} — हर चालान पूरी रिपोर्ट में` : '✅ कोई चालान बाकी नहीं'),
     },
-    rc: {
+    src: {
       head: 'गाड़ी का रिकॉर्ड', backTitle: 'वैधता, चालान और अलर्ट',
-      flip: '↻ पलटें — वैधता, चालान और अलर्ट', clear: '✓ सब ठीक',
+      flip: 'स्वाइप करें या दबाएँ — वैधता, चालान और अलर्ट', clear: '✓ सब ठीक',
       attention: (n) => `⚠ ${n} बातों पर ध्यान दें`,
     },
     fm: {
@@ -362,7 +369,7 @@ const T = {
       startNote: 'SMS, ईमेल और नोटिफ़िकेशन से अलर्ट। कुछ नहीं देना; अपने-आप कुछ रिन्यू नहीं होता।',
       started: (reg, until) => `✅ *${reg}* की मुफ़्त निगरानी *${until}* तक चालू है। कोई दस्तावेज़ खत्म होने से पहले और नया चालान आने पर हम बताएँगे।`,
       used: (reg) => `आपकी मुफ़्त निगरानी इस्तेमाल हो चुकी है${reg ? ` (${reg})` : ''}। निगरानी हर गाड़ी के लिए 28 दिन ₹19 में है — पूरी रिपोर्ट के साथ।`,
-      flip: '↻ साइन इन पर क्या दिखेगा', flipBack: '↺ गाड़ी पर वापस',
+      flip: 'स्वाइप करें या दबाएँ — साइन इन पर क्या दिखेगा', flipBack: '↺ गाड़ी पर वापस',
       backTitle: 'मुफ़्त साइन इन करें और यह देखें:',
       monitorRow: '🔔 14 दिन मुफ़्त ऑटोमैटिक निगरानी',
       monitorNote: 'एक गाड़ी के लिए — कोई दस्तावेज़ खत्म होने से पहले और नया चालान आने पर अलर्ट',
@@ -516,7 +523,7 @@ const time = (at) => {
 
 export default function Chat() {
   const { me, ready, signIn, signOut, setMe } = useSession();
-  const { lang, setLang } = useLang();
+  const { lang, setLang, chosen } = useLang();
   const L = T[lang === 'hi' ? 'hi' : 'en'];
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
@@ -612,11 +619,11 @@ export default function Chat() {
       const hello = signInRequired ? 'helloShort' : 'helloFree';
       setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: note ? `${note}\n\n${L[hello]}` : L[hello],
         chips: signInRequired ? ['sample', 'fullInfo'] : [] },
-        { id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: T[lang === 'hi' ? 'en' : 'hi'][hello] },
+        // Only the chosen language now (2026-10-10) — no second copy in the other one.
         // Signed out with sign-in required: straight back to the mobile number, policies first (2026-10-08).
         ...(signInRequired ? [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'terms' }]
           : [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'freeTerms' },
-            { id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: L.typeNow }])]);
+            { id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: L.typeNow, chips: ['sample', 'howWorks'] }])]);
     } else if (prevMe.current && me && String(prevMe.current.id) !== String(me.id)) {
       // Another account on this phone (a new mobile number): its own conversation, nothing of the old one.
       loadedFor.current = me.id;
@@ -720,10 +727,33 @@ export default function Chat() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const bot = useCallback((text, extra = {}) => push({ from: 'bot', kind: 'text', text, ...extra }), [push]);
 
-  /* First open: greet, once. Signed in: welcome back + their WhatsApp history. */
+  /* LANGUAGE FIRST, IN THE CHAT (user, 2026-10-10: "ask for language after welcome,
+     then the full conversation in the selected language"). A visitor who has not
+     chosen yet gets a welcome in both languages and two buttons; the opening below
+     then runs once, in the language picked — never both languages again. */
+  const openAfterLang = useRef(false);
   useEffect(() => {
     if (!ready || !noticeReady || greeted.current) return;
     greeted.current = true;
+    if (!chosen) {
+      openAfterLang.current = true;
+      bot(LANG_ASK.hello, { pace: 500 });
+      bot(LANG_ASK.which, { pace: 600, chips: ['lang:en', 'lang:hi'] });
+      return;
+    }
+    opening();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, me, noticeReady]);
+  // Picked (a button here, or the header switch): the opening, in that language.
+  useEffect(() => {
+    if (!chosen || !openAfterLang.current) return;
+    openAfterLang.current = false;
+    opening();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chosen, lang]);
+
+  /* First open: greet, once. Signed in: welcome back + their WhatsApp history. */
+  function opening() {
     if (me) {
       setItems(loadFor(me.id)); loadedFor.current = me.id; welcome();
       // No confirmed email yet: the recommendation again, once a day.
@@ -735,11 +765,9 @@ export default function Chat() {
       // Sign in first (2026-10-08): the greeting asks for the mobile, with the
       // policies to agree to right below — unless a number came with the link,
       // whose check asks for the sign-in itself.
-      // In both languages (user, 2026-10-08: "people prefer Hindi as well") —
-      // the chosen one first, the other right after.
-      // Short, in both languages; a sample report and the full text one tap away (2026-10-08).
+      // In the language chosen in the chat (2026-10-10) — once, not in both.
+      // A sample report and the full text one tap away (2026-10-08).
       bot(L.helloShort, { pace: 650, chips: ['sample', 'fullInfo'] });
-      bot(T[lang === 'hi' ? 'en' : 'hi'].helloShort, { pace: 700 });
       // (/login and ?signin=1 land here too: the same opening, asked once.)
       if (!(reg && looksLikePlate(reg))) startSignIn(null, { quiet: true });
     } else if (!me && (params.get('signin') || params.get('open') || params.get('next') || signingSaved())) {
@@ -750,7 +778,6 @@ export default function Chat() {
          back to "type the code". */
       const saved = signingSaved();
       bot(L.helloShort, { pace: 650, chips: ['sample', 'fullInfo'] });
-      bot(T[lang === 'hi' ? 'en' : 'hi'].helloShort, { pace: 700 });
       startSignIn(null, { quiet: true });
       if (saved?.stage === 'code' && /^[6-9]\d{9}$/.test(saved.mobile || '')) {
         setMobile(saved.mobile); setMode('code');
@@ -760,7 +787,6 @@ export default function Chat() {
       // The free check is on (check_sign_in_required false, migration 142): type a number, see make & model.
       // No buttons (user, 2026-10-10: "showing sign in feels awkward") — just type a number.
       bot(L.helloFree, { pace: 650 });
-      bot(T[lang === 'hi' ? 'en' : 'hi'].helloFree, { pace: 700 });
       // Agreeing by entering a number: the line under the welcome (no "Agree & check" button).
       setTimeout(() => push({ from: 'bot', kind: 'freeTerms' }), 1500);
       // Then its own reply: "Type in a vehicle number now." (user, 2026-10-10) — with
@@ -812,8 +838,7 @@ export default function Chat() {
       // The vehicle first (with "continue for ₹19"), then the one-tap "why not" below it.
       if (fromFreeEnd && me && reg) setTimeout(() => push({ from: 'bot', kind: 'feedback', mode: 'reasons', src: 'free_end', reg, title: L.fb.freeEndH }), 3500);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, me, noticeReady]);
+  }
 
   async function welcome({ justSignedIn = false } = {}) {
     try {
@@ -943,7 +968,7 @@ export default function Chat() {
         interaction('error', `Free check of ${reg} failed: ${String(out.message || out.error || '').slice(0, 60)}`, { reg_no: reg });
         bot(`⚠️ ${out.message || 'Something went wrong. Please try again.'}`, { chips: ['signIn'] }); return;
       }
-      // Not marked as used after one any more (2026-10-10: 3 a day) — the server says when they are used up.
+      // Not marked as used after one any more (2026-10-10: 2 a day) — the server says when they are used up.
       journey({ step: 'viewing', section: `free check result · ${reg}` });
       interaction('view', `Saw the free check of ${reg}`, { reg_no: reg });
       bot(L.free.foundIntro(prettyPlate(reg)), { pace: 500 });
@@ -1229,6 +1254,13 @@ export default function Chat() {
   /* ────────────────────────────── chips and buttons ── */
 
   function chip(key) {
+    // The language, asked in the chat; the opening follows in it (the effect on `chosen`).
+    if (key.startsWith('lang:')) {
+      const l = key.slice(5) === 'hi' ? 'hi' : 'en';
+      push({ from: 'me', kind: 'text', text: l === 'hi' ? 'हिंदी' : 'English' });
+      setLang(l);
+      return;
+    }
     // "What do I get?" lives with the signed-in options now (user, 2026-10-08: the welcome already says it all).
     if (key === 'howWorks') { push({ from: 'me', kind: 'text', text: L.howWorks }); bot(L.howAnswer, { chips: me ? ['another'] : ['sample', 'signIn'] }); return; }
     // The sample report on a made-up vehicle, and the full description (2026-10-08).
@@ -1266,6 +1298,7 @@ export default function Chat() {
     if (key.startsWith('open:')) { push({ from: 'me', kind: 'plate', text: prettyPlate(key.slice(5)) }); openVehicle(key.slice(5)); }
   }
   const chipLabel = (key) => (key.startsWith('open:') ? `🔓 ${prettyPlate(key.slice(5))}` : {
+    'lang:en': 'English', 'lang:hi': 'हिंदी',
     howWorks: `❓ ${L.howWorks}`, another: `🔍 ${L.another}`, signIn: `🔐 ${L.signIn}`,
     myVehicles: `🚗 ${L.myVehicles}`, myReports: `📄 ${L.myReports}`, profile: `👤 ${L.profile}`, invoices: `🧾 ${L.invoices}`,
     sample: L.sample.chip, fullInfo: L.sample.more,
@@ -1285,8 +1318,9 @@ export default function Chat() {
   const lastBot = [...items].reverse().find((x) => x.from === 'bot' && x.kind !== 'typing');
   const tapToo = mode === 'plate' && Boolean(lastBot && (lastBot.chips?.length
     || !['text', 'welcome', 'note', 'freeTerms', 'file'].includes(lastBot.kind)));
-  const hintText = (L.hint[mode === 'ecode' ? 'code' : mode] || L.hint.plate) + (tapToo ? L.hint.tap : '');
-  const placeholder = { mobile: L.placeholderMobile, code: L.placeholderCode, ecode: L.placeholderCode, name: L.placeholderName, email: L.placeholderEmail }[mode] || L.placeholderPlate;
+  // No language yet: only the two buttons — typing waits, so the terms line is read in the chosen language first.
+  const hintText = !chosen ? LANG_ASK.hint : (L.hint[mode === 'ecode' ? 'code' : mode] || L.hint.plate) + (tapToo ? L.hint.tap : '');
+  const placeholder = !chosen ? LANG_ASK.hint : { mobile: L.placeholderMobile, code: L.placeholderCode, ecode: L.placeholderCode, name: L.placeholderName, email: L.placeholderEmail }[mode] || L.placeholderPlate;
   const typed = mode === 'name' || mode === 'email';   // free text: no capitals forced, no digit spacing
   const plateHint = mode === 'plate' && looksLikePlate(input);
 
@@ -1300,12 +1334,9 @@ export default function Chat() {
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-3 py-2.5">
           <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-sm font-black text-[#0f766e] shadow">GP</div>
           <div className="min-w-0 flex-1 leading-tight">
-            {/* Signed in with a name (user, 2026-10-10): their name at the top, GaadiPe beneath. */}
+            {/* Signed in with a name (user, 2026-10-10): only their name — no "GaadiPe · online" under it. */}
             {me?.name ? (
-              <>
-                <div className="truncate font-bold" data-test="header-name">{lang === 'hi' ? `नमस्ते, ${String(me.name).split(/\s+/)[0]}` : `Hi, ${String(me.name).split(/\s+/)[0]}`} 👋</div>
-                <div className="text-[11px] text-white/80">GaadiPe · {busy || items.some((x) => x.kind === 'typing') ? (lang === 'hi' ? 'लिख रहा है…' : 'typing…') : L.online}</div>
-              </>
+              <div className="truncate text-[16px] font-bold" data-test="header-name">{lang === 'hi' ? `नमस्ते, ${String(me.name).split(/\s+/)[0]}` : `Hi, ${String(me.name).split(/\s+/)[0]}`} 👋</div>
             ) : (
               <>
                 <div className="flex items-center gap-1 font-bold">GaadiPe
@@ -1445,7 +1476,7 @@ export default function Chat() {
                 inputMode={mode === 'email' ? 'email' : mode === 'plate' || mode === 'name' ? 'text' : 'numeric'}
                 autoComplete={{ mobile: 'tel', code: 'one-time-code', ecode: 'one-time-code', name: 'name', email: 'email' }[mode] || 'off'}
                 autoCapitalize={mode === 'name' ? 'words' : mode === 'email' ? 'none' : undefined}
-                maxLength={{ code: 6, ecode: 6, name: 60, email: 160 }[mode] || 20} disabled={busy}
+                maxLength={{ code: 6, ecode: 6, name: 60, email: 160 }[mode] || 20} disabled={busy || !chosen}
                 className={`w-full rounded-2xl border bg-[#f6f9f9] px-4 py-3 text-[15px] outline-none transition focus:border-[#0f766e] focus:bg-white ${mode === 'plate' ? 'uppercase tracking-wider' : typed ? '' : 'tracking-widest'} placeholder:normal-case placeholder:tracking-normal ${plateHint ? 'border-[#12a150]' : 'border-black/10'}`} />
               {plateHint && <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#12a150]">✓ {prettyPlate(input)}</span>}
             </div>
@@ -1505,20 +1536,23 @@ function Menu({ items, onClose, me }) {
     <div className="fixed inset-0 z-40" onClick={onClose}>
       <div className="absolute inset-0 bg-black/20" />
       <div role="menu" onClick={(e) => e.stopPropagation()}
-        className="gp-pop absolute right-2 w-64 overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/5"
-        style={{ top: 'calc(env(safe-area-inset-top) + 64px)' }}>
+        className="gp-pop absolute right-2 flex w-64 max-w-[calc(100vw-16px)] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-black/5"
+        // Fits the phone (user, 2026-10-10: "menu options not fitting my mobile"): never past the bottom; the list scrolls.
+        style={{ top: 'calc(env(safe-area-inset-top) + 64px)', maxHeight: 'calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 76px)' }}>
         {me && (
-          <div className="border-b border-black/5 bg-gradient-to-r from-[#0f766e] to-[#14a08f] px-4 py-3 text-white">
+          <div className="shrink-0 border-b border-black/5 bg-gradient-to-r from-[#0f766e] to-[#14a08f] px-4 py-3 text-white">
             <div className="text-[14px] font-bold">{me.name || '-'}</div>
             <div className="text-[12px] text-white/80">{m ? `${m.slice(0, 5)} ${m.slice(5)}` : ''}</div>
           </div>
         )}
+        <div className="min-h-0 overflow-y-auto overscroll-contain" data-test="menu-list">
         {items.map(([icon, label, act, key, tone]) => (
           <button key={key} type="button" role="menuitem" data-test={`menu-${key}`} onClick={act}
-            className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-[14px] active:bg-black/5 ${tone === 'danger' ? 'text-[#c62828]' : tone === 'warn' ? 'text-[#b26a00]' : 'text-[#0b2e2b]'}`}>
-            <span className="w-5 text-center">{icon}</span><span>{label}</span>
+            className={`flex w-full items-center gap-3 px-4 py-2 text-left text-[14px] active:bg-black/5 ${tone === 'danger' ? 'text-[#c62828]' : tone === 'warn' ? 'text-[#b26a00]' : 'text-[#0b2e2b]'}`}>
+            <span className="w-5 shrink-0 text-center">{icon}</span><span className="min-w-0">{label}</span>
           </button>
         ))}
+        </div>
       </div>
     </div>
   );
@@ -1712,6 +1746,7 @@ function FreeVehicleCard({ it, L, onBuy, onSignIn, onFeedback }) {
   const id = v.identity || {};
   const [back, setBack] = useState(false);
   const [voted, setVoted] = useState(false);
+  const peek = usePeek(it, back);
   const touchX = useRef(null);
   const face = 'col-start-1 row-start-1 overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md [backface-visibility:hidden]';
   return (
@@ -1723,7 +1758,7 @@ function FreeVehicleCard({ it, L, onBuy, onSignIn, onFeedback }) {
           if (Math.abs(dx) > 50) setBack((b) => !b);
           touchX.current = null;
         }}>
-        <div className={`grid transition-transform duration-500 [transform-style:preserve-3d] ${back ? '[transform:rotateY(180deg)]' : ''}`}>
+        <div className={`grid transition-transform duration-500 [transform-style:preserve-3d] ${back ? '[transform:rotateY(180deg)]' : ''} ${peek ? 'gp-peek' : ''}`}>
       {/* ── the front: the vehicle ── */}
       <div className={face} aria-hidden={back} data-test="rc-front">
         <div className="bg-gradient-to-br from-[#0f766e] to-[#0a4f49] p-3.5 text-white">
@@ -1742,8 +1777,7 @@ function FreeVehicleCard({ it, L, onBuy, onSignIn, onFeedback }) {
         {v.rto ? <RtoLine rto={v.rto} L={L} /> : null}
         {/* The free-monitoring offer on the front too (user, 2026-10-10: "I haven't seen the 14 days free monitoring info"). */}
         <div className="border-b border-black/5 bg-[#fff8e1] px-3.5 py-2 text-[12.5px] leading-snug text-[#5c4300]" data-test="fm-offer-front"><Text text={L.fm.offerShort} /></div>
-        <button type="button" data-test="rc-flip" onClick={() => setBack(true)}
-          className="w-full border-b border-black/5 bg-[#f3f7f6] py-2.5 text-[13px] font-bold text-[#0f766e] active:bg-[#e6f0ee]">{L.fm.flip}</button>
+        <FlipButton test="rc-flip" text={L.fm.flip} onClick={() => setBack(true)} className="border-b border-black/5" />
         <div className="px-3.5 py-2.5 text-[12.5px] leading-relaxed text-[#0b2e2b]"><Text text={L.free.inReport} /></div>
         <button type="button" data-test="free-buy" onClick={onBuy}
           className="gp-shine w-full bg-[#ffd84d] py-3 text-[14.5px] font-black text-[#0a4f49] active:brightness-95">{L.free.buy(rupee(it.price))}</button>
@@ -2669,6 +2703,30 @@ function FileLine({ item }) {
   );
 }
 
+/*
+ * "THIS CARD TURNS OVER" (user, 2026-10-10: "animate swipe or tap flip — users won't
+ * recognise it"). A card that has just arrived peeks at its back twice; once it has
+ * been turned, or for cards restored from earlier, it stays still.
+ */
+function usePeek(it, back) {
+  const [turned, setTurned] = useState(false);
+  useEffect(() => { if (back) setTurned(true); }, [back]);
+  const fresh = !it.at || Date.now() - new Date(it.at).getTime() < 60e3;
+  return fresh && !turned && !back;
+}
+
+/** The flip button: a hand that swipes, and a gentle glow, until it is used. */
+function FlipButton({ test, text, onClick, className = '' }) {
+  return (
+    <button type="button" data-test={test} onClick={onClick}
+      className={`gp-flip-glow flex w-full items-center justify-center gap-2 bg-[#f3f7f6] py-2.5 text-[13px] font-bold text-[#0f766e] active:bg-[#e6f0ee] ${className}`}>
+      <span className="gp-swipe text-[16px]" aria-hidden="true">👆</span>
+      <span>{text}</span>
+      <span aria-hidden="true">↻</span>
+    </button>
+  );
+}
+
 /** The vehicle as a card — the free view, honest about what is locked. */
 /*
  * THE SIGNED-IN CARD AS AN RC (user, 2026-10-10: "it must be a replica of the RC and
@@ -2683,6 +2741,7 @@ function SignedRcCard({ it, L, onFull, onAnother, fm, onStartFree }) {
   const id = v.identity || {};
   const f = v.found || {};
   const [back, setBack] = useState(false);
+  const peek = usePeek(it, back);
   const touchX = useRef(null);
   const face = 'col-start-1 row-start-1 overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md [backface-visibility:hidden]';
   const age = id.reg_date ? ageOf(id.reg_date, L) : null;
@@ -2709,15 +2768,15 @@ function SignedRcCard({ it, L, onFull, onAnother, fm, onStartFree }) {
           if (Math.abs(dx) > 50) setBack((b) => !b);
           touchX.current = null;
         }}>
-        <div className={`grid transition-transform duration-500 [transform-style:preserve-3d] ${back ? '[transform:rotateY(180deg)]' : ''}`}>
+        <div className={`grid transition-transform duration-500 [transform-style:preserve-3d] ${back ? '[transform:rotateY(180deg)]' : ''} ${peek ? 'gp-peek' : ''}`}>
           {/* ── front: the RC ── */}
           <div className={face} aria-hidden={back} data-test="src-front">
-            {strip(L.rc.head)}
+            {strip(L.src.head)}
             <div className="border-b border-dashed border-[#0f766e]/25 bg-[#f4faf8] px-3.5 pb-2.5 pt-3">
               <div className="flex items-center justify-between gap-2">
                 <span className="rounded-md border-2 border-black bg-white px-2.5 py-0.5 font-mono text-[17px] font-black tracking-[2px] text-black shadow">{prettyPlate(v.reg_no)}</span>
                 <span className={`rounded-full px-2 py-0.5 text-[11px] font-black ${attention ? 'bg-[#fdecea] text-[#c62828]' : 'bg-[#e7f6ec] text-[#12813f]'}`}>
-                  {attention ? L.rc.attention(attention) : L.rc.clear}
+                  {attention ? L.src.attention(attention) : L.src.clear}
                 </span>
               </div>
               <div className="mt-2 text-[16px] font-black leading-snug text-[#0b2e2b]">{[id.maker, id.model].filter(Boolean).join(' · ') || '—'}</div>
@@ -2732,13 +2791,12 @@ function SignedRcCard({ it, L, onFull, onAnother, fm, onStartFree }) {
               {field(L.pub.weight, id.unladen_weight ? `${id.unladen_weight} kg` : null)}
             </div>
             {v.rto ? <RtoLine rto={v.rto} L={L} /> : null}
-            <button type="button" data-test="src-flip" onClick={() => setBack(true)}
-              className="w-full bg-[#f3f7f6] py-2.5 text-[13px] font-bold text-[#0f766e] active:bg-[#e6f0ee]">{L.rc.flip}</button>
+            <FlipButton test="src-flip" text={L.src.flip} onClick={() => setBack(true)} />
           </div>
 
           {/* ── back: validity, challans, monitoring, the ₹19 report ── */}
           <div className={`${face} [transform:rotateY(180deg)]`} aria-hidden={!back} data-test="src-back">
-            {strip(L.rc.backTitle)}
+            {strip(L.src.backTitle)}
             <div className="space-y-2.5 px-3.5 py-3">
               {(v.documents || []).length > 0 && (
                 <div>

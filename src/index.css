@@ -185,6 +185,14 @@
 @keyframes gp-leave { to { opacity: 0; transform: translateX(-40px) scale(.92); } }
 .gp-leave { animation: gp-leave .4s cubic-bezier(.4,0,.6,1) both; pointer-events: none; }
 .gp-chips > * { animation: gp-pop .4s cubic-bezier(.2,.8,.3,1.2) both; animation-delay: calc(.22s + var(--i, 0) * .07s); }
+/* "This card turns over" (user, 2026-10-10: "animate swipe or tap flip — users won't
+   recognise it"): a new card peeks at its back twice, and the flip button's hand swipes. */
+@keyframes gp-peek { 0%, 100% { transform: rotateY(0); } 30% { transform: rotateY(-28deg); } 55% { transform: rotateY(8deg); } 75% { transform: rotateY(0); } }
+.gp-peek { animation: gp-peek 1.3s ease-in-out 1.2s 2; }
+@keyframes gp-swipe { 0%, 100% { transform: translateX(-6px) rotate(-8deg); } 50% { transform: translateX(8px) rotate(8deg); } }
+.gp-swipe { display: inline-block; animation: gp-swipe 1.1s ease-in-out infinite; }
+@keyframes gp-flip-glow { 0%, 100% { background-color: #f3f7f6; } 50% { background-color: #dff3ee; } }
+.gp-flip-glow { animation: gp-flip-glow 1.6s ease-in-out infinite; }
 
 /* THE RC CARD (2026-10-08): a card that flips in 3D, both faces drawn, the back
    turned away; swiping left or right turns it over. */
@@ -205,7 +213,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .gp-chat-bg, .gp-glows span, .gp-glows .road, .gp-pop, .gp-shine::after, .gp-dot, .gp-chips > *, .gp-menu-pulse,
-  .rc-in, .rc-next, .rc-prev, .rc-holo, .rc-back-drop { animation: none !important; }
+  .rc-in, .rc-next, .rc-prev, .rc-holo, .rc-back-drop, .gp-peek, .gp-swipe, .gp-flip-glow { animation: none !important; }
   .rc-turn { transition: none; }
 }
 
