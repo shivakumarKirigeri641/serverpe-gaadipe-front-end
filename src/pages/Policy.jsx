@@ -77,9 +77,9 @@ export default function Policy() {
           <Banner tone="info" className="mt-5">{lang === 'hi' ? 'यह दस्तावेज़ अभी प्रकाशित नहीं हुआ है।' : 'This document is not published yet.'}</Banner>
         )}
 
-        <div className="mt-6 space-y-6">
+        <div className="mt-6 space-y-3">
           {clauses.map((c, i) => (
-            <section key={i}>
+            <section key={i} className="card p-5">
               <h2 className="text-base font-semibold text-ink">{c.title}</h2>
               <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed text-body">{c.description}</p>
             </section>

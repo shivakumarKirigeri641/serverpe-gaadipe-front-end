@@ -22,7 +22,7 @@ export default function OnWhatsApp() {
 
   return (
     <Layout>
-      <div className="mx-auto max-w-md py-6 text-center">
+      <div className="card anim-up mx-auto max-w-md p-6 text-center sm:p-8">
         <h1 className="text-2xl font-bold text-ink">{t('onwa.h')}</h1>
         <p className="mt-3 text-body">{t('onwa.b')}</p>
         <WhatsAppCta className="mt-6 w-full" showNumber />

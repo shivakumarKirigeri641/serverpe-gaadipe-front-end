@@ -41,7 +41,7 @@ export default function Layout({ children, wide = false }) {
   ];
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-[#f4faf8]">
       {noticeText && (notice.tone === 'good' ? (
         // Good news (2026-10-09: WhatsApp is back) — green, with the way in.
         <div role="status" className="border-b border-good-500/25 bg-good-50 px-4 py-2.5 text-center text-sm font-medium text-good-700">
@@ -58,10 +58,10 @@ export default function Layout({ children, wide = false }) {
           ⚠️ {noticeText}
         </div>
       ))}
-      <header className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
-        <div className="wrap flex h-16 items-center justify-between gap-4">
-          <Link to="/" className="flex items-center gap-2.5">
-            <span className="grid h-9 w-9 place-items-center rounded-lg bg-brand text-sm font-bold text-white">GP</span>
+      <header className="sticky top-0 z-30 border-b border-line/80 bg-white/90 shadow-[0_8px_24px_rgba(11,31,28,.04)] backdrop-blur-xl" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+        <div className="wrap flex min-h-16 items-center justify-between gap-3 py-2 sm:gap-4">
+          <Link to="/" className="flex min-w-0 items-center gap-2.5">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand to-brand-deep text-sm font-bold text-white shadow-md">GP</span>
             <span className="leading-tight">
               <span className="block text-base font-semibold text-ink">GaadiPe</span>
               <span className="block text-2xs text-muted">{lang === 'hi' ? 'हर गाड़ी की कुंडली।' : 'Har gaadi ki kundli.'}</span>
@@ -100,29 +100,33 @@ export default function Layout({ children, wide = false }) {
             <button className="btn-quiet !px-2.5 !py-2 md:hidden" onClick={() => setOpen(!open)} aria-label="Menu">☰</button>
           </div>
         </div>
-
-        {open && (
-          <div className="anim-open border-t border-line bg-white md:hidden">
-            <div className="wrap flex flex-col py-2">
-              {(inApp ? appLinks
-                : [['/#price', t('nav.price')],
-                   WEB_LOGIN ? ['/chat', me ? t('common.myVehicles') : t('common.checkVehicle')] : [waLink('Hi'), t('wa.short')],
-                   ['/terms', t('nav.terms')], ['/privacy', t('nav.privacy')], ['/refund', t('nav.refunds')]]
-              ).map(([to, label]) => (
-                to.startsWith('/#') || to.startsWith('https:')
-                  ? <a key={to} href={to} className="py-2.5 text-sm text-body" onClick={() => setOpen(false)}>{label}</a>
-                  : <Link key={to} to={to} className="py-2.5 text-sm text-body" onClick={() => setOpen(false)}>{label}</Link>
-              ))}
-              {me && WEB_LOGIN && <button className="py-2.5 text-left text-sm text-body" onClick={signOut}>{t('common.signOut')}</button>}
+      </header>
+      {open && (
+        <div className="fixed inset-0 z-40 md:hidden" onClick={() => setOpen(false)}>
+          <div className="absolute inset-0 bg-ink/35 backdrop-blur-[2px]" />
+          <div className="gp-sheet absolute inset-x-0 bottom-0 rounded-t-3xl bg-white px-4 pb-8 pt-3 shadow-2xl" style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }} onClick={(e) => e.stopPropagation()}>
+            <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-black/15" aria-hidden="true" />
+            <div className="flex flex-col">
+            {(inApp ? appLinks
+              : [['/#price', t('nav.price')],
+                 WEB_LOGIN ? ['/chat', me ? t('common.myVehicles') : t('common.checkVehicle')] : [waLink('Hi'), t('wa.short')],
+                 ['/help', t('footer.help')], ['/feedback?src=menu', lang === 'hi' ? '⭐ फ़ीडबैक' : '⭐ Feedback'],
+                 ['/terms', t('nav.terms')], ['/privacy', t('nav.privacy')], ['/refund', t('nav.refunds')]]
+            ).map(([to, label]) => (
+              to.startsWith('/#') || to.startsWith('https:')
+                ? <a key={to} href={to} className="gp-menu-row rounded-xl px-3 text-[15px] font-semibold text-ink" onClick={() => setOpen(false)}>{label}</a>
+                : <Link key={to} to={to} className="gp-menu-row rounded-xl px-3 text-[15px] font-semibold text-ink" onClick={() => setOpen(false)}>{label}</Link>
+            ))}
+            {me && WEB_LOGIN && <button className="gp-menu-row rounded-xl px-3 text-left text-[15px] font-semibold text-ink" onClick={signOut}>{t('common.signOut')}</button>}
             </div>
           </div>
-        )}
-      </header>
+        </div>
+      )}
 
       {/* Keyed on the path so React replays the animation on every navigation. */}
-      <main key={pathname} className={`page-in flex-1 ${wide ? '' : 'wrap py-8'}`}>{children}</main>
+      <main key={pathname} className={`page-in flex-1 ${wide ? '' : 'wrap py-6 sm:py-8 lg:py-10'}`}>{children}</main>
 
-      <footer className="border-t border-line bg-shell/60">
+      <footer className="border-t border-line bg-white/80 backdrop-blur">
         <div className="wrap grid gap-8 py-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <div className="text-sm font-semibold text-ink">GaadiPe</div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useLang } from '../lib/i18n.jsx';
+import Layout from '../components/Layout.jsx';
 
 /**
  * gaadipe.in/q/<code> — where a referral link lands (user, 2026-09-21).
@@ -24,8 +25,9 @@ export default function ReferralLanding() {
   }, [code]);
 
   return (
-    <div className="grid min-h-screen place-items-center bg-shell px-4">
-      <div className="card w-full max-w-md p-6 text-center">
+    <Layout>
+    <div className="grid min-h-[70vh] place-items-center px-4 py-8">
+      <div className="card w-full max-w-md p-6 text-center shadow-card">
         <div className="text-lg font-bold text-ink">QuizPe</div>
         <p className="mt-1 text-2xs text-muted">{t('q.by')}</p>
         {!out ? <p className="mt-6 text-sm text-body">{t('common.loading')}</p>
@@ -49,5 +51,6 @@ export default function ReferralLanding() {
           )}
       </div>
     </div>
+    </Layout>
   );
 }

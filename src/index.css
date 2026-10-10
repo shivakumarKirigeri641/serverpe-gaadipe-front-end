@@ -222,3 +222,59 @@
   .btn { min-height: 44px; }
   .input { font-size: 16px; } /* iOS zooms into anything smaller */
 }
+
+/* ── Chat chrome: a messaging app, not a website form ── */
+@keyframes gp-online { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(.72); opacity: .55; } }
+@keyframes gp-sheet-up { from { transform: translateY(18%); opacity: .6; } to { transform: none; opacity: 1; } }
+@keyframes gp-send-ready { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+@keyframes gp-bar-in { from { transform: translateY(-8px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.gp-online { animation: gp-online 1.8s ease-in-out infinite; }
+.gp-sheet { animation: gp-sheet-up .32s cubic-bezier(.2,.8,.3,1.05) both; }
+.gp-send-ready { animation: gp-send-ready 1.6s ease-in-out infinite; }
+.gp-bar-in { animation: gp-bar-in .28s cubic-bezier(.2,.8,.3,1) both; }
+
+.gp-tail-l, .gp-tail-r { position: relative; }
+.gp-tail-l::before, .gp-tail-r::before {
+  content: ''; position: absolute; bottom: 4px; width: 10px; height: 14px;
+}
+.gp-tail-l::before {
+  left: -6px;
+  background: radial-gradient(circle at 0 0, transparent 9px, rgba(255,255,255,.92) 10px);
+}
+.gp-tail-r::before {
+  right: -6px;
+  background: radial-gradient(circle at 100% 0, transparent 9px, #14a08f 10px);
+}
+
+.gp-composer {
+  box-shadow: 0 -8px 28px rgba(11, 31, 28, .06);
+}
+.gp-menu-row {
+  min-height: 48px;
+  transition: background-color .15s ease, transform .12s ease;
+}
+.gp-menu-row:active { transform: scale(.98); background: #f3f8f7; }
+
+@media (min-width: 1024px) {
+  .gp-chat-frame {
+    max-width: 42rem;
+    margin-left: auto; margin-right: auto;
+    border-left: 1px solid rgba(15, 118, 110, .12);
+    border-right: 1px solid rgba(15, 118, 110, .12);
+    box-shadow: 0 0 0 1px rgba(15, 118, 110, .04), 0 24px 80px rgba(11, 31, 28, .12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gp-online, .gp-sheet, .gp-send-ready, .gp-bar-in { animation: none !important; }
+}
+
+/* Marketing and help screens (home, policies, feedback, refer) — same family as the chat. */
+.card { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+@media (hover: hover) and (pointer: fine) {
+  .card.lift:hover, a.card:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(11, 31, 28, .1); }
+}
+@media (max-width: 640px) {
+  .wrap { padding-left: 1rem; padding-right: 1rem; }
+}

@@ -4,6 +4,7 @@ import { api, waLink, WEB_LOGIN } from '../lib/api';
 import { useLang } from '../lib/i18n.jsx';
 import { useSession } from '../lib/session';
 import { Banner, Spinner } from '../components/ui.jsx';
+import Layout from '../components/Layout.jsx';
 
 /**
  * Where a referral link lands: gaadipe.in/r/<code> (user, 2026-09-23).
@@ -108,11 +109,13 @@ const Door = ({ to, text, className, children }) => (WEB_LOGIN
   : <a className={className} href={waLink(text)} rel="noopener">{children}</a>);
 
 const Splash = ({ children }) => (
-  <div className="mx-auto max-w-md px-4 py-10">
-    <div className="mb-6 text-center">
-      <div className="text-2xl font-extrabold tracking-tight text-brand-deep">GaadiPe</div>
-      <div className="text-2xs text-muted">Har gaadi ki kundli.</div>
+  <Layout>
+    <div className="mx-auto max-w-md py-6">
+      <div className="mb-6 text-center">
+        <div className="text-2xl font-extrabold tracking-tight text-brand-deep">GaadiPe</div>
+        <div className="text-2xs text-muted">Har gaadi ki kundli.</div>
+      </div>
+      <div className="card p-5 shadow-card">{children}</div>
     </div>
-    <div className="card p-5">{children}</div>
-  </div>
+  </Layout>
 );

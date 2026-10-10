@@ -25,7 +25,17 @@ import Chat from './pages/Chat.jsx';
 function Private({ children }) {
   const { me, ready } = useSession();
   const { pathname, search } = useLocation();
-  if (!ready) return <div className="grid min-h-screen place-items-center text-sm text-muted">Loading…</div>;
+  if (!ready) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-brand-deep px-6">
+        <div className="text-center">
+          <span className="mx-auto grid h-11 w-11 place-items-center rounded-xl bg-brand-accent text-sm font-bold text-white">GP</span>
+          <p className="mt-3 text-lg font-semibold text-white">GaadiPe</p>
+          <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-white/50">Opening…</p>
+        </div>
+      </div>
+    );
+  }
   if (!me) return <Navigate to={`/chat?signin=1&next=${encodeURIComponent(pathname + search)}`} replace />;
   return children;
 }
