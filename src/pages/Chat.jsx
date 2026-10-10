@@ -213,6 +213,8 @@ const T = {
     offers: 'Tips & offers by SMS / email', signOut: 'Sign out', signedOut: 'You are signed out. Send any vehicle number for a free check.',
     vehicleBtn: 'Open',
     tapPlate: 'Tap a number to see its vehicle summary.',
+    // Basic or paid, on each vehicle in My vehicles (user, 2026-10-10).
+    tier: { paid: '★ PAID', free: '👁 FREE MONITORING', basic: 'BASIC', till: (d) => `till ${d}`, renew: 'Paid before · renew ₹11', basicSub: 'Free details' },
     rm: { q: (r) => `Remove ${r} from My vehicles?`, body: 'It will no longer appear in your list. You can check it again any time — it comes back as a new entry.',
       report: 'Your report and invoice stay in My reports and Invoices.', alerts: 'Alerts for this vehicle will stop.',
       yes: '🗑 Remove', no: 'Cancel', done: (r) => `🗑 ${r} removed from My vehicles.`, label: (r) => `Remove ${r}`, empty: 'No vehicles left in your list. Send any vehicle number to check it.' },
@@ -424,6 +426,7 @@ const T = {
     offers: 'SMS / ईमेल पर टिप्स और ऑफ़र', signOut: 'साइन आउट', signedOut: 'आप साइन आउट हो गए। मुफ़्त जाँच के लिए कोई भी गाड़ी नंबर भेजें।',
     vehicleBtn: 'खोलें',
     tapPlate: 'गाड़ी का सारांश देखने के लिए नंबर पर टैप करें।',
+    tier: { paid: '★ पेड', free: '👁 मुफ़्त निगरानी', basic: 'बेसिक', till: (d) => `${d} तक`, renew: 'पहले ख़रीदी · ₹11 में रिन्यू', basicSub: 'मुफ़्त जानकारी' },
     rm: { q: (r) => `${r} को मेरी गाड़ियों से हटाएँ?`, body: 'यह आपकी सूची में नहीं दिखेगी। आप इसे कभी भी फिर से जाँच सकते हैं — यह नई एंट्री की तरह वापस आएगी।',
       report: 'आपकी रिपोर्ट और बिल "मेरी रिपोर्ट" और "बिल" में बने रहेंगे।', alerts: 'इस गाड़ी के अलर्ट बंद हो जाएँगे।',
       yes: '🗑 हटाएँ', no: 'रद्द करें', done: (r) => `🗑 ${r} मेरी गाड़ियों से हटा दी गई।`, label: (r) => `${r} हटाएँ`, empty: 'आपकी सूची में कोई गाड़ी नहीं बची। जाँच के लिए कोई भी गाड़ी नंबर भेजें।' },
@@ -2231,9 +2234,24 @@ function VehiclesList({ rows, L, onOpen, onRemove, onRemoved }) {
                     <span className="flex w-4 items-center justify-center bg-[#1d4ed8] text-[6px] font-black text-white [writing-mode:vertical-rl]">IND</span>
                     <span className="px-1.5 py-0.5 font-mono text-[14px] font-black tracking-[1.5px] text-[#111]">{prettyPlate(r.reg_no)}</span>
                   </span>
-                  {r.report_id ? <span className="rounded-full bg-[#ffd84d] px-1.5 py-0.5 text-[9px] font-black text-[#0a4f49]">REPORT</span> : null}
                 </span>
                 <span className="w-full truncate text-[12.5px] font-semibold text-[#0b2e2b]">{[r.maker, r.model].filter(Boolean).join(' ') || '—'}</span>
+                {/* Basic or paid (user, 2026-10-10): the active report wins, then free monitoring, else basic. */}
+                {(() => {
+                  // Paid while its report or its paid monitoring runs (monitoring outlasts the PDF window).
+                  const paidUntil = [r.report_until, r.paid_until].filter(Boolean).sort().pop();
+                  const [cls, word, sub] = r.report_id || r.paid_until
+                    ? ['bg-[#ffd84d] text-[#0a4f49]', L.tier.paid, paidUntil ? L.tier.till(day(paidUntil)) : null]
+                    : r.watched
+                      ? ['bg-[#e3f2ef] text-[#0a6c5f]', L.tier.free, r.watched_until ? L.tier.till(day(r.watched_until)) : null]
+                      : ['bg-black/5 text-black/55', L.tier.basic, r.paid_before ? L.tier.renew : L.tier.basicSub];
+                  return (
+                    <span className="flex w-full flex-wrap items-center gap-1.5" data-test={`tier-${r.reg_no}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-[9.5px] font-black tracking-wide ${cls}`}>{word}</span>
+                      {sub ? <span className={`text-[10.5px] ${r.paid_before && !r.report_id && !r.paid_until && !r.watched ? 'font-semibold text-[#b26a00]' : 'text-black/45'}`}>{sub}</span> : null}
+                    </span>
+                  );
+                })()}
               </button>
               <button type="button" data-test={`remove-${r.reg_no}`} aria-label={L.rm.label(prettyPlate(r.reg_no))} onClick={() => { setErr(null); setAsking(r); }}
                 className="grid w-11 shrink-0 place-items-center rounded-r-xl border-l border-black/5 text-black/35 transition hover:bg-[#fdecea] hover:text-[#c62828] active:scale-90">
