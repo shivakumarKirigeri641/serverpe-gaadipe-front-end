@@ -107,6 +107,13 @@ const T = {
     askVehicle: '🔍 Type a vehicle number below to check it now — like *KA01AB1234*.',
     // Its own reply after the welcome and the terms line (user, 2026-10-10).
     typeNow: '👇 *Type in a vehicle number now.*',
+    // "Check another" answered like a person, not a silent cursor (user, 2026-10-10) — one of these, at random.
+    anotherReplies: [
+      'Sure! 👍 Type the vehicle number below.',
+      'Of course 🙂 Which vehicle? Type its number below.',
+      'Happy to! 🔍 Send me the next vehicle number.',
+      'Okay! Type the vehicle number — like *KA01AB1234*.',
+    ],
     found: 'We found your GaadiPe history:',
     vehicles: (n) => `${n} vehicle${n === 1 ? '' : 's'} checked`,
     reports: (n) => `${n} full report${n === 1 ? '' : 's'}`,
@@ -138,6 +145,12 @@ const T = {
       challans: (n) => (n ? `🚨 ${n} pending challan${n === 1 ? '' : 's'} — offences and amounts in the full report` : '✅ No pending challans'),
       locked: 'In the ₹19 full report', verdictH: 'Verdict — before you pay',
       challansAmt: (n, amt) => (n ? `🚨 ${n} pending challan${n === 1 ? '' : 's'}${amt ? ` · ${amt} in all` : ''} — each one in the full report` : '✅ No pending challans'),
+    },
+    // The signed-in RC card (2026-10-10).
+    rc: {
+      head: 'Vehicle record', backTitle: 'Validity, challans & alerts',
+      flip: '↻ Flip for validity, challans & alerts', clear: '✓ All clear',
+      attention: (n) => `⚠ ${n} need${n === 1 ? 's' : ''} attention`,
     },
     // Free monitoring for one vehicle (2026-10-10, site/freeMonitor.js).
     fm: {
@@ -298,6 +311,12 @@ const T = {
     welcomeNew: '👋 GaadiPe में स्वागत है! शुरू करने के लिए कोई भी गाड़ी नंबर भेजें।',
     askVehicle: '🔍 जाँच के लिए नीचे कोई भी गाड़ी नंबर लिखें — जैसे *KA01AB1234*।',
     typeNow: '👇 *अभी कोई गाड़ी नंबर लिखें।*',
+    anotherReplies: [
+      'ज़रूर! 👍 नीचे गाड़ी का नंबर लिखिए।',
+      'बिल्कुल 🙂 कौन सी गाड़ी? नीचे उसका नंबर लिखिए।',
+      'ख़ुशी से! 🔍 अगली गाड़ी का नंबर भेजिए।',
+      'ठीक है! गाड़ी का नंबर लिखिए — जैसे *KA01AB1234*।',
+    ],
     found: 'आपका GaadiPe इतिहास:',
     vehicles: (n) => `${n} गाड़ियाँ जाँचीं`,
     reports: (n) => `${n} पूरी रिपोर्ट`,
@@ -325,6 +344,11 @@ const T = {
       challans: (n) => (n ? `🚨 ${n} चालान बाकी — अपराध और राशि पूरी रिपोर्ट में` : '✅ कोई चालान बाकी नहीं'),
       locked: '₹19 की पूरी रिपोर्ट में', verdictH: 'फ़ैसला — पैसे देने से पहले',
       challansAmt: (n, amt) => (n ? `🚨 ${n} चालान बाकी${amt ? ` · कुल ${amt}` : ''} — हर चालान पूरी रिपोर्ट में` : '✅ कोई चालान बाकी नहीं'),
+    },
+    rc: {
+      head: 'गाड़ी का रिकॉर्ड', backTitle: 'वैधता, चालान और अलर्ट',
+      flip: '↻ पलटें — वैधता, चालान और अलर्ट', clear: '✓ सब ठीक',
+      attention: (n) => `⚠ ${n} बातों पर ध्यान दें`,
     },
     fm: {
       offer: '🎁 *मुफ़्त साइन इन* करें और एक गाड़ी की *14 दिन मुफ़्त निगरानी* पाएँ — इंश्योरेंस, PUC, रोड टैक्स या फिटनेस खत्म होने से पहले और नया चालान आने पर अलर्ट। फिर ₹19 में 28 दिन।',
@@ -788,11 +812,14 @@ export default function Chat() {
     try {
       const [s, h] = await Promise.all([api.chatSummary(), api.chatHistory()]);
       setHistory({ items: h.items || [], more: h.more, before: h.before, loaded: true });
-      const any = s.vehicles || s.reports || s.whatsapp;
-      const lines = any
-        ? [L.welcomeBack(s.name ? String(s.name).split(/\s+/)[0] : ''), '', L.found,
-          s.vehicles ? `• ${L.vehicles(s.vehicles)}` : null,
-          s.reports ? `• ${L.reports(s.reports)}` : null,
+      // "We found your history" only when something is still there — removed
+      // vehicles (and their reports) are gone for the customer (user, 2026-10-10).
+      const found = s.vehicles || s.reports;
+      const lines = found || s.whatsapp
+        ? [L.welcomeBack(s.name ? String(s.name).split(/\s+/)[0] : ''),
+          ...(found ? ['', L.found,
+            s.vehicles ? `• ${L.vehicles(s.vehicles)}` : null,
+            s.reports ? `• ${L.reports(s.reports)}` : null] : []),
           // Once signed in, ask for the next number (2026-10-08).
           '', L.askVehicle].filter((x) => x !== null).join('\n')
         : L.welcomeNew;
@@ -882,7 +909,8 @@ export default function Chat() {
       // The funnel's "search completed" (web admin, phase 4).
       interaction('view', `Saw ${paidCard ? 'the full report of' : 'the details of'} ${reg}`, { reg_no: reg });
       push({ from: 'bot', kind: 'vehicle', vehicle: out.vehicle, paid: paidCard, report: out.report || null,
-             price: out.price_paise, signedIn: Boolean(me), left: out.left_today });
+             // Just signed in (check after sign-in): `me` here is still the moment before — trust the flag (2026-10-10).
+             price: out.price_paise, signedIn: Boolean(me) || signedIn, left: out.left_today });
     } catch (e) {
       interaction('error', `Check of ${reg} failed: ${String(e.message).slice(0, 60)}`, { reg_no: reg });
       bot(`⚠️ ${e.message}${again}`, { chips: ['another'] });
@@ -1209,7 +1237,14 @@ export default function Chat() {
       bot(L.helloSignIn, { chips: me ? [] : ['sample'] });
       return;
     }
-    if (key === 'another') { setMode('plate'); inputRef.current?.focus(); return; }
+    if (key === 'another') {
+      // Like a conversation (2026-10-10): their tap as their message, then a friendly reply.
+      push({ from: 'me', kind: 'text', text: L.another });
+      const r = L.anotherReplies || [L.askVehicle];
+      bot(r[Math.floor(Math.random() * r.length)], { pace: 450 });
+      setMode('plate'); inputRef.current?.focus();
+      return;
+    }
     if (key === 'signIn') { startSignIn(); return; }
     if (key === 'myVehicles') { showList('vehicles'); return; }
     if (key === 'myReports') { showList('reports'); return; }
@@ -1255,10 +1290,20 @@ export default function Chat() {
         <div className="mx-auto flex max-w-2xl items-center gap-3 px-3 py-2.5">
           <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-sm font-black text-[#0f766e] shadow">GP</div>
           <div className="min-w-0 flex-1 leading-tight">
-            <div className="flex items-center gap-1 font-bold">GaadiPe
-              <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#ffd84d]" fill="currentColor" aria-label="verified"><path d="M12 2l2.4 2.1 3.2-.4.9 3.1 2.8 1.6-1.2 3 1.2 3-2.8 1.6-.9 3.1-3.2-.4L12 22l-2.4-2.1-3.2.4-.9-3.1L2.7 15.6l1.2-3-1.2-3 2.8-1.6.9-3.1 3.2.4z"/><path d="M10.5 15.5l-3-3 1.4-1.4 1.6 1.6 4.6-4.6 1.4 1.4z" fill="#0f766e"/></svg>
-            </div>
-            <div className="text-[11px] text-white/80">{busy || items.some((x) => x.kind === 'typing') ?(lang === 'hi' ? 'लिख रहा है…' : 'typing…') : L.online}</div>
+            {/* Signed in with a name (user, 2026-10-10): their name at the top, GaadiPe beneath. */}
+            {me?.name ? (
+              <>
+                <div className="truncate font-bold" data-test="header-name">{lang === 'hi' ? `नमस्ते, ${String(me.name).split(/\s+/)[0]}` : `Hi, ${String(me.name).split(/\s+/)[0]}`} 👋</div>
+                <div className="text-[11px] text-white/80">GaadiPe · {busy || items.some((x) => x.kind === 'typing') ? (lang === 'hi' ? 'लिख रहा है…' : 'typing…') : L.online}</div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-1 font-bold">GaadiPe
+                  <svg viewBox="0 0 24 24" className="h-4 w-4 text-[#ffd84d]" fill="currentColor" aria-label="verified"><path d="M12 2l2.4 2.1 3.2-.4.9 3.1 2.8 1.6-1.2 3 1.2 3-2.8 1.6-.9 3.1-3.2-.4L12 22l-2.4-2.1-3.2.4-.9-3.1L2.7 15.6l1.2-3-1.2-3 2.8-1.6.9-3.1 3.2.4z"/><path d="M10.5 15.5l-3-3 1.4-1.4 1.6 1.6 4.6-4.6 1.4 1.4z" fill="#0f766e"/></svg>
+                </div>
+                <div className="text-[11px] text-white/80">{busy || items.some((x) => x.kind === 'typing') ?(lang === 'hi' ? 'लिख रहा है…' : 'typing…') : L.online}</div>
+              </>
+            )}
           </div>
           {/* Hindi / English in one tap (user, 2026-10-08: "I don't see the Hindi toggle") — it
               was only inside the menu. Shows the language it switches TO. */}
@@ -1313,7 +1358,8 @@ export default function Chat() {
               return <FullCard key={it.id} it={it} L={L} onDownload={() => it.report && download('report', it.report)} onAnother={() => chip('another')} />;
             }
             if (it.kind === 'vehicle') {
-              return <VehicleCard key={it.id} it={it} L={L} fm={fm} onStartFree={startFree}
+              // Signed in now = never the "Sign in free…" line, whatever the card was saved with.
+              return <VehicleCard key={it.id} it={me ? { ...it, signedIn: true } : it} L={L} fm={fm} onStartFree={startFree}
                 onFull={() => (it.paid ? openVehicle(it.vehicle.reg_no) : fullReport(it.vehicle.reg_no, it.price))} onAnother={() => chip('another')} />;
             }
             if (it.kind === 'consent') {
@@ -1337,8 +1383,8 @@ export default function Chat() {
                 }}
                 onRemoved={(reg) => {
                   // Gone from every list on screen (and from the saved conversation).
+                  // No chat message — the popup, then the plate slides away (user, 2026-10-10).
                   setItems((cur) => cur.map((x) => (x.kind === 'vehicles' ? { ...x, rows: x.rows.filter((r) => r.reg_no !== reg) } : x)));
-                  bot(L.rm.done(prettyPlate(reg)), { pace: 300 });
                 }} />;
             }
             if (it.kind === 'reports' || it.kind === 'invoices') {
@@ -2606,7 +2652,133 @@ function FileLine({ item }) {
 }
 
 /** The vehicle as a card — the free view, honest about what is locked. */
-function VehicleCard({ it, L, onFull, onAnother, fm, onStartFree }) {
+/*
+ * THE SIGNED-IN CARD AS AN RC (user, 2026-10-10: "it must be a replica of the RC and
+ * flippable / swipeable to show other details at the back"). FRONT: what an RC says —
+ * the number, make and model, fuel and class, the owner (masked), registration date
+ * and age, RC status, norms, seats, weight, the RTO. BACK (tap or swipe): validity
+ * dates, challans, free monitoring, and what the ₹19 report adds. GaadiPe's own
+ * design in the RC's order — deliberately not a copy of the Government's card.
+ */
+function SignedRcCard({ it, L, onFull, onAnother, fm, onStartFree }) {
+  const v = it.vehicle || {};
+  const id = v.identity || {};
+  const f = v.found || {};
+  const [back, setBack] = useState(false);
+  const touchX = useRef(null);
+  const face = 'col-start-1 row-start-1 overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md [backface-visibility:hidden]';
+  const age = id.reg_date ? ageOf(id.reg_date, L) : null;
+  const field = (k, val, wide = false) => (val == null || val === '' ? null : (
+    <div className={wide ? 'col-span-2' : ''}>
+      <div className="text-[9.5px] font-bold uppercase tracking-wider text-[#0f766e]/75">{k}</div>
+      <div className="break-words text-[13px] font-semibold leading-snug text-[#0b2e2b]">{val}</div>
+    </div>
+  ));
+  const attention = (f.expired?.length || 0) + (f.due_soon?.length || 0) + (f.challans_pending ? 1 : 0);
+  const running = Boolean(fm?.used?.active && fm.used.reg_no === v.reg_no);
+  const strip = (title) => (
+    <div className="flex items-center justify-between gap-2 bg-gradient-to-r from-[#0a4f49] to-[#0f766e] px-3.5 py-2 text-white">
+      <span className="text-[10.5px] font-black uppercase tracking-[0.16em]">{title}</span>
+      <span className="text-[10px] text-white/75">{L.free.found}</span>
+    </div>
+  );
+  return (
+    <div className="anim-up flex flex-col items-start">
+      <div className="w-[92%] max-w-sm [perspective:1200px]"
+        onTouchStart={(e) => { touchX.current = e.touches[0].clientX; }}
+        onTouchEnd={(e) => {
+          const dx = e.changedTouches[0].clientX - (touchX.current ?? e.changedTouches[0].clientX);
+          if (Math.abs(dx) > 50) setBack((b) => !b);
+          touchX.current = null;
+        }}>
+        <div className={`grid transition-transform duration-500 [transform-style:preserve-3d] ${back ? '[transform:rotateY(180deg)]' : ''}`}>
+          {/* ── front: the RC ── */}
+          <div className={face} aria-hidden={back} data-test="src-front">
+            {strip(L.rc.head)}
+            <div className="border-b border-dashed border-[#0f766e]/25 bg-[#f4faf8] px-3.5 pb-2.5 pt-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className="rounded-md border-2 border-black bg-white px-2.5 py-0.5 font-mono text-[17px] font-black tracking-[2px] text-black shadow">{prettyPlate(v.reg_no)}</span>
+                <span className={`rounded-full px-2 py-0.5 text-[11px] font-black ${attention ? 'bg-[#fdecea] text-[#c62828]' : 'bg-[#e7f6ec] text-[#12813f]'}`}>
+                  {attention ? L.rc.attention(attention) : L.rc.clear}
+                </span>
+              </div>
+              <div className="mt-2 text-[16px] font-black leading-snug text-[#0b2e2b]">{[id.maker, id.model].filter(Boolean).join(' · ') || '—'}</div>
+              <div className="text-[12px] text-black/55">{[id.fuel, id.vehicle_class].filter(Boolean).join(' · ')}</div>
+            </div>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-2 px-3.5 py-3">
+              {field(L.pub.owner, id.owner_masked, true)}
+              {field(L.pub.regOn, id.reg_date ? `${day(id.reg_date)}${age ? ` · ${age}` : ''}` : null, true)}
+              {field(L.pub.rcStatus, id.rc_status)}
+              {field(L.pub.norms, id.norms)}
+              {field(L.pub.seats, id.seats)}
+              {field(L.pub.weight, id.unladen_weight ? `${id.unladen_weight} kg` : null)}
+            </div>
+            {v.rto ? <RtoLine rto={v.rto} L={L} /> : null}
+            <button type="button" data-test="src-flip" onClick={() => setBack(true)}
+              className="w-full bg-[#f3f7f6] py-2.5 text-[13px] font-bold text-[#0f766e] active:bg-[#e6f0ee]">{L.rc.flip}</button>
+          </div>
+
+          {/* ── back: validity, challans, monitoring, the ₹19 report ── */}
+          <div className={`${face} [transform:rotateY(180deg)]`} aria-hidden={!back} data-test="src-back">
+            {strip(L.rc.backTitle)}
+            <div className="space-y-2.5 px-3.5 py-3">
+              {(v.documents || []).length > 0 && (
+                <div>
+                  <div className="mb-1 text-[10.5px] uppercase tracking-wide text-black/45">{L.pub.dates}</div>
+                  {v.documents.map((d) => (
+                    <div key={d.label} className="flex items-center justify-between gap-2 py-0.5">
+                      <span className="flex items-center gap-1.5 text-[13px] text-[#0b2e2b]"><Mark state={d.state} />{d.name || d.label}</span>
+                      <span className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold" style={{ color: STATE[d.state]?.[0], background: STATE[d.state]?.[1] }}>
+                        {L.daysLeft(d.days)}{d.valid_until ? ` · ${day(d.valid_until)}` : ''}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className={`text-[13px] font-semibold ${f.challans_pending ? 'text-[#c62828]' : 'text-[#12813f]'}`}>
+                {L.pub.challansAmt(f.challans_pending || 0, f.challans_amount_paise ? inr(f.challans_amount_paise) : null)}
+              </div>
+              {running ? (
+                <div className="rounded-lg bg-[#e7f6ec] px-2.5 py-2 text-[12.5px] font-semibold text-[#12813f]" data-test="fm-running">
+                  ✅ {L.fm.started(prettyPlate(v.reg_no), day(fm.used.ends_at)).replace(/\*/g, '')}
+                </div>
+              ) : fm?.eligible ? (
+                <div className="rounded-lg bg-[#fff8e1] px-2.5 py-2">
+                  <button type="button" data-test="fm-start" onClick={() => onStartFree?.(v.reg_no)} tabIndex={back ? 0 : -1}
+                    className="gp-shine w-full rounded-xl bg-[#0f766e] py-2.5 text-[14px] font-black text-white active:brightness-95">{L.fm.start}</button>
+                  <div className="mt-1 text-center text-[11.5px] text-[#5c4300]">{L.fm.startNote}</div>
+                </div>
+              ) : null}
+              {v.locked?.length > 0 && (
+                <div className="rounded-xl bg-[#f3f7f6] p-2.5">
+                  <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-[#0f766e]">🔒 {L.pub.locked}</div>
+                  {v.locked.map((x) => <div key={x} className="text-[12.5px] text-black/60">• {x}</div>)}
+                </div>
+              )}
+            </div>
+            <button type="button" data-test="src-flip-back" onClick={() => setBack(false)} tabIndex={back ? 0 : -1}
+              className="w-full border-t border-black/5 py-2.5 text-[13px] font-bold text-[#0f766e] active:bg-black/5">{L.fm.flipBack}</button>
+          </div>
+        </div>
+      </div>
+      <div className="mt-1.5 grid w-[92%] max-w-sm grid-cols-2 overflow-hidden rounded-2xl bg-white shadow-md">
+        <button type="button" data-test="card-full" onClick={onFull} className="gp-shine bg-[#ffd84d] py-3 text-[14px] font-black text-[#0a4f49] active:brightness-95">
+          🔓 {L.fullReport(rupee(it.price))}
+        </button>
+        <button type="button" data-test="card-another" onClick={onAnother} className="py-3 text-[14px] font-bold text-[#0f766e] active:bg-black/5">🔍 {L.another}</button>
+      </div>
+    </div>
+  );
+}
+
+function VehicleCard(props) {
+  const { it } = props;
+  // Signed in, the public record: the RC card that flips (2026-10-10).
+  if (!it.paid && it.vehicle?.detail === 'public') return <SignedRcCard {...props} />;
+  return <VehicleCardList {...props} />;
+}
+
+function VehicleCardList({ it, L, onFull, onAnother, fm, onStartFree }) {
   // A signed-in check of a vehicle they own a report for comes back full: open it in the chat.
   const v = it.vehicle || {};
   const id = v.identity || {};
