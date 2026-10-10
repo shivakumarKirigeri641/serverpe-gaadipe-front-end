@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLang } from '../lib/i18n.jsx';
 
 /*
@@ -25,6 +25,27 @@ const TEXT = {
   },
 };
 
+/*
+ * The nail sits on the header's bottom edge, wherever that is: below the top bar on the
+ * home page, at the top once the page scrolls (the header is sticky), under the chat's bar.
+ * So the sign never covers the header's buttons.
+ */
+export function useNailY(fallback) {
+  const [y, setY] = useState(fallback);
+  useEffect(() => {
+    const place = () => {
+      const h = document.querySelector('header');
+      setY(h ? Math.max(0, Math.round(h.getBoundingClientRect().bottom) - 4) : fallback);
+    };
+    place();
+    const late = [setTimeout(place, 400), setTimeout(place, 1500)];   // after the top bar loads
+    window.addEventListener('scroll', place, { passive: true });
+    window.addEventListener('resize', place);
+    return () => { late.forEach(clearTimeout); window.removeEventListener('scroll', place); window.removeEventListener('resize', place); };
+  }, [fallback]);
+  return y;
+}
+
 const foldedNow = () => {
   try { return Date.now() - Number(localStorage.getItem(KEY) || 0) < DAYS * 864e5; } catch { return false; }
 };
@@ -33,11 +54,12 @@ export default function HangingNotice() {
   const { lang } = useLang();
   const t = TEXT[lang === 'hi' ? 'hi' : 'en'];
   const [folded, setFolded] = useState(foldedNow);
+  const nailY = useNailY(58);
   const fold = () => { try { localStorage.setItem(KEY, String(Date.now())); } catch { /* private mode */ } setFolded(true); };
   const unfold = () => { try { localStorage.removeItem(KEY); } catch { /* private mode */ } setFolded(false); };
   if (Date.now() > UNTIL.getTime()) return null;
   return (
-    <div className="pointer-events-none fixed right-3 z-40" style={{ top: 'calc(env(safe-area-inset-top) + 58px)' }} data-test="hanging-notice">
+    <div className="pointer-events-none fixed right-3 z-40" style={{ top: `${nailY}px` }} data-test="hanging-notice">
       <div className={`hang-sign pointer-events-auto relative pt-4 ${folded ? 'hang-sway' : 'hang-swing'}`} key={folded ? 'tag' : 'sign'}>
         {/* the strings and the nail */}
         <span aria-hidden="true" className="absolute left-1/2 top-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#0a4f49]" />

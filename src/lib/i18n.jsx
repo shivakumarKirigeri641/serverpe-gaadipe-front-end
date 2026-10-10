@@ -172,7 +172,10 @@ export const STRINGS = {
     'footer.disclaimer': 'GaadiPe shows Government-sourced records as they are and does not create, alter or verify them. Where anything differs from your papers, the RTO record prevails.',
 
     'home.chip': 'All India · Every RTO · No app needed',
-    'home.h1a': 'Kharidne se pehle,',
+    // The headline (user, 2026-10-10), with a small English line under it for readers who
+    // don't read Hindi or Hinglish — Kerala and Tamil Nadu especially.
+    'home.h1a': 'Gaadi ki chamak pe mat jao,',
+    'home.h1en': 'Don’t go by the shine — check the vehicle’s full record first.',
     'source.h': 'Official Government data.',
     'source.body': 'Vehicle and challan details are fetched directly from the Government of India’s Parivahan records (VAHAN and e-Challan) and shown exactly as received — GaadiPe does not alter them. If anything differs from your documents, please verify it with your local RTO; the RTO’s record prevails.',
     'home.offer.title': 'Complete Vehicle Report + {days} Days Automatic Monitoring',
@@ -180,7 +183,7 @@ export const STRINGS = {
     'home.offer.l1': 'Know your vehicle status today.',
     'home.offer.l2': 'Stay informed for the next {days} days.',
     'home.offer.law': 'Personal details are masked, as on the Government’s Parivahan portal — the owner’s name, chassis and engine numbers.',
-    'home.h1b': 'poori kundli.',
+    'home.h1b': 'gaadi ki kundli dekho.',
     'home.lead': 'Before you buy a used car or bike, read its whole record: is there a **loan on it**, is it **blacklisted**, how many **challans are pending**, and are the insurance, PUC and tax still valid.',
     'home.cta': 'Check this vehicle',
     'home.freeLine': '**Check up to 2 vehicles a day free** — make, model and variant, the owner’s name masked and the RTO, no sign-in. **Sign in free** for every validity date and the challans — up to **10 vehicles a day** — plus **14 days of free monitoring** for one vehicle. The full report is **{price}**, and **₹11** to renew a vehicle you bought — **every purchase adds 5 more vehicle checks** that month.',
@@ -694,7 +697,9 @@ export const STRINGS = {
     'footer.disclaimer': 'GaadiPe सरकारी स्रोतों के रिकॉर्ड जैसे हैं वैसे दिखाता है; उन्हें न बनाता है, न बदलता है, न सत्यापित करता है। अगर कुछ आपके कागज़ों से अलग हो, तो RTO का रिकॉर्ड ही मान्य है।',
 
     'home.chip': 'पूरा भारत · हर RTO · कोई ऐप नहीं',
-    'home.h1a': 'खरीदने से पहले,',
+    'home.h1a': 'गाड़ी की चमक पे मत जाओ,',
+    // Stays in English on the Hindi page too — it is there for readers of neither.
+    'home.h1en': 'Don’t go by the shine — check the vehicle’s full record first.',
     'source.h': 'आधिकारिक सरकारी डेटा।',
     'source.body': 'वाहन और चालान की जानकारी सीधे भारत सरकार के परिवहन (Parivahan — VAHAN और e-Challan) रिकॉर्ड से ली जाती है और जैसी मिलती है वैसी ही दिखाई जाती है — GaadiPe उसमें कोई बदलाव नहीं करता। अगर कुछ आपके दस्तावेज़ों से अलग हो, तो कृपया अपने स्थानीय RTO से पुष्टि करें; RTO का रिकॉर्ड ही मान्य है।',
     'home.offer.title': 'पूरी वाहन रिपोर्ट + {days} दिन की ऑटोमैटिक निगरानी',
@@ -702,7 +707,7 @@ export const STRINGS = {
     'home.offer.l1': 'आज ही जानें अपने वाहन की स्थिति।',
     'home.offer.l2': 'अगले {days} दिन तक हर बदलाव की जानकारी पाएँ।',
     'home.offer.law': 'निजी जानकारी मास्क की जाती है, जैसे सरकारी परिवहन पोर्टल पर — मालिक का नाम, चेसिस और इंजन नंबर।',
-    'home.h1b': 'पूरी कुंडली।',
+    'home.h1b': 'गाड़ी की कुंडली देखो।',
     'home.lead': 'पुरानी कार या बाइक खरीदने से पहले उसका पूरा रिकॉर्ड देखिए: क्या उस पर **लोन है**, क्या वह **ब्लैकलिस्टेड** है, कितने **चालान बाकी हैं**, और क्या बीमा, PUC और टैक्स अभी वैध हैं।',
     'home.cta': 'यह वाहन चेक करें',
     'home.freeLine': '**दिन में 2 गाड़ियाँ मुफ़्त जाँचें** — कंपनी, मॉडल और वेरिएंट, मालिक का नाम (छिपा हुआ) और RTO, बिना साइन इन। **मुफ़्त साइन इन** करें और हर वैधता की तारीख व चालान देखें — दिन में **10 गाड़ियाँ** तक — साथ में एक गाड़ी की **14 दिन मुफ़्त निगरानी**। पूरी रिपोर्ट **{price}** में, और ख़रीदी हुई गाड़ी को रिन्यू करना **₹11** में — **हर ख़रीद पर उस महीने 5 गाड़ी जाँच और**।',

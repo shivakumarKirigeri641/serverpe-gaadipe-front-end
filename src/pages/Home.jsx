@@ -15,7 +15,8 @@ import Testimonials from '../components/Testimonials.jsx';
 /**
  * The landing page, in English and Hindi.
  *
- * THE VOICE IS THE ONE GAADIPE ALREADY HAS: "kharidne se pehle, poori kundli".
+ * THE VOICE IS THE ONE GAADIPE ALREADY HAS: "gaadi ki chamak pe mat jao, gaadi ki kundli
+ * dekho" (2026-10-10; before it, "kharidne se pehle, poori kundli").
  * A kundli is a birth chart — the whole history of a thing, read before a
  * family commits to it. In Hindi the line is simply the line; in English the
  * Hinglish is kept, because it is the brand, and the detail underneath does
@@ -82,6 +83,10 @@ export default function Home() {
               style={{ animationDelay: '.06s' }}>
               {t('home.h1a')}<br className="hidden sm:block" /> {t('home.h1b')}
             </h1>
+            {/* The same line in plain English, small (2026-10-10) — for Kerala, Tamil Nadu and beyond. */}
+            <p className="anim-up mt-2 text-base font-semibold text-brand-deep sm:text-lg" style={{ animationDelay: '.1s' }} lang="en">
+              {t('home.h1en')}
+            </p>
 
             <p className="anim-up mt-4 text-lg leading-relaxed text-body" style={{ animationDelay: '.14s' }}>
               <Rich text={t('home.lead')} />
