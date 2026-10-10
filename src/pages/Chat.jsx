@@ -72,6 +72,7 @@ const T = {
       // The blurred preview of what signing in shows (2026-10-10) — labels only, the values are dummies.
       blurRows: ['Registered on', 'Insurance valid till', 'PUC valid till', 'Road tax valid till', 'Fitness valid till', 'Pending challans'],
       unlock: '🔓 Sign in free to see',
+      signInTag: 'Free',
       unlockNote: 'Every date and the challan count — free with your mobile number.',
     },
     sample: { chip: '📄 See a sample report', more: '📋 Full details', intro: 'Here is what a full report looks like — on a *made-up vehicle*, so nothing real is shown 👇',
@@ -140,6 +141,10 @@ const T = {
       started: (reg, until) => `✅ Free monitoring is on for *${reg}* until *${until}*. We will tell you before any document expires and when a new challan appears.`,
       used: (reg) => `Your free monitoring has been used${reg ? ` (${reg})` : ''}. Monitoring is ₹19 for 28 days per vehicle — the full report included.`,
       flip: '↻ See what sign-in shows', flipBack: '↺ Back to the vehicle',
+      backTitle: 'Sign in free and you will see:',
+      monitorRow: '🔔 14 days of free automatic monitoring',
+      monitorNote: 'for one vehicle — alerts before any document expires and when a new challan appears',
+      offerShort: '🎁 *Sign in free:* 14 days of *free automatic monitoring* for one vehicle — then ₹19 for 28 days.',
       optIn: 'Also send me occasional tips & offers by SMS (optional — change it any time in Profile)',
     },
     // Feedback, asked at a few moments (2026-10-10) — all optional except on deactivating.
@@ -256,6 +261,7 @@ const T = {
       signIn: '🔐 और जाँचने के लिए साइन इन करें',
       blurRows: ['पंजीकरण की तारीख', 'इंश्योरेंस की वैधता', 'PUC की वैधता', 'रोड टैक्स की वैधता', 'फिटनेस की वैधता', 'बाकी चालान'],
       unlock: '🔓 देखने के लिए मुफ़्त साइन इन करें',
+      signInTag: 'मुफ़्त',
       unlockNote: 'हर तारीख और चालानों की गिनती — आपके मोबाइल नंबर से मुफ़्त।',
     },
     sample: { chip: '📄 नमूना रिपोर्ट देखें', more: '📋 पूरी जानकारी', intro: 'पूरी रिपोर्ट ऐसी दिखती है — एक *काल्पनिक गाड़ी* पर, कुछ भी असली नहीं 👇',
@@ -318,6 +324,10 @@ const T = {
       started: (reg, until) => `✅ *${reg}* की मुफ़्त निगरानी *${until}* तक चालू है। कोई दस्तावेज़ खत्म होने से पहले और नया चालान आने पर हम बताएँगे।`,
       used: (reg) => `आपकी मुफ़्त निगरानी इस्तेमाल हो चुकी है${reg ? ` (${reg})` : ''}। निगरानी हर गाड़ी के लिए 28 दिन ₹19 में है — पूरी रिपोर्ट के साथ।`,
       flip: '↻ साइन इन पर क्या दिखेगा', flipBack: '↺ गाड़ी पर वापस',
+      backTitle: 'मुफ़्त साइन इन करें और यह देखें:',
+      monitorRow: '🔔 14 दिन मुफ़्त ऑटोमैटिक निगरानी',
+      monitorNote: 'एक गाड़ी के लिए — कोई दस्तावेज़ खत्म होने से पहले और नया चालान आने पर अलर्ट',
+      offerShort: '🎁 *मुफ़्त साइन इन:* एक गाड़ी की 14 दिन *मुफ़्त ऑटोमैटिक निगरानी* — फिर ₹19 में 28 दिन।',
       optIn: 'मुझे कभी-कभी SMS पर टिप्स और ऑफ़र भी भेजें (वैकल्पिक — प्रोफ़ाइल में कभी भी बदलें)',
     },
     fb: {
@@ -1648,6 +1658,8 @@ function FreeVehicleCard({ it, L, onBuy, onSignIn, onFeedback }) {
         </div>
         {/* The RTO, from the number (2026-10-10, like CarInfo). */}
         {v.rto ? <RtoLine rto={v.rto} L={L} /> : null}
+        {/* The free-monitoring offer on the front too (user, 2026-10-10: "I haven't seen the 14 days free monitoring info"). */}
+        <div className="border-b border-black/5 bg-[#fff8e1] px-3.5 py-2 text-[12.5px] leading-snug text-[#5c4300]" data-test="fm-offer-front"><Text text={L.fm.offerShort} /></div>
         <button type="button" data-test="rc-flip" onClick={() => setBack(true)}
           className="w-full border-b border-black/5 bg-[#f3f7f6] py-2.5 text-[13px] font-bold text-[#0f766e] active:bg-[#e6f0ee]">{L.fm.flip}</button>
         <div className="px-3.5 py-2.5 text-[12.5px] leading-relaxed text-[#0b2e2b]"><Text text={L.free.inReport} /></div>
@@ -1657,25 +1669,31 @@ function FreeVehicleCard({ it, L, onBuy, onSignIn, onFeedback }) {
 
       {/* ── the back: what signing in adds, blurred ── */}
       <div className={`${face} [transform:rotateY(180deg)]`} aria-hidden={!back} data-test="rc-back">
-        <div className="flex items-center justify-between gap-3 bg-gradient-to-br from-[#0a4f49] to-[#0f766e] p-3 text-white">
-          <span className="rounded-md border-2 border-black bg-white px-2 py-0.5 font-mono text-[15px] font-black tracking-[2px] text-black shadow">{prettyPlate(v.reg_no)}</span>
-          <span className="text-[11px] font-semibold text-white/85">🔐 {L.free.unlockNote}</span>
-        </div>
-        <div className="relative border-b border-black/5 px-3.5 py-2.5">
-          <div className="select-none space-y-1.5" aria-hidden="true" style={{ filter: 'blur(4px)' }}>
-            {L.free.blurRows.map((k, i) => (
-              <div key={k} className="flex items-center justify-between gap-2 text-[12.5px]">
-                <span className="text-black/60">{k}</span>
-                <span className="font-bold text-[#0b2e2b]">{i === L.free.blurRows.length - 1 ? '0 0' : '00 Xxx 2000'}</span>
-              </div>
-            ))}
+        {/* The heading says plainly what signing in shows (2026-10-10); the labels are readable, only the values blurred. */}
+        <div className="bg-gradient-to-br from-[#0a4f49] to-[#0f766e] p-3 text-white">
+          <div className="flex items-center justify-between gap-3">
+            <span className="rounded-md border-2 border-black bg-white px-2 py-0.5 font-mono text-[15px] font-black tracking-[2px] text-black shadow">{prettyPlate(v.reg_no)}</span>
+            <span className="rounded-full bg-[#ffd84d] px-2 py-0.5 text-[11px] font-black text-[#0a4f49]">🔐 {L.free.signInTag}</span>
           </div>
-          <div className="absolute inset-0 grid place-items-center bg-white/40 px-4">
-            <button type="button" data-test="free-signin" onClick={onSignIn} tabIndex={back ? 0 : -1}
-              className="gp-shine rounded-full bg-[#0f766e] px-4 py-2 text-[13.5px] font-black text-white shadow-md active:brightness-95">{L.free.unlock}</button>
+          <div className="mt-2 text-[15px] font-black" data-test="rc-back-title">{L.fm.backTitle}</div>
+        </div>
+        <div className="space-y-1.5 border-b border-black/5 px-3.5 py-2.5">
+          {L.free.blurRows.map((k, i) => (
+            <div key={k} className="flex items-center justify-between gap-2 text-[12.5px]">
+              <span className="font-semibold text-[#0b2e2b]">✓ {k}</span>
+              <span className="select-none font-bold text-[#0b2e2b]" aria-hidden="true" style={{ filter: 'blur(4px)' }}>{i === L.free.blurRows.length - 1 ? '0 0' : '00 Xxx 2000'}</span>
+            </div>
+          ))}
+          <div className="mt-1 rounded-lg bg-[#fff8e1] px-2.5 py-2">
+            <div className="text-[12.5px] font-black text-[#5c4300]">{L.fm.monitorRow}</div>
+            <div className="text-[11.5px] text-[#5c4300]/80">{L.fm.monitorNote}</div>
           </div>
         </div>
-        <div className="bg-[#fff8e1] px-3.5 py-2.5 text-[12.5px] leading-relaxed text-[#5c4300]"><Text text={L.fm.offer} /></div>
+        <div className="px-3.5 py-3 text-center">
+          <button type="button" data-test="free-signin" onClick={onSignIn} tabIndex={back ? 0 : -1}
+            className="gp-shine w-full rounded-full bg-[#0f766e] px-4 py-2.5 text-[14px] font-black text-white shadow-md active:brightness-95">{L.free.unlock}</button>
+          <div className="mt-1 text-[11.5px] text-black/55">{L.free.unlockNote}</div>
+        </div>
         <button type="button" data-test="rc-flip-back" onClick={() => setBack(false)} tabIndex={back ? 0 : -1}
           className="w-full py-2.5 text-[13px] font-bold text-[#0f766e] active:bg-black/5">{L.fm.flipBack}</button>
       </div>
