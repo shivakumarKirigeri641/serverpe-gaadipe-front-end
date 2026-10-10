@@ -67,7 +67,7 @@ const T = {
       // When today's free check is used (the server's limit), in the visitor's language (2026-10-08).
       limit: '🔐 You’ve used today’s free check. Sign in with your mobile to check more — *basic details free* (make, model, variant, fuel, vehicle type), *full report ₹19*.',
       // A second number after today's free check (user, 2026-10-09: "say politely that 1 free check is done for the day").
-      usedToday: (r) => `🙏 Sorry, today’s *1 free check* is already done.\n\nPlease *sign in* to check *${r}* and more vehicles — *basic details free* (make, model, variant, fuel, vehicle type), *full report ₹19*. I’ll check *${r}* right after you sign in.`,
+      usedToday: (r) => `🙏 Today’s *free checks* are used up.\n\n*Sign in free* with your mobile number to check *${r}* and more vehicles — you also see every validity date and the challans, and get *14 days of free monitoring* for one vehicle. I’ll check *${r}* right after you sign in.`,
       signIn: '🔐 Sign in to check more',
       // The blurred preview of what signing in shows (2026-10-10) — labels only, the values are dummies.
       blurRows: ['Registered on', 'Insurance valid till', 'PUC valid till', 'Road tax valid till', 'Fitness valid till', 'Pending challans'],
@@ -82,6 +82,10 @@ const T = {
       + '*Full report — ₹19* · PDF with a GST invoice\n• Insurance (insurer and policy), PUC and road tax — and fitness and permit for commercial vehicles — each with its valid-until date\n• Every pending challan, with offence, place and amount\n• Loan / hypothecation, blacklist and NOC status\n• Number of owners, registration date and RTO\n• Owner name, chassis and engine number — masked, as on Parivahan\n• Alerts before documents expire, for 28 days\n\n'
       + '*Start checking vehicles by signing in* with your mobile number — a one-time code by SMS. No password, no app.',
     termsByUse: ['By signing in, you agree to GaadiPe’s', 'Terms of use', 'Privacy policy', 'and', 'Refund policy'],
+    // Agreeing by entering a number (user, 2026-10-10: "say that by entering a vehicle you agree to the terms — no button").
+    // Short, like CarInfo's (user, 2026-10-10: a line about recording device details puts people off checking).
+    termsByEntering: ['By entering a vehicle number, you agree to GaadiPe’s', 'Terms of use', 'Privacy policy', 'and', 'Refund policy', '.'],
+    enteredWords: 'By entering a vehicle number, you agree to GaadiPe’s Terms of use, Privacy policy and Refund policy.',
     signInToCheck: (r) => `🔐 Sign in with your mobile to check *${r}* — *basic details free* (make, model, variant, fuel, vehicle type), *full report ₹19*. I’ll check it straight after.`,
     plateNoted: (r) => `👍 Noted *${r}* — I’ll check it right after you sign in. Your *mobile number*, please.`,
     checking: (r) => `Checking *${r}* …`,
@@ -256,7 +260,7 @@ const T = {
       inReport: '*पूरी रिपोर्ट ₹19:* लोन, ब्लैकलिस्ट व NOC, हर चालान राशि के साथ, कितने मालिक, साफ़ फ़ैसला, PDF + 28 दिन अलर्ट।',
       buy: (p) => `🔓 पूरी रिपोर्ट लें — ${p}`,
       more: 'यह आज की मुफ़्त जाँच थी। हर तारीख और चालानों की गिनती के लिए *मुफ़्त साइन इन* करें; लोन, चालान राशि और फ़ैसले के लिए *पूरी रिपोर्ट ₹19*।',
-      usedToday: (r) => `🙏 माफ़ कीजिए, आज की *1 मुफ़्त जाँच* हो चुकी है।\n\n*${r}* और दूसरी गाड़ियाँ जाँचने के लिए कृपया *साइन इन* करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*। साइन इन होते ही मैं *${r}* जाँच दूँगा।`,
+      usedToday: (r) => `🙏 आज की *मुफ़्त जाँचें* पूरी हो गईं।\n\n*${r}* और दूसरी गाड़ियाँ जाँचने के लिए मोबाइल नंबर से *मुफ़्त साइन इन* करें — साथ में हर वैधता की तारीख और चालान दिखेंगे, और एक गाड़ी की *14 दिन मुफ़्त निगरानी* मिलेगी। साइन इन होते ही मैं *${r}* जाँच दूँगा।`,
       limit: '🔐 आज की मुफ़्त जाँच हो चुकी है। और जाँचने के लिए मोबाइल से साइन इन करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*।',
       signIn: '🔐 और जाँचने के लिए साइन इन करें',
       blurRows: ['पंजीकरण की तारीख', 'इंश्योरेंस की वैधता', 'PUC की वैधता', 'रोड टैक्स की वैधता', 'फिटनेस की वैधता', 'बाकी चालान'],
@@ -271,6 +275,8 @@ const T = {
       + '*पूरी रिपोर्ट — ₹19* · PDF, GST बिल के साथ\n• इंश्योरेंस (कंपनी और पॉलिसी), PUC और रोड टैक्स — और व्यावसायिक गाड़ियों के लिए फिटनेस और परमिट — हर एक की वैधता की तारीख़\n• हर बाकी चालान — अपराध, जगह और राशि के साथ\n• लोन / हाइपोथिकेशन, ब्लैकलिस्ट और NOC की स्थिति\n• कितने मालिक, रजिस्ट्रेशन की तारीख़ और RTO\n• मालिक का नाम, चेसिस और इंजन नंबर — छिपे हुए, जैसे परिवहन पर\n• दस्तावेज़ समाप्त होने से पहले अलर्ट, 28 दिनों तक\n\n'
       + '*गाड़ियाँ जाँचना शुरू करने के लिए साइन इन करें* — मोबाइल नंबर पर SMS से एक बार का कोड। कोई पासवर्ड नहीं, कोई ऐप नहीं।',
     termsByUse: ['साइन इन करके आप GaadiPe की', 'उपयोग की शर्तें', 'गोपनीयता नीति', 'और', 'रिफ़ंड नीति से सहमत होते हैं'],
+    termsByEntering: ['गाड़ी नंबर डालकर आप GaadiPe की', 'उपयोग की शर्तें', 'गोपनीयता नीति', 'और', 'रिफ़ंड नीति', 'से सहमत होते हैं।'],
+    enteredWords: 'गाड़ी नंबर डालकर आप GaadiPe की उपयोग की शर्तें, गोपनीयता नीति और रिफ़ंड नीति से सहमत होते हैं।',
     signInToCheck: (r) => `🔐 *${r}* जाँचने के लिए मोबाइल से साइन इन करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*। साइन इन होते ही मैं इसे जाँच दूँगा।`,
     plateNoted: (r) => `👍 *${r}* नोट कर लिया — साइन इन होते ही इसकी जाँच करूँगा। कृपया अपना *मोबाइल नंबर* लिखें।`,
     checking: (r) => `*${r}* की जाँच हो रही है…`,
@@ -551,7 +557,7 @@ export default function Chat() {
     if (!me?.id || loadedFor.current !== me.id) return;   // a visitor's conversation is never kept
     const keep = items.filter((x) => x.kind !== 'typing').map((x) => {
       if (x.kind === 'vehicle' && x.paid) return { ...x, kind: 'text', from: 'bot', text: `📄 *${x.vehicle?.reg_no}* — full report`, chips: [`open:${x.vehicle?.reg_no}`], vehicle: undefined };
-      if (['profile', 'reports', 'invoices', 'vehicles', 'email', 'deactivate', 'notify', 'help', 'welcome', 'terms', 'feedback', 'signoutall'].includes(x.kind)) return null;
+      if (['profile', 'reports', 'invoices', 'vehicles', 'email', 'deactivate', 'notify', 'help', 'welcome', 'terms', 'feedback', 'signoutall', 'freeTerms'].includes(x.kind)) return null;
       return x;
     }).filter(Boolean);
     try { localStorage.setItem(`${STORE}${me.id}`, JSON.stringify(keep.slice(-60))); } catch { /* private mode */ }
@@ -575,7 +581,8 @@ export default function Chat() {
         chips: signInRequired ? ['sample', 'fullInfo'] : [] },
         { id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: T[lang === 'hi' ? 'en' : 'hi'][hello] },
         // Signed out with sign-in required: straight back to the mobile number, policies first (2026-10-08).
-        ...(signInRequired ? [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'terms' }] : [])]);
+        ...(signInRequired ? [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'terms' }]
+          : [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'freeTerms' }])]);
     } else if (prevMe.current && me && String(prevMe.current.id) !== String(me.id)) {
       // Another account on this phone (a new mobile number): its own conversation, nothing of the old one.
       loadedFor.current = me.id;
@@ -720,6 +727,8 @@ export default function Chat() {
       // No buttons (user, 2026-10-10: "showing sign in feels awkward") — just type a number.
       bot(L.helloFree, { pace: 650 });
       bot(T[lang === 'hi' ? 'en' : 'hi'].helloFree, { pace: 700 });
+      // Agreeing by entering a number: the line under the welcome (no "Agree & check" button).
+      setTimeout(() => push({ from: 'bot', kind: 'freeTerms' }), 1500);
     }
     /* LOCAL DEVELOPMENT ONLY (?demo=full): the full-report card with sample data,
        to try its buttons without a live lookup. Never in a production build. */
@@ -844,10 +853,9 @@ export default function Chat() {
       return;
     }
     if (!me && !signedIn) {
-      interaction('search', `Typed ${reg} — asked to agree before the free check`, { reg_no: reg });
-      journey({ step: 'consent', section: `free check · ${reg}` });
-      bot(L.free.ask(prettyPlate(reg)));
-      push({ from: 'bot', kind: 'consent', reg });
+      // Entering the number is the agreement (2026-10-10) — the check runs at once, no "Agree & check" card.
+      interaction('search', `Typed ${reg} — free check (agreed by entering the number)`, { reg_no: reg });
+      freeCheck(reg);
       return;
     }
     // Said before the first check; after that, only alongside a failure (never twice in a row).
@@ -877,13 +885,13 @@ export default function Chat() {
 
   /* "Agree & check" tapped: the one free look — make, model name and fuel — with
      the exact words the visitor agreed to sent along and recorded (migration 142). */
-  async function freeCheck(reg, itemId) {
-    setItems((cur) => cur.map((x) => (x.id === itemId ? { ...x, agreed: true } : x)));
-    interaction('click', `Agreed & checked ${reg} (free check)`, { reg_no: reg });
+  async function freeCheck(reg, itemId = null) {
+    if (itemId) setItems((cur) => cur.map((x) => (x.id === itemId ? { ...x, agreed: true } : x)));
     setBusy(true); typing();
     journey({ step: 'checking', section: `free check · ${reg}` });
     try {
-      const out = await api.chatCheck(reg, { agreed: true, words: `${L.free.consentH(prettyPlate(reg))}. ${L.free.consent}`, language: lang === 'hi' ? 'hi' : 'en' });
+      // The words on screen under the welcome are what is recorded as the agreement.
+      const out = await api.chatCheck(reg, { agreed: true, method: 'entered_vehicle_number', words: L.enteredWords, language: lang === 'hi' ? 'hi' : 'en' });
       if (out.error === 'sign_in_needed') {
         markFreeUsed();
         interaction('error', 'Free check used up — asked to sign in', { reg_no: reg });
@@ -893,7 +901,7 @@ export default function Chat() {
         interaction('error', `Free check of ${reg} failed: ${String(out.message || out.error || '').slice(0, 60)}`, { reg_no: reg });
         bot(`⚠️ ${out.message || 'Something went wrong. Please try again.'}`, { chips: ['signIn'] }); return;
       }
-      markFreeUsed();
+      // Not marked as used after one any more (2026-10-10: 3 a day) — the server says when they are used up.
       journey({ step: 'viewing', section: `free check result · ${reg}` });
       interaction('view', `Saw the free check of ${reg}`, { reg_no: reg });
       bot(L.free.foundIntro(prettyPlate(reg)), { pace: 500 });
@@ -1339,6 +1347,7 @@ export default function Chat() {
                 onSend={(rating, message) => { sendFeedback(rating, it.src || 'menu', it.reg, message); bot(L.fb.thanks); }} />;
             }
             if (it.kind === 'terms') return <TermsLine key={it.id} L={L} optIn={offersOptIn} onOptIn={me ? null : setOffersOptIn} />;
+            if (it.kind === 'freeTerms') return me ? null : <FreeTermsLine key={it.id} L={L} />;
             if (it.kind === 'notify') return <NotifyCard key={it.id} L={L} state={notifyState} onAllow={allowNotifications} onLater={() => bot(lang === 'hi' ? 'ठीक है। मेनू ⋮ → नोटिफ़िकेशन से कभी भी चालू करें।' : 'OK. Turn them on any time from the menu ⋮ → Notifications.')} />;
             if (it.kind === 'help') return <CardShell key={it.id} title={L.helpH}><div className="text-[13.5px] text-[#0b2e2b]"><Text text={L.helpBody} /></div>
               <a href="mailto:support@gaadipe.in" className="mt-2 inline-block rounded-full bg-[#0f766e] px-3 py-1.5 text-[12px] font-bold text-white">✉️ support@gaadipe.in</a></CardShell>;
@@ -1483,6 +1492,19 @@ function EmailCard({ L, current, onSave }) {
    tick and left — "no need to tick & go"). One small line under the welcome,
    with the three policies a tap away. Signing in is the agreement; the server
    records it at every sign-in (consent_accepted, method sign_in). */
+/* "By entering a vehicle number, you agree to…" — under the welcome, before the free check (2026-10-10). */
+function FreeTermsLine({ L }) {
+  const link = (href, label) => <a href={href} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#0f766e] underline">{label}</a>;
+  const t = L.termsByEntering;
+  return (
+    <div className="anim-up flex">
+      <p data-test="free-terms" className="ml-1 max-w-[88%] px-1 text-[11.5px] leading-relaxed text-black/55">
+        🔒 {t[0]} {link('/terms', t[1])}, {link('/privacy', t[2])} {t[3]} {link('/refund', t[4])}{t[5].startsWith('.') ? '' : ' '}{t[5]}
+      </p>
+    </div>
+  );
+}
+
 function TermsLine({ L, optIn, onOptIn }) {
   const link = (href, label) => <a href={href} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#0f766e] underline">{label}</a>;
   const t = L.termsByUse;
