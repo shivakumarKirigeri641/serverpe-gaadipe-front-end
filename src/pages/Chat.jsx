@@ -133,7 +133,7 @@ const T = {
     profile: 'Profile',
     howWorks: 'What do I get?',
     // As the site is now (2026-10-10): the three levels, in plain words.
-    howAnswer: '*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 3 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, up to 10 vehicles a day, and *14 days of free monitoring* for one vehicle.\n\n*Full report ₹19* — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice.',
+    howAnswer: '*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 3 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, up to 10 vehicles a day, and *14 days of free monitoring* for one vehicle.\n\n*Full report ₹19* — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears.',
     attention: (n) => (n ? `⚠️ *${n} thing${n === 1 ? '' : 's'} need attention*` : '✅ *Nothing needs attention*'),
     /* Honest about what signing in gives (user, 2026-10-08: "this fools the
        user — the details are ₹19"). Signing in is free and keeps the vehicle and
@@ -338,7 +338,7 @@ const T = {
     myReports: 'मेरी रिपोर्ट',
     profile: 'प्रोफ़ाइल',
     howWorks: 'मुझे क्या मिलेगा?',
-    howAnswer: '*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 3 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, दिन में 10 गाड़ियाँ, और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ₹19* — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में।',
+    howAnswer: '*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 3 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, दिन में 10 गाड़ियाँ, और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ₹19* — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे।',
     attention: (n) => (n ? `⚠️ *${n} चीज़ों पर ध्यान चाहिए*` : '✅ *कुछ भी बाकी नहीं*'),
     identityOnly: (p) => '✅ *गाड़ी सरकारी रिकॉर्ड में मिल गई।*\n\nइसे अपने खाते में सेव करने और और गाड़ियाँ जाँचने के लिए मोबाइल से *मुफ़्त साइन इन* करें।\n\n*पूरी रिपोर्ट* — इंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, चालान, लोन, ब्लैकलिस्ट और कितने मालिक — *' + p + '* में, PDF और GST बिल के साथ।',
     expired: 'समाप्त', dueSoon: 'जल्द', challans: 'बाकी चालान',
