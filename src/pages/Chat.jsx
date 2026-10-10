@@ -105,6 +105,8 @@ const T = {
     welcomeBack: (n) => `🎉 Welcome back${n ? `, *${n}*` : ''}!`,
     welcomeNew: '👋 Welcome to GaadiPe! Send any vehicle number to begin.',
     askVehicle: '🔍 Type a vehicle number below to check it now — like *KA01AB1234*.',
+    // Its own reply after the welcome and the terms line (user, 2026-10-10).
+    typeNow: '👇 *Type in a vehicle number now.*',
     found: 'We found your GaadiPe history:',
     vehicles: (n) => `${n} vehicle${n === 1 ? '' : 's'} checked`,
     reports: (n) => `${n} full report${n === 1 ? '' : 's'}`,
@@ -295,6 +297,7 @@ const T = {
     welcomeBack: (n) => `🎉 वापसी पर स्वागत है${n ? `, *${n}*` : ''}!`,
     welcomeNew: '👋 GaadiPe में स्वागत है! शुरू करने के लिए कोई भी गाड़ी नंबर भेजें।',
     askVehicle: '🔍 जाँच के लिए नीचे कोई भी गाड़ी नंबर लिखें — जैसे *KA01AB1234*।',
+    typeNow: '👇 *अभी कोई गाड़ी नंबर लिखें।*',
     found: 'आपका GaadiPe इतिहास:',
     vehicles: (n) => `${n} गाड़ियाँ जाँचीं`,
     reports: (n) => `${n} पूरी रिपोर्ट`,
@@ -582,7 +585,8 @@ export default function Chat() {
         { id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: T[lang === 'hi' ? 'en' : 'hi'][hello] },
         // Signed out with sign-in required: straight back to the mobile number, policies first (2026-10-08).
         ...(signInRequired ? [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'terms' }]
-          : [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'freeTerms' }])]);
+          : [{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'freeTerms' },
+            { id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: L.typeNow }])]);
     } else if (prevMe.current && me && String(prevMe.current.id) !== String(me.id)) {
       // Another account on this phone (a new mobile number): its own conversation, nothing of the old one.
       loadedFor.current = me.id;
@@ -729,6 +733,8 @@ export default function Chat() {
       bot(T[lang === 'hi' ? 'en' : 'hi'].helloFree, { pace: 700 });
       // Agreeing by entering a number: the line under the welcome (no "Agree & check" button).
       setTimeout(() => push({ from: 'bot', kind: 'freeTerms' }), 1500);
+      // Then its own reply: "Type in a vehicle number now." (user, 2026-10-10)
+      setTimeout(() => { bot(L.typeNow, { pace: 300 }); inputRef.current?.focus(); }, 2100);
     }
     /* LOCAL DEVELOPMENT ONLY (?demo=full): the full-report card with sample data,
        to try its buttons without a live lookup. Never in a production build. */
