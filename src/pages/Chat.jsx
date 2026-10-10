@@ -106,7 +106,10 @@ const T = {
     welcomeNew: '👋 Welcome to GaadiPe! Send any vehicle number to begin.',
     askVehicle: '🔍 Type a vehicle number below to check it now — like *KA01AB1234*.',
     // Its own reply after the welcome and the terms line (user, 2026-10-10).
-    typeNow: '👇 *Type in a vehicle number now.*',
+    typeNow: '👇 *Type a vehicle number below* — like *KA01AB1234*.\nOr tap a button.',
+    // The line above the typing box: what to type now, or tap (user, 2026-10-10).
+    hint: { plate: 'Type a vehicle number', tap: ' — or tap a button above', mobile: 'Type your 10-digit mobile number',
+      code: 'Type the 6-digit code from the SMS', name: 'Type your name', email: 'Type your email address' },
     // "Check another" answered like a person, not a silent cursor (user, 2026-10-10) — one of these, at random.
     anotherReplies: [
       'Sure! 👍 Type the vehicle number below.',
@@ -129,7 +132,8 @@ const T = {
     myReports: 'My reports',
     profile: 'Profile',
     howWorks: 'What do I get?',
-    howAnswer: 'The *free check* shows the vehicle’s make, model and fuel, and how many things need attention.\n\nThe *full report* (₹19, GST invoice) shows insurance, PUC, road tax, fitness and permit dates, every challan with place and amount, loan (hypothecation), blacklist status and number of owners — as a PDF you can download.',
+    // As the site is now (2026-10-10): the three levels, in plain words.
+    howAnswer: '*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 3 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, up to 10 vehicles a day, and *14 days of free monitoring* for one vehicle.\n\n*Full report ₹19* — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice.',
     attention: (n) => (n ? `⚠️ *${n} thing${n === 1 ? '' : 's'} need attention*` : '✅ *Nothing needs attention*'),
     /* Honest about what signing in gives (user, 2026-10-08: "this fools the
        user — the details are ₹19"). Signing in is free and keeps the vehicle and
@@ -310,7 +314,9 @@ const T = {
     welcomeBack: (n) => `🎉 वापसी पर स्वागत है${n ? `, *${n}*` : ''}!`,
     welcomeNew: '👋 GaadiPe में स्वागत है! शुरू करने के लिए कोई भी गाड़ी नंबर भेजें।',
     askVehicle: '🔍 जाँच के लिए नीचे कोई भी गाड़ी नंबर लिखें — जैसे *KA01AB1234*।',
-    typeNow: '👇 *अभी कोई गाड़ी नंबर लिखें।*',
+    typeNow: '👇 *नीचे गाड़ी नंबर लिखें* — जैसे *KA01AB1234*।\nया कोई बटन दबाएँ।',
+    hint: { plate: 'गाड़ी नंबर लिखें', tap: ' — या ऊपर कोई बटन दबाएँ', mobile: 'अपना 10 अंकों का मोबाइल नंबर लिखें',
+      code: 'SMS का 6 अंकों का कोड लिखें', name: 'अपना नाम लिखें', email: 'अपना ईमेल लिखें' },
     anotherReplies: [
       'ज़रूर! 👍 नीचे गाड़ी का नंबर लिखिए।',
       'बिल्कुल 🙂 कौन सी गाड़ी? नीचे उसका नंबर लिखिए।',
@@ -332,7 +338,7 @@ const T = {
     myReports: 'मेरी रिपोर्ट',
     profile: 'प्रोफ़ाइल',
     howWorks: 'मुझे क्या मिलेगा?',
-    howAnswer: '*मुफ़्त जाँच* में गाड़ी का मेक, मॉडल, ईंधन और कितनी चीज़ों पर ध्यान चाहिए, यह दिखता है।\n\n*पूरी रिपोर्ट* (₹19, GST बिल) में बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट की तारीखें, हर चालान (जगह और राशि), लोन, ब्लैकलिस्ट और मालिकों की संख्या — PDF में।',
+    howAnswer: '*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 3 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, दिन में 10 गाड़ियाँ, और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ₹19* — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में।',
     attention: (n) => (n ? `⚠️ *${n} चीज़ों पर ध्यान चाहिए*` : '✅ *कुछ भी बाकी नहीं*'),
     identityOnly: (p) => '✅ *गाड़ी सरकारी रिकॉर्ड में मिल गई।*\n\nइसे अपने खाते में सेव करने और और गाड़ियाँ जाँचने के लिए मोबाइल से *मुफ़्त साइन इन* करें।\n\n*पूरी रिपोर्ट* — इंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, चालान, लोन, ब्लैकलिस्ट और कितने मालिक — *' + p + '* में, PDF और GST बिल के साथ।',
     expired: 'समाप्त', dueSoon: 'जल्द', challans: 'बाकी चालान',
@@ -757,8 +763,9 @@ export default function Chat() {
       bot(T[lang === 'hi' ? 'en' : 'hi'].helloFree, { pace: 700 });
       // Agreeing by entering a number: the line under the welcome (no "Agree & check" button).
       setTimeout(() => push({ from: 'bot', kind: 'freeTerms' }), 1500);
-      // Then its own reply: "Type in a vehicle number now." (user, 2026-10-10)
-      setTimeout(() => { bot(L.typeNow, { pace: 300 }); inputRef.current?.focus(); }, 2100);
+      // Then its own reply: "Type in a vehicle number now." (user, 2026-10-10) — with
+      // WhatsApp-like buttons, so it is clear what can be typed and what tapped.
+      setTimeout(() => { bot(L.typeNow, { pace: 300, chips: ['sample', 'howWorks'] }); inputRef.current?.focus(); }, 2100);
     }
     /* LOCAL DEVELOPMENT ONLY (?demo=full): the full-report card with sample data,
        to try its buttons without a live lookup. Never in a production build. */
@@ -824,8 +831,9 @@ export default function Chat() {
           '', L.askVehicle].filter((x) => x !== null).join('\n')
         : L.welcomeNew;
       if (justSignedIn || !items.some((x) => x.kind === 'welcome')) {
-        // No quick buttons for a signed-in customer (user, 2026-10-10) — the Menu has them all.
-        push({ from: 'bot', kind: 'welcome', text: lines, last: s.last_vehicle, chips: [] });
+        // Type a number, or tap — reply buttons like WhatsApp's (user, 2026-10-10, later the same day).
+        push({ from: 'bot', kind: 'welcome', text: lines, last: s.last_vehicle,
+          chips: [...(s.vehicles ? ['myVehicles'] : []), ...(s.reports ? ['myReports'] : []), 'howWorks'] });
       }
     } catch { /* the chat still works without it */ }
   }
@@ -940,7 +948,7 @@ export default function Chat() {
       interaction('view', `Saw the free check of ${reg}`, { reg_no: reg });
       bot(L.free.foundIntro(prettyPlate(reg)), { pace: 500 });
       push({ from: 'bot', kind: 'freeVehicle', vehicle: out.vehicle, price: out.price_paise });
-      bot(L.free.nudge, { pace: 1300 });
+      bot(L.free.nudge, { pace: 1300, chips: ['another', 'howWorks'] });
     } catch (e) {
       bot(`⚠️ ${e.message}`, { chips: ['signIn'] });
     } finally { setBusy(false); }
@@ -1222,7 +1230,7 @@ export default function Chat() {
 
   function chip(key) {
     // "What do I get?" lives with the signed-in options now (user, 2026-10-08: the welcome already says it all).
-    if (key === 'howWorks') { push({ from: 'me', kind: 'text', text: L.howWorks }); bot(L.howAnswer, { chips: me ? ['another'] : ['signIn'] }); return; }
+    if (key === 'howWorks') { push({ from: 'me', kind: 'text', text: L.howWorks }); bot(L.howAnswer, { chips: me ? ['another'] : ['sample', 'signIn'] }); return; }
     // The sample report on a made-up vehicle, and the full description (2026-10-08).
     if (key === 'sample') {
       journey({ step: 'welcome', section: 'sample report' });
@@ -1270,12 +1278,14 @@ export default function Chat() {
     else { push({ from: 'me', kind: 'text', text: L.fullReport('').trim() }); startSignIn(reg); }
   }
 
-  // Nothing until the saved sign-in is known — "Sign in" must never flash for someone signed in.
-  /* NO QUICK-BUTTON ROW (user, 2026-10-10: "on welcome, no need to show quick options —
-     just ask them to type the vehicle number"). Signed in, the Menu holds every option;
-     a visitor simply types a number, and signing in is offered where it means something
-     (the back of the free check's card). */
-  const quick = [];
+  /* No row of buttons above the typing box: the buttons belong to the messages, as
+     WhatsApp's reply buttons do, and the box itself says what to type (2026-10-10). */
+  // The hint above the typing box: what to type in this step, and "or tap" when the
+  // last message has buttons (its reply buttons, or a card's).
+  const lastBot = [...items].reverse().find((x) => x.from === 'bot' && x.kind !== 'typing');
+  const tapToo = mode === 'plate' && Boolean(lastBot && (lastBot.chips?.length
+    || !['text', 'welcome', 'note', 'freeTerms', 'file'].includes(lastBot.kind)));
+  const hintText = (L.hint[mode === 'ecode' ? 'code' : mode] || L.hint.plate) + (tapToo ? L.hint.tap : '');
   const placeholder = { mobile: L.placeholderMobile, code: L.placeholderCode, ecode: L.placeholderCode, name: L.placeholderName, email: L.placeholderEmail }[mode] || L.placeholderPlate;
   const typed = mode === 'name' || mode === 'email';   // free text: no capitals forced, no digit spacing
   const plateHint = mode === 'plate' && looksLikePlate(input);
@@ -1414,7 +1424,9 @@ export default function Chat() {
                   await signIn(out.token, out.user);
                 }} />;
             }
-            return <Bubble key={it.id} item={it} onChip={chip} chipLabel={chipLabel} L={L} />;
+            // Signed in, an earlier "Sign in" button is gone from the conversation.
+            return <Bubble key={it.id} item={me && it.chips?.includes('signIn') ? { ...it, chips: it.chips.filter((c) => c !== 'signIn') } : it}
+              onChip={chip} chipLabel={chipLabel} L={L} />;
           })}
         </div>
       </main>
@@ -1422,13 +1434,9 @@ export default function Chat() {
       {/* Quick actions and the composer, above the keyboard. */}
       <footer className="border-t border-black/5 bg-white/95 backdrop-blur" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="mx-auto max-w-2xl">
-          <div className={`flex gap-2 overflow-x-auto px-3 [scrollbar-width:none] ${quick.length ? 'pt-2' : 'hidden'}`}>
-            {quick.map((k) => (
-              <button key={k} type="button" data-test={`quick-${k}`} onClick={() => chip(k)}
-                className="shrink-0 rounded-full border border-[#0f766e]/20 bg-[#0f766e]/5 px-3 py-1.5 text-xs font-semibold text-[#0a4f49] active:scale-95">
-                {chipLabel(k)}
-              </button>
-            ))}
+          {/* What to do next, always in sight: type this — or tap a button above (user, 2026-10-10). */}
+          <div data-test="compose-hint" className="flex items-center gap-1.5 px-4 pt-2 text-[12px] font-medium text-[#0a4f49]/70">
+            <span aria-hidden="true">⌨️</span><span>{hintText}</span>
           </div>
           <form className="flex items-end gap-2 px-3 py-2" onSubmit={(e) => { e.preventDefault(); send(); }}>
             <div className="relative flex-1">
@@ -2608,9 +2616,12 @@ function Bubble({ item, onChip, chipLabel, faded = false }) {
     );
   }
   const welcome = item.kind === 'welcome';
+  const hasChips = item.chips?.length > 0;
   return (
     <div className={`flex flex-col ${mine ? 'items-end' : 'items-start'} ${faded ? 'opacity-75' : `gp-pop ${mine ? 'gp-from-r' : 'gp-from-l'}`}`}>
-      <div className={`max-w-[85%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2 text-[14.5px] leading-snug shadow-sm ${mine
+      {/* The message and its buttons share one width, as on WhatsApp. */}
+      <div className={`flex max-w-[85%] flex-col ${hasChips ? 'min-w-[240px]' : ''}`}>
+      <div className={`whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2 text-[14.5px] leading-snug shadow-sm ${mine
         ? 'gp-me rounded-br-md text-white'
         : welcome ? 'rounded-bl-md border border-[#ffd84d] bg-gradient-to-br from-white to-[#fff8d6] text-[#0b2e2b]'
           : 'gp-bot rounded-bl-md text-[#0b2e2b]'}`}>
@@ -2620,19 +2631,26 @@ function Bubble({ item, onChip, chipLabel, faded = false }) {
           : <Text text={item.text} />}
         <div className={`mt-0.5 text-right text-[10px] ${mine ? 'text-white/70' : 'text-black/35'}`}>{time(item.at)}{faded ? ' · WhatsApp' : ''}</div>
       </div>
-      {item.chips?.length > 0 && (
-        <div className={`mt-1.5 flex max-w-[90%] flex-wrap gap-1.5 ${mine ? 'justify-end' : ''} ${faded ? '' : 'gp-chips'}`}>
+      {/* REPLY BUTTONS LIKE WHATSAPP'S (user, 2026-10-10: "tappable buttons similar to
+          WhatsApp conversations — user must understand what next if they type or tap"):
+          full width under the message, one per line, the reply arrow on each. */}
+      {hasChips && (
+        <div className={`mt-[3px] grid gap-[3px] ${faded ? '' : 'gp-chips'}`}>
           {/* Old WhatsApp buttons are shown as plain labels — never tappable, never mistaken for real ones. */}
           {item.chips.map((c, i) => (faded
-            ? <span key={c} className="rounded-full border border-black/10 bg-white/50 px-3 py-1 text-xs font-semibold text-black/40">{c}</span>
+            ? <span key={c} className="rounded-xl bg-white/50 px-3 py-2 text-center text-[13px] font-semibold text-black/40">{c}</span>
             : (
               <button key={c} type="button" data-test={`chip-${c}`} onClick={() => onChip(c)} style={{ '--i': i }}
-                className="rounded-full border border-[#0f766e]/30 bg-white px-3 py-1 text-xs font-semibold text-[#0f766e] shadow-sm active:scale-95">
-                {chipLabel(c)}
+                className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-white px-3 py-2.5 text-[14px] font-semibold text-[#0f766e] shadow-sm transition hover:bg-[#f1f8f7] active:scale-[.98] active:bg-[#e3f2ef]">
+                <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 opacity-70" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M9 14L4 9l5-5" /><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
+                </svg>
+                <span className="truncate">{chipLabel(c)}</span>
               </button>
             )))}
         </div>
       )}
+      </div>
     </div>
   );
 }
