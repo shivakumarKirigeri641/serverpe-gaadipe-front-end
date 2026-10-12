@@ -41,6 +41,15 @@ export const WHATSAPP_ENABLED = import.meta.env.VITE_WHATSAPP_ENABLED === '1';
  */
 export const WEB_LOGIN = !WHATSAPP_ENABLED || import.meta.env.VITE_WEB_LOGIN !== '0';
 
+/*
+ * "CHECK A VEHICLE" OPENS WHATSAPP (user, 2026-10-12: "on tap of Check a vehicle
+ * navigate to 'hi' of WhatsApp … wherever check vehicle, or check this vehicle").
+ * Whenever WhatsApp is on, every check button opens the chat with "Hi" typed —
+ * even with the web account kept (VITE_WEB_LOGIN=1), which stays for signing in,
+ * My vehicles and reports already bought.
+ */
+export const CHECK_ON_WHATSAPP = WHATSAPP_ENABLED;
+
 /**
  * Is the QuizPe cross-sell shown?
  *

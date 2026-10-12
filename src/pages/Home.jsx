@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '../lib/session.jsx';
-import { api, waLink, WHATSAPP_ENABLED, WEB_LOGIN } from '../lib/api';
+import { api, waLink, WHATSAPP_ENABLED, WEB_LOGIN, CHECK_ON_WHATSAPP } from '../lib/api';
 import WhatsAppCta from '../components/WhatsAppCta.jsx';
 import { rupees } from '../lib/format';
 import { useLang, Rich } from '../lib/i18n.jsx';
@@ -54,13 +54,15 @@ export default function Home() {
   const price = pricing ? rupees(pricing.price_paise) : '₹19';
   const days = pricing?.duration_days ?? 28;
   const validDays = pricing?.report_valid_days ?? 7;
-  // No web account: every door on this page opens the WhatsApp chat instead.
-  const wa = !WEB_LOGIN;
+  // WhatsApp on: every check door on this page opens the WhatsApp chat with "Hi" (2026-10-12).
+  const wa = CHECK_ON_WHATSAPP;
 
   const go = (e) => {
     e.preventDefault();
     const plate = reg.toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (plate.length < 5) return;
+    // WhatsApp on: straight into the WhatsApp chat with "Hi" (2026-10-12).
+    if (CHECK_ON_WHATSAPP) { window.location.href = waLink('Hi'); return; }
     // The free check needs no account (2026-10-07): it runs in the chat at once.
     navigate(`/chat?reg=${plate}`);
   };

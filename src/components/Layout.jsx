@@ -1,7 +1,7 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useSession } from '../lib/session';
-import { api, waLink, WHATSAPP_ENABLED, QUIZPE_ENABLED, WEB_LOGIN } from '../lib/api';
+import { api, waLink, WHATSAPP_ENABLED, QUIZPE_ENABLED, WEB_LOGIN, CHECK_ON_WHATSAPP } from '../lib/api';
 import { useLang } from '../lib/i18n.jsx';
 
 /**
@@ -34,7 +34,7 @@ export default function Layout({ children, wide = false }) {
   }, [me, lang, setMe]);
 
   const appLinks = [
-    ['/app', t('common.myVehicles')], ['/app/check', t('common.checkVehicle')],
+    ['/app', t('common.myVehicles')], [CHECK_ON_WHATSAPP ? waLink('Hi') : '/app/check', t('common.checkVehicle')],
     ['/app/reports', t('nav.reports')], ['/app/invoices', t('nav.invoices')],
     // Refer & earn is hidden while referral rewards are off (2026-10-08).
     ['/app/profile', t('nav.profile')],
@@ -94,8 +94,11 @@ export default function Layout({ children, wide = false }) {
               </>
             ) : (
               /* "Check vehicle", not "Sign in" (user, 2026-10-08): the free check
-                 needs no sign-in, and it is what a visitor came for. */
-              <Link className="btn-primary !py-2" to="/chat">{t('common.checkVehicle')}</Link>
+                 needs no sign-in, and it is what a visitor came for — on WhatsApp
+                 while it is on (2026-10-12). */
+              CHECK_ON_WHATSAPP
+                ? <a className="btn-primary !py-2" href={waLink('Hi')} rel="noopener">{t('common.checkVehicle')}</a>
+                : <Link className="btn-primary !py-2" to="/chat">{t('common.checkVehicle')}</Link>
             )}
             <button className="btn-quiet !px-2.5 !py-2 md:hidden" onClick={() => setOpen(!open)} aria-label="Menu">☰</button>
           </div>
@@ -109,7 +112,9 @@ export default function Layout({ children, wide = false }) {
             <div className="flex flex-col">
             {(inApp ? appLinks
               : [['/#price', t('nav.price')],
-                 WEB_LOGIN ? ['/chat', me ? t('common.myVehicles') : t('common.checkVehicle')] : [waLink('Hi'), t('wa.short')],
+                 WEB_LOGIN && me ? ['/chat', t('common.myVehicles')]
+                   : CHECK_ON_WHATSAPP ? [waLink('Hi'), t('common.checkVehicle')]
+                   : WEB_LOGIN ? ['/chat', t('common.checkVehicle')] : [waLink('Hi'), t('wa.short')],
                  ['/help', t('footer.help')], ['/feedback?src=menu', lang === 'hi' ? '⭐ फ़ीडबैक' : '⭐ Feedback'],
                  ['/terms', t('nav.terms')], ['/privacy', t('nav.privacy')], ['/refund', t('nav.refunds')]]
             ).map(([to, label]) => (
@@ -135,7 +140,7 @@ export default function Layout({ children, wide = false }) {
           <div>
             <div className="text-2xs font-semibold uppercase tracking-wider text-muted">{t('footer.product')}</div>
             <ul className="mt-2 space-y-1.5 text-sm">
-              {WEB_LOGIN
+              {WEB_LOGIN && !CHECK_ON_WHATSAPP
                 ? <li><Link className="text-body hover:text-ink" to="/chat">{t('common.checkVehicle')}</Link></li>
                 : <li><a className="text-body hover:text-ink" href={waLink('Hi')}>{t('common.checkVehicle')}</a></li>}
               {WHATSAPP_ENABLED && <li><a className="text-body hover:text-ink" href={waLink('Hi')}>GaadiPe on WhatsApp</a></li>}
@@ -173,9 +178,10 @@ export default function Layout({ children, wide = false }) {
   );
 }
 
-const Tab = ({ to, children }) => (
-  <NavLink to={to} end={to === '/app'}
+const Tab = ({ to, children }) => (to.startsWith('https:')
+  // "Check a vehicle" on WhatsApp (2026-10-12): a plain link out, never an in-app route.
+  ? <a href={to} rel="noopener" className="text-sm text-body hover:text-ink">{children}</a>
+  : <NavLink to={to} end={to === '/app'}
     className={({ isActive }) => `text-sm ${isActive ? 'font-semibold text-brand-deep' : 'text-body hover:text-ink'}`}>
     {children}
-  </NavLink>
-);
+  </NavLink>);

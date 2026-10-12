@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { api, waLink, WEB_LOGIN } from '../lib/api';
+import { api, waLink, WEB_LOGIN, CHECK_ON_WHATSAPP } from '../lib/api';
 import { useLang } from '../lib/i18n.jsx';
 import { useSession } from '../lib/session';
 import { Banner, Spinner } from '../components/ui.jsx';
@@ -72,7 +72,7 @@ export default function ReferLanding() {
     return (
       <Splash>
         <Banner tone="watch">{t('refl.bad')}</Banner>
-        <Door to="/app/check" text="Hi" className="btn-primary btn-arrow mt-4 w-full text-center">
+        <Door check to="/app/check" text="Hi" className="btn-primary btn-arrow mt-4 w-full text-center">
           {t('refl.anyway')} <span className="arrow">→</span>
         </Door>
       </Splash>
@@ -90,7 +90,7 @@ export default function ReferLanding() {
         <li>· {t('refl.l2')}</li>
         <li>· {t('refl.l3')}</li>
       </ul>
-      <Door to={me ? '/app/check' : '/login'} text={`Hi GaadiPe (ref ${state.code || code})`}
+      <Door check to={me ? '/app/check' : '/login'} text={`Hi GaadiPe (ref ${state.code || code})`}
         className="btn-primary btn-arrow mt-5 w-full text-center">
         {t('refl.cta')} <span className="arrow">→</span>
       </Door>
@@ -104,7 +104,8 @@ export default function ReferLanding() {
  * WhatsApp chat with `text` typed. The referral code rides in that text: the
  * bot reads "(ref CODE)" from the first message.
  */
-const Door = ({ to, text, className, children }) => (WEB_LOGIN
+// `check`: a "Check a vehicle" door — WhatsApp while it is on (2026-10-12), web account or not.
+const Door = ({ to, text, className, children, check = false }) => (WEB_LOGIN && !(check && CHECK_ON_WHATSAPP)
   ? <Link className={className} to={to}>{children}</Link>
   : <a className={className} href={waLink(text)} rel="noopener">{children}</a>);
 
