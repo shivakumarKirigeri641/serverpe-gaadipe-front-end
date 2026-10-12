@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLang } from '../lib/i18n.jsx';
+import { WHATSAPP_ENABLED } from '../lib/api';
 
 /*
  * THE HANGING NOTICE (user, 2026-10-10: "a hanging label saying GaadiPe is now serving on
@@ -57,7 +58,8 @@ export default function HangingNotice() {
   const nailY = useNailY(58);
   const fold = () => { try { localStorage.setItem(KEY, String(Date.now())); } catch { /* private mode */ } setFolded(true); };
   const unfold = () => { try { localStorage.removeItem(KEY); } catch { /* private mode */ } setFolded(false); };
-  if (Date.now() > UNTIL.getTime()) return null;
+  // Not on the WhatsApp-first build (user, 2026-10-12: "revert back to WhatsApp based logics").
+  if (WHATSAPP_ENABLED || Date.now() > UNTIL.getTime()) return null;
   return (
     <div className="pointer-events-none fixed right-3 z-40" style={{ top: `${nailY}px` }} data-test="hanging-notice">
       <div className={`hang-sign pointer-events-auto relative pt-4 ${folded ? 'hang-sway' : 'hang-swing'}`} key={folded ? 'tag' : 'sign'}>

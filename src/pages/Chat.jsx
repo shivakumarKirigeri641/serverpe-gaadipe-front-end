@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { api, onSignedOut } from '../lib/api';
+import { api, onSignedOut, WHATSAPP_ENABLED } from '../lib/api';
 import { useSession } from '../lib/session';
 import { useLang } from '../lib/i18n.jsx';
 import BuyDialog from '../components/BuyDialog.jsx';
@@ -161,6 +161,8 @@ const T = {
       pdf: (d) => `📄 Report PDF downloadable till ${d}`,
       renew: (p) => `🔄 Renew 28 days · ${p}`, buy: (p) => `🔓 Full report + 28 days · ${p}`,
       checks: (d, m) => `🔢 Checks left: *${d}* today${m != null ? ` · *${m}* this month` : ''} — every report bought adds more.`,
+      // "Pause this alert" on the WhatsApp alert (2026-10-12).
+      paused: (d) => `⏸️ Alerts paused till *${d}*`, resume: '▶️ Resume alerts', resumed: '✅ Alerts are back on.',
     },
     attention: (n) => (n ? `⚠️ *${n} thing${n === 1 ? '' : 's'} need attention*` : '✅ *Nothing needs attention*'),
     /* Honest about what signing in gives (user, 2026-10-08: "this fools the
@@ -428,6 +430,7 @@ const T = {
       pdf: (d) => `📄 रिपोर्ट PDF ${d} तक डाउनलोड करें`,
       renew: (p) => `🔄 28 दिन रिन्यू · ${p}`, buy: (p) => `🔓 पूरी रिपोर्ट + 28 दिन · ${p}`,
       checks: (d, m) => `🔢 बाकी जाँच: आज *${d}*${m != null ? ` · इस महीने *${m}*` : ''} — हर ख़रीदी रिपोर्ट पर और मिलती हैं।`,
+      paused: (d) => `⏸️ अलर्ट *${d}* तक रुके हुए हैं`, resume: '▶️ अलर्ट फिर शुरू करें', resumed: '✅ अलर्ट फिर शुरू हो गए।',
     },
     attention: (n) => (n ? `⚠️ *${n} चीज़ों पर ध्यान चाहिए*` : '✅ *कुछ भी बाकी नहीं*'),
     identityOnly: (p) => '✅ *गाड़ी सरकारी रिकॉर्ड में मिल गई।*\n\nइसे अपने खाते में सेव करने और और गाड़ियाँ जाँचने के लिए मोबाइल से *मुफ़्त साइन इन* करें।\n\n*पूरी रिपोर्ट* — इंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, चालान, लोन, ब्लैकलिस्ट और कितने मालिक — *' + p + '* में, PDF और GST बिल के साथ।',
@@ -587,6 +590,10 @@ const T = {
    (gp.chat.u.<user id>). A visitor who is not signed in always starts fresh
    with the welcome; nothing from an earlier sign-in is ever shown to them.
    gp.chat.v1 was the old shared key, removed on load. */
+// The "WhatsApp account was disabled" line only on the web-first build (WhatsApp-first again, user 2026-10-12).
+const noteAfter = (L) => (WHATSAPP_ENABLED ? '' : `\n\n${L.webNote}`);
+const noteLines = (L) => (WHATSAPP_ENABLED ? [] : ['', L.webNote]);
+
 const STORE = 'gp.chat.u.';
 const OLD_STORE = 'gp.chat.v1';
 const loadFor = (userId) => {
@@ -749,7 +756,7 @@ export default function Chat() {
       setMode(signInRequired ? 'mobile' : 'plate');
       const note = resetNote.current; resetNote.current = null;
       const hello = signInRequired ? 'helloShort' : 'helloFree';
-      setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: `${note ? `${note}\n\n` : ''}${L[hello]}\n\n${L.webNote}`,
+      setItems([{ id: uid(), at: new Date().toISOString(), from: 'bot', kind: 'text', text: `${note ? `${note}\n\n` : ''}${L[hello]}${noteAfter(L)}`,
         chips: signInRequired ? ['sample', 'fullInfo'] : [] },
         // Only the chosen language now (2026-10-10) — no second copy in the other one.
         // Signed out with sign-in required: straight back to the mobile number, policies first (2026-10-08).
@@ -899,7 +906,7 @@ export default function Chat() {
       // whose check asks for the sign-in itself.
       // In the language chosen in the chat (2026-10-10) — once, not in both.
       // A sample report and the full text one tap away (2026-10-08).
-      bot(`${L.helloShort}\n\n${L.webNote}`, { pace: 650, chips: ['sample', 'fullInfo'] });
+      bot(`${L.helloShort}${noteAfter(L)}`, { pace: 650, chips: ['sample', 'fullInfo'] });
       // (/login and ?signin=1 land here too: the same opening, asked once.)
       if (!(reg && looksLikePlate(reg))) startSignIn(null, { quiet: true });
     } else if (!me && (params.get('signin') || params.get('open') || params.get('next') || signingSaved())) {
@@ -909,7 +916,7 @@ export default function Chat() {
          number, please" (user, 2026-10-08). After the code was sent, straight
          back to "type the code". */
       const saved = signingSaved();
-      bot(`${L.helloShort}\n\n${L.webNote}`, { pace: 650, chips: ['sample', 'fullInfo'] });
+      bot(`${L.helloShort}${noteAfter(L)}`, { pace: 650, chips: ['sample', 'fullInfo'] });
       startSignIn(null, { quiet: true });
       if (saved?.stage === 'code' && /^[6-9]\d{9}$/.test(saved.mobile || '')) {
         setMobile(saved.mobile); setMode('code');
@@ -918,7 +925,7 @@ export default function Chat() {
     } else if (!me) {
       // The free check is on (check_sign_in_required false, migration 142): type a number, see make & model.
       // No buttons (user, 2026-10-10: "showing sign in feels awkward") — just type a number.
-      bot(`${L.helloFree}\n\n${L.webNote}`, { pace: 650 });
+      bot(`${L.helloFree}${noteAfter(L)}`, { pace: 650 });
       // Agreeing by entering a number: the line under the welcome (no "Agree & check" button).
       setTimeout(() => push({ from: 'bot', kind: 'freeTerms' }), 1500);
       // Then its own reply: "Type in a vehicle number now." (user, 2026-10-10) — with
@@ -991,8 +998,8 @@ export default function Chat() {
             s.reports ? `• ${L.reports(s.reports)}` : null] : []),
           ...leftLines,
           // Once signed in, ask for the next number (2026-10-08).
-          '', L.askVehicle, '', L.webNote].filter((x) => x !== null).join('\n')
-        : [L.welcomeNew, ...leftLines, '', L.webNote].join('\n');
+          '', L.askVehicle, ...noteLines(L)].filter((x) => x !== null).join('\n')
+        : [L.welcomeNew, ...leftLines, ...noteLines(L)].join('\n');
       if (justSignedIn || !items.some((x) => x.kind === 'welcome')) {
         // Type a number, or tap — reply buttons like WhatsApp's (user, 2026-10-10, later the same day).
         push({ from: 'bot', kind: 'welcome', text: lines, last: s.last_vehicle,
@@ -1673,7 +1680,8 @@ export default function Chat() {
                 }} />;
             }
             if (it.kind === 'subs') {
-              return <SubsCard key={it.id} rows={it.rows} checks={it.checks} L={L} onRenew={(reg, price) => fullReport(reg, price)} />;
+              return <SubsCard key={it.id} rows={it.rows} checks={it.checks} L={L} onRenew={(reg, price) => fullReport(reg, price)}
+                onResume={(reg) => api.resumeAlerts(reg).then((r) => r?.ok).catch(() => false)} />;
             }
             if (it.kind === 'reports' || it.kind === 'invoices') {
               return <DocsList key={it.id} kind={it.kind} rows={it.rows} L={L} onDownload={(row) => download(it.kind === 'invoices' ? 'invoice' : 'report', row)} />;
@@ -2435,8 +2443,9 @@ const Row = ({ k, v, tone }) => (
  * the next check for new challans, the next document to expire, the PDF's window,
  * and a renew button at this customer's price. Checks left on top.
  */
-function SubsCard({ rows, checks, L, onRenew }) {
+function SubsCard({ rows, checks, L, onRenew, onResume }) {
   const S = L.subs;
+  const [resumed, setResumed] = useState({});
   const when = (iso) => {
     if (!iso) return null;
     if (new Date(iso) <= new Date()) return S.dueNow;
@@ -2466,7 +2475,16 @@ function SubsCard({ rows, checks, L, onRenew }) {
                 {s.active && s.next_check_at ? <div>{S.nextCheck(when(s.next_check_at))}</div> : null}
                 {s.next_document ? <div>{S.nextDoc(S.docs[s.next_document.doc] || s.next_document.label, day(s.next_document.date))}</div> : null}
                 {s.report_until ? <div>{S.pdf(day(s.report_until))}</div> : null}
+                {s.paused_until && !resumed[s.reg_no] ? <div><Text text={S.paused(day(s.paused_until))} /></div> : null}
+                {resumed[s.reg_no] ? <div>{S.resumed}</div> : null}
               </div>
+              {s.paused_until && !resumed[s.reg_no] ? (
+                <button type="button" data-test={`sub-resume-${s.reg_no}`}
+                  onClick={async () => { if (await onResume(s.reg_no)) setResumed((m) => ({ ...m, [s.reg_no]: true })); }}
+                  className="mt-2 w-full rounded-xl border-2 border-[#0f766e] py-1.5 text-[13px] font-black text-[#0f766e] active:bg-[#e3f2ef]">
+                  {S.resume}
+                </button>
+              ) : null}
               {s.renew_paise ? (
                 <button type="button" data-test={`sub-renew-${s.reg_no}`} onClick={() => onRenew(s.reg_no, s.renew_paise)}
                   className="gp-shine mt-2 w-full rounded-xl bg-[#ffd84d] py-2 text-[13px] font-black text-[#0a4f49] active:brightness-95">
