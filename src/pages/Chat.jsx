@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { api, onSignedOut, WHATSAPP_ENABLED } from '../lib/api';
+import { api, onSignedOut, WHATSAPP_ENABLED, gatewayUrl } from '../lib/api';
 import { useSession } from '../lib/session';
 import { useLang } from '../lib/i18n.jsx';
 import BuyDialog from '../components/BuyDialog.jsx';
@@ -163,6 +163,20 @@ const T = {
       checks: (d, m) => `🔢 Checks left: *${d}* today${m != null ? ` · *${m}* this month` : ''} — every report bought adds more.`,
       // "Pause this alert" on the WhatsApp alert (2026-10-12).
       paused: (d) => `⏸️ Alerts paused till *${d}*`, resume: '▶️ Resume alerts', resumed: '✅ Alerts are back on.',
+      // Replace vehicle (2026-10-13): ₹9 + GST moves the monitoring to another vehicle.
+      replace: (p) => `🔁 Replace vehicle · ${p}`,
+      rp: {
+        title: (r) => `🔁 Replace ${r}`,
+        ask: 'Type the new vehicle number. Its monitoring moves there until the same end date — I show you the vehicle before you pay.',
+        check: 'Check', checking: 'Checking…', placeholder: 'KA01AB1234',
+        confirm: (from, to) => `Replace ${from} with ${to}?`,
+        l1: (to, d) => `Monitoring moves to ${to} until ${d} — new challans and document expiry warnings.`,
+        l2: (from) => `${from} comes off your list and its alerts stop; its report stays in My reports.`,
+        l3: (to) => `The full report of ${to} is not included.`,
+        fee: (p) => `Fee ${p} (₹9 + GST) — once for this purchase.`,
+        agree: 'I agree to the Terms of use, Refund policy and Privacy policy',
+        pay: (p) => `Pay ${p}`, paying: 'Opening payment…', other: 'Change number',
+      },
     },
     attention: (n) => (n ? `⚠️ *${n} thing${n === 1 ? '' : 's'} need attention*` : '✅ *Nothing needs attention*'),
     /* Honest about what signing in gives (user, 2026-10-08: "this fools the
@@ -431,6 +445,19 @@ const T = {
       renew: (p) => `🔄 28 दिन रिन्यू · ${p}`, buy: (p) => `🔓 पूरी रिपोर्ट + 28 दिन · ${p}`,
       checks: (d, m) => `🔢 बाकी जाँच: आज *${d}*${m != null ? ` · इस महीने *${m}*` : ''} — हर ख़रीदी रिपोर्ट पर और मिलती हैं।`,
       paused: (d) => `⏸️ अलर्ट *${d}* तक रुके हुए हैं`, resume: '▶️ अलर्ट फिर शुरू करें', resumed: '✅ अलर्ट फिर शुरू हो गए।',
+      replace: (p) => `🔁 गाड़ी बदलें · ${p}`,
+      rp: {
+        title: (r) => `🔁 ${r} बदलें`,
+        ask: 'नई गाड़ी का नंबर लिखें। उसकी निगरानी उसी आख़िरी तारीख़ तक चलेगी — पैसे देने से पहले मैं गाड़ी दिखाऊँगा।',
+        check: 'जाँचें', checking: 'जाँच हो रही है…', placeholder: 'KA01AB1234',
+        confirm: (from, to) => `${from} की जगह ${to}?`,
+        l1: (to, d) => `निगरानी ${to} पर ${d} तक — नए चालान और दस्तावेज़ समाप्ति की चेतावनी।`,
+        l2: (from) => `${from} आपकी सूची से हटेगी और उसके अलर्ट बंद होंगे; उसकी रिपोर्ट मेरी रिपोर्ट में रहेगी।`,
+        l3: (to) => `${to} की पूरी रिपोर्ट शामिल नहीं है।`,
+        fee: (p) => `शुल्क ${p} (₹9 + GST) — इस ख़रीद पर एक बार।`,
+        agree: 'मैं उपयोग की शर्तें, रिफ़ंड नीति और गोपनीयता नीति से सहमत हूँ',
+        pay: (p) => `${p} दें`, paying: 'भुगतान खुल रहा है…', other: 'नंबर बदलें',
+      },
     },
     attention: (n) => (n ? `⚠️ *${n} चीज़ों पर ध्यान चाहिए*` : '✅ *कुछ भी बाकी नहीं*'),
     identityOnly: (p) => '✅ *गाड़ी सरकारी रिकॉर्ड में मिल गई।*\n\nइसे अपने खाते में सेव करने और और गाड़ियाँ जाँचने के लिए मोबाइल से *मुफ़्त साइन इन* करें।\n\n*पूरी रिपोर्ट* — इंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, चालान, लोन, ब्लैकलिस्ट और कितने मालिक — *' + p + '* में, PDF और GST बिल के साथ।',
@@ -952,8 +979,8 @@ export default function Chat() {
     const open = params.get('open');
     const next = params.get('next');
     if (next && /^\/app\/refer/.test(next)) afterSignIn.current = { next };
-    if (open && ['reports', 'invoices', 'profile', 'vehicles'].includes(open)) {
-      if (me) setTimeout(() => (open === 'profile' ? showProfile() : showList(open)), 500);
+    if (open && ['reports', 'invoices', 'profile', 'vehicles', 'subs'].includes(open)) {
+      if (me) setTimeout(() => (open === 'profile' ? showProfile() : open === 'subs' ? showSubscriptions() : showList(open)), 500);
       else afterSignIn.current = { ...(afterSignIn.current || {}), open };
     }
     if (params.get('signin') || open || next) {
@@ -1196,7 +1223,7 @@ export default function Chat() {
       // Signed in from an old account address: on to where they were going.
       const after = afterSignIn.current; afterSignIn.current = null;
       if (after?.next) { navigate(after.next); return; }
-      if (after?.open) setTimeout(() => (after.open === 'profile' ? showProfile() : showList(after.open)), 600);
+      if (after?.open) setTimeout(() => (after.open === 'profile' ? showProfile() : after.open === 'subs' ? showSubscriptions() : showList(after.open)), 600);
       // Right after signing in: offer notifications (only where the browser can, and not if already on).
       // Signing in drops the account's notification devices (one sign-in at a time): this one
       // re-subscribes quietly if it had allowed them and not turned them off (notify.resume).
@@ -1681,8 +1708,10 @@ export default function Chat() {
             }
             if (it.kind === 'subs') {
               return <SubsCard key={it.id} rows={it.rows} checks={it.checks} L={L} onRenew={(reg, price) => fullReport(reg, price)}
-                onResume={(reg) => api.resumeAlerts(reg).then((r) => r?.ok).catch(() => false)} />;
+                onResume={(reg) => api.resumeAlerts(reg).then((r) => r?.ok).catch(() => false)}
+                onReplace={(reg) => push({ from: 'bot', kind: 'replace', fromReg: reg })} />;
             }
+            if (it.kind === 'replace') return <ReplaceCard key={it.id} from={it.fromReg} L={L} />;
             if (it.kind === 'reports' || it.kind === 'invoices') {
               return <DocsList key={it.id} kind={it.kind} rows={it.rows} L={L} onDownload={(row) => download(it.kind === 'invoices' ? 'invoice' : 'report', row)} />;
             }
@@ -2443,7 +2472,85 @@ const Row = ({ k, v, tone }) => (
  * the next check for new challans, the next document to expire, the PDF's window,
  * and a renew button at this customer's price. Checks left on top.
  */
-function SubsCard({ rows, checks, L, onRenew, onResume }) {
+/* ₹10.62 stays ₹10.62 (rupee() rounds to whole rupees, right for ₹19 and ₹11). */
+const paise = (p) => `₹${(Number(p || 0) / 100).toFixed(Number(p || 0) % 100 ? 2 : 0)}`;
+
+/*
+ * REPLACE VEHICLE (user, 2026-10-13; server pay/replace.js): the new number, looked
+ * up and shown, then the terms tick and Pay — the checkout, as for a report.
+ */
+function ReplaceCard({ from, L }) {
+  const R = L.subs.rp;
+  const [to, setTo] = useState('');
+  const [quote, setQuote] = useState(null);
+  const [agree, setAgree] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState(null);
+  const check = async (e) => {
+    e?.preventDefault();
+    if (!to.trim()) return;
+    setBusy(true); setErr(null);
+    try { setQuote(await api.replaceQuote(from, to)); } catch (x) { setErr(x.message); } finally { setBusy(false); }
+  };
+  const pay = async () => {
+    setBusy(true); setErr(null);
+    try {
+      const out = await api.replaceBuy(from, quote.to.reg_no);
+      const target = out.pay_path ? gatewayUrl(out.pay_path) : out.pay_url;
+      window.location.href = `${target}${target.includes('?') ? '&' : '?'}go=1`;
+    } catch (x) { setErr(x.message); setBusy(false); }
+  };
+  const ends = quote ? new Date(quote.ends_on).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' }) : '';
+  return (
+    <div className="anim-up flex flex-col items-start">
+      <div className="w-[94%] max-w-md overflow-hidden rounded-2xl rounded-bl-md bg-white shadow-md" data-test="replace">
+        <div className="bg-gradient-to-r from-[#0a4f49] to-[#0f766e] px-3.5 py-2.5 text-[14px] font-black text-white">{R.title(prettyPlate(from))}</div>
+        <div className="px-3.5 py-3 text-[13px] text-[#0b2e2b]">
+          {!quote ? (
+            <form onSubmit={check}>
+              <p className="leading-snug">{R.ask}</p>
+              <div className="mt-2 flex gap-2">
+                <input className="min-w-0 flex-1 rounded-xl border-2 border-black/15 px-3 py-2 font-mono text-[14px] uppercase tracking-[1.5px] outline-none focus:border-[#0f766e]"
+                  value={to} onChange={(e) => setTo(e.target.value.toUpperCase())} placeholder={R.placeholder} maxLength={15} autoFocus data-test="replace-to" />
+                <button type="submit" disabled={busy || !to.trim()} className="rounded-xl bg-[#0f766e] px-4 py-2 text-[13px] font-black text-white disabled:opacity-40">
+                  {busy ? R.checking : R.check}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div>
+              <div className="font-black">{R.confirm(prettyPlate(quote.from), prettyPlate(quote.to.reg_no))}</div>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <span className="rounded-md border-2 border-black bg-white px-2 py-0.5 font-mono text-[14px] font-black tracking-[1.5px] text-black">{prettyPlate(quote.to.reg_no)}</span>
+                <span className="truncate text-[12.5px] font-semibold">{[quote.to.maker, quote.to.model].filter(Boolean).join(' ')}</span>
+              </div>
+              <ul className="mt-2 space-y-1 text-[12.5px] leading-snug">
+                <li>🔔 {R.l1(prettyPlate(quote.to.reg_no), ends)}</li>
+                <li>🔕 {R.l2(prettyPlate(quote.from))}</li>
+                <li>📄 {R.l3(prettyPlate(quote.to.reg_no))}</li>
+              </ul>
+              <div className="mt-2 font-black">{R.fee(paise(quote.price_paise))}</div>
+              <label className="mt-2 flex items-start gap-2 text-[12px]">
+                <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5" data-test="replace-agree" />
+                <span>{R.agree} (<a className="underline" href="/terms" target="_blank" rel="noopener">Terms</a> · <a className="underline" href="/refund" target="_blank" rel="noopener">Refund</a> · <a className="underline" href="/privacy" target="_blank" rel="noopener">Privacy</a>)</span>
+              </label>
+              <button type="button" disabled={busy || !agree} onClick={pay} data-test="replace-pay"
+                className="gp-shine mt-2 w-full rounded-xl bg-[#ffd84d] py-2 text-[13px] font-black text-[#0a4f49] disabled:opacity-40">
+                {busy ? R.paying : R.pay(paise(quote.price_paise))}
+              </button>
+              <button type="button" disabled={busy} onClick={() => { setQuote(null); setAgree(false); }} className="mt-1.5 w-full py-1 text-[12px] font-semibold text-[#0f766e] underline">
+                {R.other}
+              </button>
+            </div>
+          )}
+          {err ? <div className="mt-2 rounded-lg bg-[#fdecea] px-3 py-2 text-[12.5px] text-[#7a1a12]">{err}</div> : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SubsCard({ rows, checks, L, onRenew, onResume, onReplace }) {
   const S = L.subs;
   const [resumed, setResumed] = useState({});
   const when = (iso) => {
@@ -2489,6 +2596,13 @@ function SubsCard({ rows, checks, L, onRenew, onResume }) {
                 <button type="button" data-test={`sub-renew-${s.reg_no}`} onClick={() => onRenew(s.reg_no, s.renew_paise)}
                   className="gp-shine mt-2 w-full rounded-xl bg-[#ffd84d] py-2 text-[13px] font-black text-[#0a4f49] active:brightness-95">
                   {s.renewal ? S.renew(rupee(s.renew_paise)) : S.buy(rupee(s.renew_paise))}
+                </button>
+              ) : null}
+              {/* Replace vehicle (2026-10-13): while the server says it may be done. */}
+              {s.replace?.ok && onReplace ? (
+                <button type="button" data-test={`sub-replace-${s.reg_no}`} onClick={() => onReplace(s.reg_no)}
+                  className="mt-2 w-full rounded-xl border-2 border-[#0a4f49] py-1.5 text-[13px] font-black text-[#0a4f49] active:bg-[#e3f2ef]">
+                  {S.replace(paise(s.replace.price_paise))}
                 </button>
               ) : null}
             </div>

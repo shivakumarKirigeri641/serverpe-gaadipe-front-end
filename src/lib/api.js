@@ -243,6 +243,9 @@ export const api = {
   subscriptions: () => call('/subscriptions'),
   // Alerts paused from WhatsApp's "Pause this alert" — back on (2026-10-12).
   resumeAlerts: (regNo) => call('/subscriptions/resume', { method: 'POST', body: { reg_no: regNo } }),
+  // Replace vehicle (2026-10-13): look the new one up, then open the ₹9 + GST checkout.
+  replaceQuote: (from, to) => call('/replace/quote', { method: 'POST', body: { from, to } }),
+  replaceBuy: (from, to) => call('/replace/buy', { method: 'POST', body: { from, to, terms_accepted: true } }),
   invoices: () => call('/invoices'),
   reportPdf: (id, download) => pdf(`/reports/${id}/file`, download),
   invoicePdf: (id, download) => pdf(`/invoices/${id}/file`, download),
