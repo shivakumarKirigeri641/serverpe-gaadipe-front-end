@@ -165,7 +165,7 @@ const T = {
       checks: (d, m) => `🔢 Checks left: *${d}* today${m != null ? ` · *${m}* this month` : ''} — every report bought adds more.`,
       // "Pause this alert" on the WhatsApp alert (2026-10-12).
       paused: (d) => `⏸️ Alerts paused till *${d}*`, resume: '▶️ Resume alerts', resumed: '✅ Alerts are back on.',
-      // Replace vehicle (2026-10-13): ₹9 + GST moves the monitoring to another vehicle.
+      // Replace vehicle (2026-10-13): ₹11 incl. GST (₹9 + GST until 14 Oct) moves the monitoring to another vehicle.
       replace: (p) => `🔁 Replace vehicle · ${p}`,
       rp: {
         title: (r) => `🔁 Replace ${r}`,
@@ -175,7 +175,7 @@ const T = {
         l1: (to, d) => `Monitoring moves to ${to} until ${d} — new challans and document expiry warnings.`,
         l2: (from) => `${from} comes off your list and its alerts stop; its report stays in My reports.`,
         l3: (to) => `The full report of ${to} is not included.`,
-        fee: (p) => `Fee ${p} (₹9 + GST) — once for this purchase.`,
+        fee: (p, b) => `Fee ${p}, GST included${b ? ` (${b})` : ''} — once for this purchase.`,
         agree: 'I agree to the Terms of use, Refund policy and Privacy policy',
         pay: (p) => `Pay ${p}`, paying: 'Opening payment…', other: 'Change number',
       },
@@ -457,7 +457,7 @@ const T = {
         l1: (to, d) => `निगरानी ${to} पर ${d} तक — नए चालान और दस्तावेज़ समाप्ति की चेतावनी।`,
         l2: (from) => `${from} आपकी सूची से हटेगी और उसके अलर्ट बंद होंगे; उसकी रिपोर्ट मेरी रिपोर्ट में रहेगी।`,
         l3: (to) => `${to} की पूरी रिपोर्ट शामिल नहीं है।`,
-        fee: (p) => `शुल्क ${p} (₹9 + GST) — इस ख़रीद पर एक बार।`,
+        fee: (p, b) => `शुल्क ${p}, GST सहित${b ? ` (${b})` : ''} — इस ख़रीद पर एक बार।`,
         agree: 'मैं उपयोग की शर्तें, रिफ़ंड नीति और गोपनीयता नीति से सहमत हूँ',
         pay: (p) => `${p} दें`, paying: 'भुगतान खुल रहा है…', other: 'नंबर बदलें',
       },
@@ -2562,7 +2562,11 @@ function ReplaceCard({ from, L }) {
                 <li>🔕 {R.l2(prettyPlate(quote.from))}</li>
                 <li>📄 {R.l3(prettyPlate(quote.to.reg_no))}</li>
               </ul>
-              <div className="mt-2 font-black">{R.fee(paise(quote.price_paise))}</div>
+              {/* With what it is made of, at 18% GST (2026-10-14): ₹11 = ₹9.32 + ₹1.68 GST. */}
+              <div className="mt-2 font-black">{R.fee(paise(quote.price_paise), (() => {
+                const total = Number(quote.price_paise || 0); const taxable = Math.round(total / 1.18);
+                return total ? `₹${(taxable / 100).toFixed(2)} + ₹${((total - taxable) / 100).toFixed(2)} GST` : '';
+              })())}</div>
               <label className="mt-2 flex items-start gap-2 text-[12px]">
                 <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5" data-test="replace-agree" />
                 <span>{R.agree} (<a className="underline" href="/terms" target="_blank" rel="noopener">Terms</a> · <a className="underline" href="/refund" target="_blank" rel="noopener">Refund</a> · <a className="underline" href="/privacy" target="_blank" rel="noopener">Privacy</a>)</span>
