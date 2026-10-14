@@ -14,11 +14,11 @@
  */
 
 /*
- * OFF FOR NOW (user, 2026-10-14: "remove/hide that PWA asking for installation"). No card
- * after sign-in, no menu row — and capture() still holds back the browser's own install
- * bar, so nothing asks at all. true brings it all back.
+ * ON AGAIN (user, 2026-10-14 evening: "enable the PWA install app option as well", the site
+ * being web-first again). Off for a day earlier the same day ("remove/hide that PWA asking
+ * for installation"); false hides the card after sign-in and the menu row once more.
  */
-export const OFFER = false;
+export const OFFER = true;
 
 const LATER = 'gp.install.later';
 const DONE = 'gp.install.done';

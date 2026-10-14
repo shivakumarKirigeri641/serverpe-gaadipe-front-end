@@ -135,6 +135,15 @@ export default function Home() {
                 </button>
               </form>
             )}
+            {/* Typing and sending a number is agreeing (user, 2026-10-14). */}
+            {!wa && (
+              <p className="mt-2 text-2xs text-muted" data-test="home-send-terms">
+                {String(t('home.sendAgree')).split(/(\[[^\]]+\]\([^)]+\))/).map((part, i) => {
+                  const m = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(part);
+                  return m ? <a key={i} href={m[2]} target="_blank" rel="noopener noreferrer" className="underline hover:text-ink">{m[1]}</a> : part;
+                })}
+              </p>
+            )}
 
             <p className="anim-up mt-3 text-sm text-muted" style={{ animationDelay: '.3s' }}>
               <Rich text={t(wa ? 'home.freeLine.wa' : 'home.freeLine', { price })} />

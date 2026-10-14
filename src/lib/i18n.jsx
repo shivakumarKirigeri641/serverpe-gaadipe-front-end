@@ -305,6 +305,7 @@ export const STRINGS = {
     'home.final.h': 'Check a vehicle before you commit to it.',
     'home.final.sub': 'The first check costs nothing.',
     'home.sticky.placeholder': 'Vehicle number',
+    'home.sendAgree': 'By typing and sending a vehicle number, you agree to our [Terms](/terms), [Privacy](/privacy) & [Refund policies](/refund).',
     'home.sticky.cta': 'Check',
     // WhatsApp-first (user, 2026-09-25): the chat is the product; the site is its front door.
     'wa.cta': 'Say Hi on WhatsApp',
@@ -829,6 +830,7 @@ export const STRINGS = {
     'home.final.h': 'फ़ैसला करने से पहले वाहन चेक करें।',
     'home.final.sub': 'पहला चेक बिल्कुल मुफ़्त।',
     'home.sticky.placeholder': 'वाहन नंबर',
+    'home.sendAgree': 'गाड़ी नंबर टाइप करके भेजने पर आप हमारी [शर्तों](/terms), [गोपनीयता](/privacy) और [रिफ़ंड नीति](/refund) से सहमत होते हैं।',
     'home.sticky.cta': 'चेक करें',
     'wa.cta': 'WhatsApp पर Hi भेजें',
     'wa.short': 'WhatsApp',

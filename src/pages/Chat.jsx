@@ -94,6 +94,7 @@ const T = {
     // Agreeing by entering a number (user, 2026-10-10: "say that by entering a vehicle you agree to the terms — no button").
     // Short, like CarInfo's (user, 2026-10-10: a line about recording device details puts people off checking).
     termsByEntering: ['By entering a vehicle number, you agree to GaadiPe’s', 'Terms of use', 'Privacy policy', 'and', 'Refund policy', '.'],
+    sendAgree: ['By typing and sending a vehicle number, you agree to our', 'Terms', 'Privacy', '&', 'Refund policies', '.'],
     enteredWords: 'By entering a vehicle number, you agree to GaadiPe’s Terms of use, Privacy policy and Refund policy.',
     signInToCheck: (r) => `🔐 Sign in with your mobile to check *${r}* — *basic details free* (make, model, variant, fuel, vehicle type), *full report ₹19*. I’ll check it straight after.`,
     plateNoted: (r) => `👍 Noted *${r}* — I’ll check it right after you sign in. Your *mobile number*, please.`,
@@ -384,6 +385,7 @@ const T = {
       + '*गाड़ियाँ जाँचना शुरू करने के लिए साइन इन करें* — मोबाइल नंबर पर SMS से एक बार का कोड। कोई पासवर्ड नहीं, कोई ऐप नहीं।',
     termsByUse: ['साइन इन करके आप GaadiPe की', 'उपयोग की शर्तें', 'गोपनीयता नीति', 'और', 'रिफ़ंड नीति से सहमत होते हैं'],
     termsByEntering: ['गाड़ी नंबर डालकर आप GaadiPe की', 'उपयोग की शर्तें', 'गोपनीयता नीति', 'और', 'रिफ़ंड नीति', 'से सहमत होते हैं।'],
+    sendAgree: ['गाड़ी नंबर टाइप करके भेजने पर आप हमारी', 'शर्तों', 'गोपनीयता', 'और', 'रिफ़ंड नीति', ' से सहमत होते हैं।'],
     enteredWords: 'गाड़ी नंबर डालकर आप GaadiPe की उपयोग की शर्तें, गोपनीयता नीति और रिफ़ंड नीति से सहमत होते हैं।',
     signInToCheck: (r) => `🔐 *${r}* जाँचने के लिए मोबाइल से साइन इन करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*। साइन इन होते ही मैं इसे जाँच दूँगा।`,
     plateNoted: (r) => `👍 *${r}* नोट कर लिया — साइन इन होते ही इसकी जाँच करूँगा। कृपया अपना *मोबाइल नंबर* लिखें।`,
@@ -1782,6 +1784,12 @@ export default function Chat() {
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor"><path d="M3 20.5l18-8.5L3 3.5v6.6l12 1.9-12 1.9z" /></svg>
             </button>
           </form>
+          {/* Right under the box (user, 2026-10-14): typing and sending a number is agreeing. */}
+          {mode === 'plate' && (
+            <p data-test="send-terms" className="px-4 pb-1.5 text-center text-[10.5px] leading-snug text-black/45">
+              {L.sendAgree[0]} <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline">{L.sendAgree[1]}</a>, <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline">{L.sendAgree[2]}</a> {L.sendAgree[3]} <a href="/refund" target="_blank" rel="noopener noreferrer" className="underline">{L.sendAgree[4]}</a>{L.sendAgree[5]}
+            </p>
+          )}
         </div>
       </footer>
 
