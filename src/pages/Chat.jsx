@@ -9,6 +9,7 @@ import * as notify from '../lib/notify';
 import * as install from '../lib/install';
 import { journey, interaction, scrollSource, onEnded } from '../lib/track';
 import EmailVerify from '../components/EmailVerify.jsx';
+import VehicleArt from '../components/VehicleArt.jsx';
 import { saveBlob } from '../components/ui.jsx';
 
 /**
@@ -964,7 +965,7 @@ export default function Chat() {
     // ?demo=basic — a free-check card, to try "Full report ₹19" while the records server is down.
     if (import.meta.env.DEV && params.get('demo') === 'basic') {
       push({ from: 'bot', kind: 'vehicle', paid: false, signedIn: Boolean(me), price: 1900, vehicle: {
-        reg_no: 'KA31N8147', pretty: 'KA 31 N 8147', identity: { maker: 'KIA INDIA', model: 'SELTOS D1.5 6AT HTX PLUS', fuel: 'Diesel', vehicle_class: 'Motor Car' },
+        reg_no: 'KA31N8147', pretty: 'KA 31 N 8147', identity: { kind: 'suv', maker: 'KIA INDIA', model: 'SELTOS D1.5 6AT HTX PLUS', fuel: 'Diesel', vehicle_class: 'Motor Car' },
         found: { needs_attention: 2, documents_total: 5, has_record: true },
         locked: ['Loan / hypothecation status', 'Blacklist and NOC status', 'Every challan, with its offence, place and amount'] } });
     }
@@ -1944,11 +1945,24 @@ function ConsentCard({ it, L, busy, onAgree }) {
   );
 }
 
-/* The RTO, worked out from the number: code, office, district, state (2026-10-10). */
+/* The RTO, worked out from the number: code, office, district, state (2026-10-10) — and
+   the state's own transport website and helpline (2026-10-14, server site/stateTransport.js). */
 function RtoLine({ rto, L }) {
   return (
-    <div className="border-b border-black/5 px-3.5 py-2 text-[12px] text-[#0b2e2b]">
+    <div className="border-b border-black/5 px-3.5 py-2 text-[12px] text-[#0b2e2b]" data-test="rto-line">
       🏛️ <b>{L.pub.rto} {rto.code}</b>{rto.office ? ` · ${rto.office}` : ''}{rto.district ? `, ${rto.district}` : ''}{rto.state ? ` · ${rto.state}` : ''}
+      {(rto.website || rto.helpline) && (
+        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
+          {rto.website && (
+            <a className="font-semibold text-[#0f766e] underline-offset-2 hover:underline" href={rto.website} target="_blank" rel="noopener noreferrer" data-test="rto-site">
+              🌐 {rto.website_label || rto.website.replace(/^https?:\/\//, '')}
+            </a>
+          )}
+          {rto.helpline && (
+            <a className="font-semibold text-[#0f766e]" href={`tel:${rto.helpline.replace(/[^0-9+]/g, '')}`} data-test="rto-helpline">📞 {rto.helpline}</a>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -2067,11 +2081,17 @@ function FreeVehicleCard({ it, L, onBuy, onSignIn, onFeedback }) {
             <span className="rounded-md border-2 border-black bg-white px-2.5 py-0.5 font-mono text-[17px] font-black tracking-[2px] text-black shadow">{prettyPlate(v.reg_no)}</span>
             <span className="text-[11px] font-semibold text-white/85">{L.free.found}</span>
           </div>
-          <div className="mt-2 text-[17px] font-black" data-test="free-identity">
-            {[id.maker, id.model ? `${id.model}${id.variant_hidden ? ' •••' : ''}` : null].filter(Boolean).join(' · ') || '—'}
+          <div className="mt-2 flex items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="text-[17px] font-black" data-test="free-identity">
+                {[id.maker, id.model ? `${id.model}${id.variant_hidden ? ' •••' : ''}` : null].filter(Boolean).join(' · ') || '—'}
+              </div>
+              {id.fuel || id.vehicle_class ? <div className="text-[12.5px] text-white/85">⛽ {[id.fuel, id.vehicle_class].filter(Boolean).join(' · ')}</div> : null}
+              {id.owner_masked ? <div className="text-[12.5px] text-white/85">👤 {L.pub.owner}: {id.owner_masked}</div> : null}
+            </div>
+            {/* The vehicle's type, drawn (2026-10-14) — our own picture, not a maker's photo. */}
+            <VehicleArt kind={id.kind} tone="dark" className="h-14 w-[104px] shrink-0" />
           </div>
-          {id.fuel || id.vehicle_class ? <div className="text-[12.5px] text-white/85">⛽ {[id.fuel, id.vehicle_class].filter(Boolean).join(' · ')}</div> : null}
-          {id.owner_masked ? <div className="text-[12.5px] text-white/85">👤 {L.pub.owner}: {id.owner_masked}</div> : null}
           {id.variant_hidden ? <div className="mt-1 text-[11.5px] text-[#ffd84d]">🔒 {L.free.hidden}</div> : null}
         </div>
         {/* The RTO, from the number (2026-10-10, like CarInfo). */}
@@ -2303,7 +2323,7 @@ function InstallCard({ L, onResult }) {
 /* Sample data for ?demo=full in local development (see above). */
 const DEMO_FULL = {
   reg_no: 'KA02EX1480', pretty: 'KA 02 EX 1480', paid: true,
-  identity: { maker: 'MARUTI SUZUKI', model: 'SWIFT VXI', fuel: 'Petrol', vehicle_class: 'Motor Car', colour: 'Red', manufactured: '03/2019' },
+  identity: { kind: 'hatchback', maker: 'MARUTI SUZUKI', model: 'SWIFT VXI', fuel: 'Petrol', vehicle_class: 'Motor Car', colour: 'Red', manufactured: '03/2019' },
   documents: [
     { label: 'insurance', name: 'Insurance', valid_until: '2027-03-14', days: 158, state: 'valid' },
     { label: 'puc', name: 'PUC (emission test)', valid_until: '2026-10-12', days: 5, state: 'due' },
@@ -2327,7 +2347,7 @@ const sampleVehicle = () => {
   const on = (days) => new Date(Date.now() + days * 86400000).toISOString().slice(0, 10);
   return {
     reg_no: 'XX00AB0000', paid: true, sample: true,
-    identity: { maker: 'MARUTI SUZUKI', model: 'SWIFT VXI', fuel: 'Petrol', vehicle_class: 'Motor Car', colour: 'Red', manufactured: '03/2019' },
+    identity: { kind: 'hatchback', maker: 'MARUTI SUZUKI', model: 'SWIFT VXI', fuel: 'Petrol', vehicle_class: 'Motor Car', colour: 'Red', manufactured: '03/2019' },
     documents: [
       { label: 'insurance', name: 'Insurance', valid_until: on(158), days: 158, state: 'valid' },
       { label: 'puc', name: 'PUC (emission test)', valid_until: on(5), days: 5, state: 'due' },
@@ -2389,8 +2409,13 @@ function FullCard({ it, L, onDownload, onAnother, onSignIn }) {
             <span className="rounded-md border-2 border-black bg-white px-2.5 py-0.5 font-mono text-[17px] font-black tracking-[2px] text-black shadow">{prettyPlate(v.reg_no)}</span>
             <span className={`rounded-full px-2.5 py-1 text-[11px] font-black ${sample ? 'bg-[#e08700] text-white' : 'bg-[#ffd84d] text-[#0a4f49]'}`}>{sample ? L.sample.badge : 'FULL REPORT'}</span>
           </div>
-          <div className="mt-2 text-[15px] font-bold">{[id.maker, id.model].filter(Boolean).join(' · ')}</div>
-          <div className="text-[12px] text-white/80">{[id.fuel, id.vehicle_class, id.colour, id.manufactured].filter(Boolean).join(' · ')}</div>
+          <div className="mt-2 flex items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="text-[15px] font-bold">{[id.maker, id.model].filter(Boolean).join(' · ')}</div>
+              <div className="text-[12px] text-white/80">{[id.fuel, id.vehicle_class, id.colour, id.manufactured].filter(Boolean).join(' · ')}</div>
+            </div>
+            <VehicleArt kind={id.kind} tone="dark" className="h-12 w-[92px] shrink-0" />
+          </div>
           <div className="mt-1 text-[12px] text-white/80">{bad ? `⚠️ ${bad} need attention` : '✅ All in order'}</div>
         </div>
         <Verdict lines={v.verdict} L={L} />
@@ -3295,8 +3320,13 @@ function SignedRcCard({ it, L, onFull, onAnother, fm, onStartFree, bonus }) {
                   {attention ? L.src.attention(attention) : L.src.clear}
                 </span>
               </div>
-              <div className="mt-2 text-[16px] font-black leading-snug text-[#0b2e2b]">{[id.maker, id.model].filter(Boolean).join(' · ') || '—'}</div>
-              <div className="text-[12px] text-black/55">{[id.fuel, id.vehicle_class].filter(Boolean).join(' · ')}</div>
+              <div className="mt-2 flex items-center gap-2">
+                <div className="min-w-0 flex-1">
+                  <div className="text-[16px] font-black leading-snug text-[#0b2e2b]">{[id.maker, id.model].filter(Boolean).join(' · ') || '—'}</div>
+                  <div className="text-[12px] text-black/55">{[id.fuel, id.vehicle_class].filter(Boolean).join(' · ')}</div>
+                </div>
+                <VehicleArt kind={id.kind} tone="light" className="h-12 w-[92px] shrink-0" />
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-x-3 gap-y-2 px-3.5 py-3">
               {field(L.pub.owner, id.owner_masked, true)}
@@ -3399,8 +3429,13 @@ function VehicleCardList({ it, L, onFull, onAnother, fm, onStartFree, bonus }) {
               </span>
             )}
           </div>
-          <div className="mt-2 text-[15px] font-bold">{[id.maker, id.model].filter(Boolean).join(' · ') || '—'}</div>
-          <div className="text-[12px] text-white/80">{[id.fuel, id.vehicle_class].filter(Boolean).join(' · ')}</div>
+          <div className="mt-2 flex items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="text-[15px] font-bold">{[id.maker, id.model].filter(Boolean).join(' · ') || '—'}</div>
+              <div className="text-[12px] text-white/80">{[id.fuel, id.vehicle_class].filter(Boolean).join(' · ')}</div>
+            </div>
+            <VehicleArt kind={id.kind} tone="dark" className="h-12 w-[92px] shrink-0" />
+          </div>
         </div>
         {v.rto ? <RtoLine rto={v.rto} L={L} /> : null}
         <div className="space-y-1.5 p-3.5 text-[13.5px] text-[#0b2e2b]">
