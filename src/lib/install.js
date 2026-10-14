@@ -13,6 +13,13 @@
  * capture() must run once, early (main.jsx), before the browser fires its event.
  */
 
+/*
+ * OFF FOR NOW (user, 2026-10-14: "remove/hide that PWA asking for installation"). No card
+ * after sign-in, no menu row — and capture() still holds back the browser's own install
+ * bar, so nothing asks at all. true brings it all back.
+ */
+export const OFFER = false;
+
 const LATER = 'gp.install.later';
 const DONE = 'gp.install.done';
 const LATER_DAYS = 14;
@@ -66,7 +73,9 @@ export function mode() {
   return null;
 }
 /** Worth offering on its own (after sign-in): something to offer, and not put off recently. */
-export const shouldOffer = () => Boolean(mode()) && !laterActive();
+export const shouldOffer = () => OFFER && Boolean(mode()) && !laterActive();
+/** The menu's "Install the app" row: only while offering, and not inside the installed app. */
+export const inMenu = () => OFFER && !standalone();
 
 /** Opens the browser's install dialog. Resolves 'accepted' | 'dismissed' | 'unavailable'. */
 export async function promptInstall() {

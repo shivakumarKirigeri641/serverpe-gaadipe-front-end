@@ -1797,8 +1797,8 @@ export default function Chat() {
           ['🌐', L.mLang, switchLang, 'lang'],
           ['💡', L.howWorks, () => { setMenuOpen(false); chip('howWorks'); }, 'how'],
           ['❓', L.mHelp, () => showCard('help', L.mHelp), 'help'],
-          // Not when opened as the installed app (2026-10-10).
-          ...(install.standalone() ? [] : [['📲', L.inst.menu, () => showCard('install', L.inst.menu), 'install']]),
+          // Not when opened as the installed app (2026-10-10), nor while install is off (lib/install.js OFFER).
+          ...(install.inMenu() ? [['📲', L.inst.menu, () => showCard('install', L.inst.menu), 'install']] : []),
           ['📜', L.mTerms, () => { setMenuOpen(false); window.open('/terms', '_blank', 'noopener'); push({ from: 'me', kind: 'text', text: L.mTerms }); nextStep(me ? ['myVehicles'] : ['howWorks']); }, 'terms'],
           ['📝', L.mFeedback, () => showCard('feedback', L.mFeedback, { mode: 'stars', src: 'menu', title: L.fb.menuH }), 'feedback'],
           ['↪', L.signOut, () => showCard('signout', L.signOut), 'signout', 'warn'],
@@ -1808,7 +1808,7 @@ export default function Chat() {
           ['🔐', L.signIn, () => { setMenuOpen(false); startSignIn(); }, 'signin'],
           ['🌐', L.mLang, switchLang, 'lang'],
           ['✉️', L.mHelp, () => showCard('help', L.mHelp), 'help'],
-          ...(install.standalone() ? [] : [['📲', L.inst.menu, () => showCard('install', L.inst.menu), 'install']]),
+          ...(install.inMenu() ? [['📲', L.inst.menu, () => showCard('install', L.inst.menu), 'install']] : []),
           ['📝', L.mFeedback, () => showCard('feedback', L.mFeedback, { mode: 'stars', src: 'menu', title: L.fb.menuH }), 'feedback'],
           ['📜', L.mTerms, () => { setMenuOpen(false); window.open('/terms', '_blank', 'noopener'); push({ from: 'me', kind: 'text', text: L.mTerms }); nextStep(me ? ['myVehicles'] : ['howWorks']); }, 'terms'],
         ]} />
