@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
-import { waLink, WHATSAPP } from '../lib/api';
+import { Navigate } from 'react-router-dom';
+import { waLink, WHATSAPP, WHATSAPP_ENABLED } from '../lib/api';
 
 /**
  * gaadipe.in/wa — INTO THE WHATSAPP APP (user, 2026-10-13: Jio TrueConnect would not
@@ -14,6 +15,13 @@ import { waLink, WHATSAPP } from '../lib/api';
  * waLink adds the visitor's code, so the chat is tied to this visit.
  */
 export default function GoWhatsApp() {
+  // WEB-FIRST (2026-10-14, WhatsApp account disabled): the link in old SMS opens the
+  // website's own chat instead of a number that cannot answer.
+  if (!WHATSAPP_ENABLED) return <Navigate to="/chat" replace />;
+  return <GoWhatsAppApp />;
+}
+
+function GoWhatsAppApp() {
   const web = waLink('Hi');
   const { app, name } = useMemo(() => {
     const ua = navigator.userAgent || '';
