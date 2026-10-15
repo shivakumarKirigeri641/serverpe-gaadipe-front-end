@@ -146,7 +146,7 @@ const T = {
     profile: 'Profile',
     howWorks: 'What do I get?',
     // As the site is now (2026-10-10): the three levels, in plain words.
-    get howAnswer() { return `*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 2 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, and *14 days of free monitoring* for one vehicle.\n\n*Full report ${PRICES.full}* (${PRICES.renew} to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears. *Every purchase also adds 5 more vehicle checks* that month.\n\n🔢 *Vehicle checks — the more you buy, the more you can check*\n• Signed in: *10 a day* and *30 a month*\n• *Every report you buy — ${PRICES.full}, or ${PRICES.renew} to renew — adds 5 more checks* that month\n• The same vehicle again within an hour does not count\n• Removing a vehicle from My vehicles does *not* give a check back\nTap *Checks left* any time to see yours.`; },
+    get howAnswer() { return `*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 2 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, and *14 days of free monitoring* for one vehicle.\n\n*Full report ${PRICES.full}* (${PRICES.renew} to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears. *Every purchase also adds 5 more vehicle checks* that month.\n\n🔢 *Vehicle checks — the more you buy, the more you can check*\n• Signed in: *${PRICES.perDay} a day* and *30 a month*\n• *Every report you buy — ${PRICES.full}, or ${PRICES.renew} to renew — adds 5 more checks* that month\n• The same vehicle again within an hour does not count\n• Removing a vehicle from My vehicles does *not* give a check back\nTap *Checks left* any time to see yours.`; },
     // My subscriptions (user, 2026-10-10).
     subs: {
       menu: 'My subscriptions', title: '📋 My subscriptions',
@@ -431,7 +431,7 @@ const T = {
     myReports: 'मेरी रिपोर्ट',
     profile: 'प्रोफ़ाइल',
     howWorks: 'मुझे क्या मिलेगा?',
-    get howAnswer() { return `*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 2 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ${PRICES.full}* (ख़रीदी हुई गाड़ी का रिन्यू ${PRICES.renew}) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे। *हर ख़रीद पर उस महीने 5 गाड़ी जाँच और* मिलती हैं।\n\n🔢 *गाड़ी जाँच — जितना ख़रीदेंगे, उतना ज़्यादा जाँच सकेंगे*\n• साइन इन करके: *दिन में 10* और *महीने में 30*\n• *हर रिपोर्ट ख़रीदने पर — ${PRICES.full}, या रिन्यू के लिए ${PRICES.renew} — उस महीने 5 जाँच और*\n• एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता\n• मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती\nअपनी बाकी जाँच देखने के लिए कभी भी *बाकी जाँच* दबाएँ।`; },
+    get howAnswer() { return `*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 2 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ${PRICES.full}* (ख़रीदी हुई गाड़ी का रिन्यू ${PRICES.renew}) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे। *हर ख़रीद पर उस महीने 5 गाड़ी जाँच और* मिलती हैं।\n\n🔢 *गाड़ी जाँच — जितना ख़रीदेंगे, उतना ज़्यादा जाँच सकेंगे*\n• साइन इन करके: *दिन में ${PRICES.perDay}* और *महीने में 30*\n• *हर रिपोर्ट ख़रीदने पर — ${PRICES.full}, या रिन्यू के लिए ${PRICES.renew} — उस महीने 5 जाँच और*\n• एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता\n• मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती\nअपनी बाकी जाँच देखने के लिए कभी भी *बाकी जाँच* दबाएँ।`; },
     subs: {
       menu: 'मेरी सदस्यता', title: '📋 मेरी सदस्यता',
       none: 'अभी कोई निगरानी नहीं। पूरी रिपोर्ट ख़रीदें (₹19) — इसमें 28 दिन की निगरानी शामिल है — या जाँची हुई किसी गाड़ी पर 14 दिन मुफ़्त निगरानी शुरू करें।',
@@ -652,7 +652,7 @@ const markFreeUsed = () => { try { localStorage.setItem('gp.free.day', istDay())
 const rupee = (p) => (p == null ? '₹19' : `₹${Math.round(p / 100)}`);
 /* The prices as set in admin (2026-10-14: "is the renewal linked to the site?"), filled from
    /pricing when the chat opens; the texts that name them read these. */
-const PRICES = { full: '₹19', renew: '₹11' };
+const PRICES = { full: '₹19', renew: '₹11', perDay: 5 };   // perDay: checks a day signed in (2026-10-15)
 const cleanPlate = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 const looksLikePlate = (s) => /^[A-Z]{2}\d{1,2}[A-Z]{0,3}\d{3,4}$/.test(cleanPlate(s)) || /^\d{2}BH\d{4}[A-Z]{1,2}$/.test(cleanPlate(s));
 const prettyMobile = (m) => { const d = String(m || '').replace(/\D/g, '').slice(-10); return d.length === 10 ? `${d.slice(0, 5)} ${d.slice(5)}` : d; };
@@ -692,6 +692,7 @@ export default function Chat() {
     api.pricing().then((p) => {
       if (p?.price_paise) PRICES.full = rupee(p.price_paise);
       if (p?.renewal_paise) PRICES.renew = rupee(p.renewal_paise);
+      if (p?.free_checks_per_day) PRICES.perDay = p.free_checks_per_day;
     }).catch(() => {});
   }, []);
 

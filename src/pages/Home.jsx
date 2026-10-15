@@ -148,7 +148,7 @@ export default function Home() {
             )}
 
             <p className="anim-up mt-3 text-sm text-muted" style={{ animationDelay: '.3s' }}>
-              <Rich text={t(wa ? 'home.freeLine.wa' : 'home.freeLine', { price, renew })} />
+              <Rich text={t(wa ? 'home.freeLine.wa' : 'home.freeLine', { price, renew, perDay: pricing?.free_checks_per_day ?? 5 })} />
             </p>
 
             {/* Why pay at all (user, 2026-09-30): what the other way costs — up
