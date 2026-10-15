@@ -53,7 +53,7 @@ export default function Home() {
   const priceSeen = useSeen(priceRef, Boolean(pricing));
   const price = pricing ? rupees(pricing.price_paise) : '₹19';
   // The renewal price as set in admin (2026-10-14), not typed into the text.
-  const renew = pricing?.renewal_paise ? rupees(pricing.renewal_paise) : '₹15';
+  const renew = pricing?.renewal_paise ? rupees(pricing.renewal_paise) : '₹11';
   const days = pricing?.duration_days ?? 28;
   const validDays = pricing?.report_valid_days ?? 7;
   // WhatsApp on: every check door on this page opens the WhatsApp chat with "Hi" (2026-10-12).
