@@ -1,5 +1,7 @@
 node_modules/
 dist/
+# The spare web-first build (VITE_WHATSAPP_ENABLED=0), kept ready on the server for a WhatsApp outage.
+dist-webfirst/
 .env
 .env.*
 !.env.example
