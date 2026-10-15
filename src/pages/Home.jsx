@@ -52,6 +52,8 @@ export default function Home() {
   const priceRef = useRef(null);
   const priceSeen = useSeen(priceRef, Boolean(pricing));
   const price = pricing ? rupees(pricing.price_paise) : '₹19';
+  // The renewal price as set in admin (2026-10-14), not typed into the text.
+  const renew = pricing?.renewal_paise ? rupees(pricing.renewal_paise) : '₹11';
   const days = pricing?.duration_days ?? 28;
   const validDays = pricing?.report_valid_days ?? 7;
   // WhatsApp on: every check door on this page opens the WhatsApp chat with "Hi" (2026-10-12).
@@ -146,7 +148,7 @@ export default function Home() {
             )}
 
             <p className="anim-up mt-3 text-sm text-muted" style={{ animationDelay: '.3s' }}>
-              <Rich text={t(wa ? 'home.freeLine.wa' : 'home.freeLine', { price })} />
+              <Rich text={t(wa ? 'home.freeLine.wa' : 'home.freeLine', { price, renew })} />
             </p>
 
             {/* Why pay at all (user, 2026-09-30): what the other way costs — up
@@ -259,7 +261,7 @@ export default function Home() {
         <div className="grid gap-8 lg:grid-cols-2">
           <Reveal>
             <h2 className="text-2xl font-bold text-ink">{t('home.price.h')}</h2>
-            <p className="mt-3 text-body">{t('home.price.sub')}</p>
+            <p className="mt-3 text-body">{t('home.price.sub', { renew, days })}</p>
             <ul className="mt-5 space-y-2.5">
               {['t1', 't2', 't3', 't4', 't5'].map((k) => (
                 <Tick key={k}>{t(`home.price.${k}${wa && (k === 't2' || k === 't4') ? '.wa' : ''}`, { days, validDays })}</Tick>

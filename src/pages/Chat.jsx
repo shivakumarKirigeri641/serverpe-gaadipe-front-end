@@ -146,7 +146,7 @@ const T = {
     profile: 'Profile',
     howWorks: 'What do I get?',
     // As the site is now (2026-10-10): the three levels, in plain words.
-    howAnswer: '*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 2 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, and *14 days of free monitoring* for one vehicle.\n\n*Full report ₹19* (₹11 to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears. *Every purchase also adds 5 more vehicle checks* that month.\n\n🔢 *Vehicle checks — the more you buy, the more you can check*\n• Signed in: *10 a day* and *30 a month*\n• *Every report you buy — ₹19, or ₹11 to renew — adds 5 more checks* that month\n• The same vehicle again within an hour does not count\n• Removing a vehicle from My vehicles does *not* give a check back\nTap *Checks left* any time to see yours.',
+    get howAnswer() { return `*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 2 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, and *14 days of free monitoring* for one vehicle.\n\n*Full report ${PRICES.full}* (${PRICES.renew} to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears. *Every purchase also adds 5 more vehicle checks* that month.\n\n🔢 *Vehicle checks — the more you buy, the more you can check*\n• Signed in: *10 a day* and *30 a month*\n• *Every report you buy — ${PRICES.full}, or ${PRICES.renew} to renew — adds 5 more checks* that month\n• The same vehicle again within an hour does not count\n• Removing a vehicle from My vehicles does *not* give a check back\nTap *Checks left* any time to see yours.`; },
     // My subscriptions (user, 2026-10-10).
     subs: {
       menu: 'My subscriptions', title: '📋 My subscriptions',
@@ -253,7 +253,7 @@ const T = {
     vehicleBtn: 'Open',
     tapPlate: 'Tap a number to see its vehicle summary.',
     // Basic or paid, on each vehicle in My vehicles (user, 2026-10-10).
-    tier: { paid: '★ PAID', free: '👁 FREE MONITORING', basic: 'BASIC', till: (d) => `till ${d}`, renew: 'Paid before · renew ₹11', basicSub: 'Free details' },
+    tier: { paid: '★ PAID', free: '👁 FREE MONITORING', basic: 'BASIC', till: (d) => `till ${d}`, get renew() { return `Paid before · renew ${PRICES.renew}`; }, basicSub: 'Free details' },
     rm: { q: (r) => `Remove ${r} from My vehicles?`, body: 'It will no longer appear in your list. You can check it again any time — it comes back as a new entry.',
       report: 'Your report and invoice stay in My reports and Invoices.', alerts: 'Alerts for this vehicle will stop.',
       yes: '🗑 Remove', no: 'Cancel', done: (r) => `🗑 ${r} removed from My vehicles.`, label: (r) => `Remove ${r}`, empty: 'No vehicles left in your list. Send any vehicle number to check it.' },
@@ -275,7 +275,7 @@ const T = {
     // Checks left (user, 2026-10-10: "show the vehicle check count, updated when they buy").
     left: {
       line: (d, m) => `🔢 Checks left: *${d}* today${m != null ? ` · *${m}* this month` : ''}`,
-      bonus: (n) => `Every report you buy (₹19, or ₹11 to renew) adds *${n} more* this month.`,
+      bonus: (n) => `Every report you buy (${PRICES.full}, or ${PRICES.renew} to renew) adds *${n} more* this month.`,
       hint: (d, m) => `${d} checks left today${m != null ? ` · ${m} this month` : ''}`,
       none: 'No checks left now',
       // The "Checks left" button and its answer (user, 2026-10-10).
@@ -286,7 +286,7 @@ const T = {
         `• Today: *${q.today.left}* left of ${q.today.limit}`,
         ...(q.month ? [`• This month: *${q.month.left}* left of ${q.month.limit}${q.month.bonus ? ` (${q.month.base} + ${q.month.bonus} from reports you bought)` : ''}`] : []),
         '',
-        ...(q.month?.per_report ? [`💡 Every report you buy — ₹19, or ₹11 to renew — adds *${q.month.per_report} more checks* this month.`] : []),
+        ...(q.month?.per_report ? [`💡 Every report you buy — ${PRICES.full}, or ${PRICES.renew} to renew — adds *${q.month.per_report} more checks* this month.`] : []),
         `Checking the same vehicle again within an hour does not count.`,
       ].join('\n'),
       unlimited: '🔢 Your account has *no check limit*.',
@@ -431,7 +431,7 @@ const T = {
     myReports: 'मेरी रिपोर्ट',
     profile: 'प्रोफ़ाइल',
     howWorks: 'मुझे क्या मिलेगा?',
-    howAnswer: '*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 2 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ₹19* (ख़रीदी हुई गाड़ी का रिन्यू ₹11) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे। *हर ख़रीद पर उस महीने 5 गाड़ी जाँच और* मिलती हैं।\n\n🔢 *गाड़ी जाँच — जितना ख़रीदेंगे, उतना ज़्यादा जाँच सकेंगे*\n• साइन इन करके: *दिन में 10* और *महीने में 30*\n• *हर रिपोर्ट ख़रीदने पर — ₹19, या रिन्यू के लिए ₹11 — उस महीने 5 जाँच और*\n• एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता\n• मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती\nअपनी बाकी जाँच देखने के लिए कभी भी *बाकी जाँच* दबाएँ।',
+    get howAnswer() { return `*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 2 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ${PRICES.full}* (ख़रीदी हुई गाड़ी का रिन्यू ${PRICES.renew}) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे। *हर ख़रीद पर उस महीने 5 गाड़ी जाँच और* मिलती हैं।\n\n🔢 *गाड़ी जाँच — जितना ख़रीदेंगे, उतना ज़्यादा जाँच सकेंगे*\n• साइन इन करके: *दिन में 10* और *महीने में 30*\n• *हर रिपोर्ट ख़रीदने पर — ${PRICES.full}, या रिन्यू के लिए ${PRICES.renew} — उस महीने 5 जाँच और*\n• एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता\n• मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती\nअपनी बाकी जाँच देखने के लिए कभी भी *बाकी जाँच* दबाएँ।`; },
     subs: {
       menu: 'मेरी सदस्यता', title: '📋 मेरी सदस्यता',
       none: 'अभी कोई निगरानी नहीं। पूरी रिपोर्ट ख़रीदें (₹19) — इसमें 28 दिन की निगरानी शामिल है — या जाँची हुई किसी गाड़ी पर 14 दिन मुफ़्त निगरानी शुरू करें।',
@@ -526,7 +526,7 @@ const T = {
     offers: 'SMS / ईमेल पर ऑफ़र और न्यूज़लेटर', signOut: 'साइन आउट', signedOut: 'आप साइन आउट हो गए। मुफ़्त जाँच के लिए कोई भी गाड़ी नंबर भेजें।',
     vehicleBtn: 'खोलें',
     tapPlate: 'गाड़ी का सारांश देखने के लिए नंबर पर टैप करें।',
-    tier: { paid: '★ पेड', free: '👁 मुफ़्त निगरानी', basic: 'बेसिक', till: (d) => `${d} तक`, renew: 'पहले ख़रीदी · ₹11 में रिन्यू', basicSub: 'मुफ़्त जानकारी' },
+    tier: { paid: '★ पेड', free: '👁 मुफ़्त निगरानी', basic: 'बेसिक', till: (d) => `${d} तक`, get renew() { return `पहले ख़रीदी · ${PRICES.renew} में रिन्यू`; }, basicSub: 'मुफ़्त जानकारी' },
     rm: { q: (r) => `${r} को मेरी गाड़ियों से हटाएँ?`, body: 'यह आपकी सूची में नहीं दिखेगी। आप इसे कभी भी फिर से जाँच सकते हैं — यह नई एंट्री की तरह वापस आएगी।',
       report: 'आपकी रिपोर्ट और बिल "मेरी रिपोर्ट" और "बिल" में बने रहेंगे।', alerts: 'इस गाड़ी के अलर्ट बंद हो जाएँगे।',
       yes: '🗑 हटाएँ', no: 'रद्द करें', done: (r) => `🗑 ${r} मेरी गाड़ियों से हटा दी गई।`, label: (r) => `${r} हटाएँ`, empty: 'आपकी सूची में कोई गाड़ी नहीं बची। जाँच के लिए कोई भी गाड़ी नंबर भेजें।' },
@@ -545,7 +545,7 @@ const T = {
     next: 'आगे क्या? गाड़ी नंबर लिखें, या नीचे कोई बटन दबाएँ।', langNow: 'ठीक है — अब से हिंदी में। 👍',
     left: {
       line: (d, m) => `🔢 बाकी जाँच: आज *${d}*${m != null ? ` · इस महीने *${m}*` : ''}`,
-      bonus: (n) => `हर रिपोर्ट ख़रीदने पर (₹19, या रिन्यू के लिए ₹11) इस महीने *${n} जाँच और* मिलती हैं।`,
+      bonus: (n) => `हर रिपोर्ट ख़रीदने पर (${PRICES.full}, या रिन्यू के लिए ${PRICES.renew}) इस महीने *${n} जाँच और* मिलती हैं।`,
       hint: (d, m) => `आज ${d} जाँच बाकी${m != null ? ` · इस महीने ${m}` : ''}`,
       none: 'अभी कोई जाँच बाकी नहीं',
       menu: 'बाकी जाँच',
@@ -555,7 +555,7 @@ const T = {
         `• आज: ${q.today.limit} में से *${q.today.left}* बाकी`,
         ...(q.month ? [`• इस महीने: ${q.month.limit} में से *${q.month.left}* बाकी${q.month.bonus ? ` (${q.month.base} + ख़रीदी रिपोर्ट से ${q.month.bonus})` : ''}`] : []),
         '',
-        ...(q.month?.per_report ? [`💡 हर रिपोर्ट ख़रीदने पर — ₹19, या रिन्यू के लिए ₹11 — इस महीने *${q.month.per_report} जाँच और* मिलती हैं।`] : []),
+        ...(q.month?.per_report ? [`💡 हर रिपोर्ट ख़रीदने पर — ${PRICES.full}, या रिन्यू के लिए ${PRICES.renew} — इस महीने *${q.month.per_report} जाँच और* मिलती हैं।`] : []),
         `एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता।`,
       ].join('\n'),
       unlimited: '🔢 आपके खाते पर *कोई जाँच सीमा नहीं* है।',
@@ -650,6 +650,9 @@ const istDay = () => new Date(Date.now() + 5.5 * 3600 * 1000).toISOString().slic
 const freeUsedToday = () => { try { return localStorage.getItem('gp.free.day') === istDay(); } catch { return false; } };
 const markFreeUsed = () => { try { localStorage.setItem('gp.free.day', istDay()); } catch { /* private mode */ } };
 const rupee = (p) => (p == null ? '₹19' : `₹${Math.round(p / 100)}`);
+/* The prices as set in admin (2026-10-14: "is the renewal linked to the site?"), filled from
+   /pricing when the chat opens; the texts that name them read these. */
+const PRICES = { full: '₹19', renew: '₹11' };
 const cleanPlate = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 const looksLikePlate = (s) => /^[A-Z]{2}\d{1,2}[A-Z]{0,3}\d{3,4}$/.test(cleanPlate(s)) || /^\d{2}BH\d{4}[A-Z]{1,2}$/.test(cleanPlate(s));
 const prettyMobile = (m) => { const d = String(m || '').replace(/\D/g, '').slice(-10); return d.length === 10 ? `${d.slice(0, 5)} ${d.slice(5)}` : d; };
@@ -684,6 +687,13 @@ export default function Chat() {
   const L = T[lang === 'hi' ? 'hi' : 'en'];
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
+  // The prices the texts name, as set in admin (2026-10-14); ₹19 / ₹11 until they arrive.
+  useEffect(() => {
+    api.pricing().then((p) => {
+      if (p?.price_paise) PRICES.full = rupee(p.price_paise);
+      if (p?.renewal_paise) PRICES.renew = rupee(p.renewal_paise);
+    }).catch(() => {});
+  }, []);
 
   // Filled once the sign-in is known: the account's own conversation, or a fresh welcome.
   const [items, setItems] = useState([]);
