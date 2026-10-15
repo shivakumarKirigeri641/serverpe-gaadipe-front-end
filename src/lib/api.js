@@ -153,6 +153,8 @@ export const api = {
   feedback: (body) => call('/feedback', { method: 'POST', auth: false, body }),
   testimonials: () => call('/testimonials', { auth: false }),
   stats: () => call('/stats', { auth: false }),
+  // A shared report's summary, public (gaadipe.in/r/<token>, 2026-10-15).
+  share: (token) => call(`/share/${encodeURIComponent(token)}`, { auth: false }),
   policies: () => call('/policies', { auth: false, base: PUBLIC }),
   // The notice at the top of every page, set from the admin panel (2026-10-07).
   notice: () => call('/notice', { auth: false, base: PUBLIC }),

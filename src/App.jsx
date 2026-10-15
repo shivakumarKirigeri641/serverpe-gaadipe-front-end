@@ -16,6 +16,7 @@ import SupportTicket from './pages/SupportTicket.jsx';
 import ReferralLanding from './pages/ReferralLanding.jsx';
 import OnWhatsApp from './pages/OnWhatsApp.jsx';
 import GoWhatsApp from './pages/GoWhatsApp.jsx';
+import ShareReport from './pages/ShareReport.jsx';
 import Chat from './pages/Chat.jsx';
 
 /**
@@ -108,6 +109,8 @@ export default function App() {
       <Route path="/" element={<Home />} />
       {/* gaadipe.in/wa — straight into the WhatsApp chat; the link the DLT SMS carries (2026-10-13). */}
       <Route path="/wa" element={<GoWhatsApp />} />
+      {/* gaadipe.in/s/<token> — a shared report's summary (2026-10-15); /r/ is the referral link. */}
+      <Route path="/s/:token" element={<ShareReport />} />
       {/* The chat (2026-10-07): free check without signing in; full-screen, installable. */}
       <Route path="/chat" element={<Chat />} />
       {/* THE OLD ACCOUNT PAGES ARE RETIRED (user, 2026-10-07: "sign-in on mobile goes to
