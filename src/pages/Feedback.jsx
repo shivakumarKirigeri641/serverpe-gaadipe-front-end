@@ -51,7 +51,10 @@ export default function Feedback() {
   const { lang, t } = useLang();
   const p = PAGE[lang] || PAGE.en;
   const [params] = useSearchParams();
-  const [rating, setRating] = useState(0);
+  /* From the feedback email (2026-10-16): the star they tapped is already chosen, and their
+     email token (t) and vehicle (reg) go with the rating so it is linked to them. */
+  const preset = Number(params.get('rating'));
+  const [rating, setRating] = useState(Number.isInteger(preset) && preset >= 1 && preset <= 5 ? preset : 0);
   const [hover, setHover] = useState(0);
   const [message, setMessage] = useState('');
   const [name, setName] = useState('');
@@ -66,7 +69,8 @@ export default function Feedback() {
     if (!rating) { setError(p.pick); return; }
     setBusy(true); setError('');
     try {
-      await api.feedback({ rating, message, name, src: params.get('src') || '', website: trap });
+      await api.feedback({ rating, message, name, src: params.get('src') || '', website: trap,
+        t: params.get('t') || undefined, reg_no: params.get('reg') || undefined });
       setDone(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
