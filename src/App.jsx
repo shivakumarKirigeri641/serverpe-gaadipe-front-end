@@ -57,6 +57,13 @@ function ToChat() {
   return <Navigate to={to} replace />;
 }
 
+/* /chat while the web chat is hidden (user, 2026-10-16): on to /wa, which opens WhatsApp with
+   Hi — keeping any ?utm_… so the visit is still credited to where it came from. */
+function ToWhatsApp() {
+  const { search } = useLocation();
+  return <Navigate to={`/wa${search}`} replace />;
+}
+
 /*
  * GOOGLE ANALYTICS ON EVERY PAGE (user, 2026-09-18). The Google tag in
  * index.html counts the first page. This site changes pages without reloading,
@@ -113,7 +120,7 @@ export default function App() {
       <Route path="/s/:token" element={<ShareReport />} />
       {/* The chat (2026-10-07): free check without signing in; full-screen, installable. */}
       {/* Hidden while WhatsApp is the way in (user, 2026-10-16): /chat opens WhatsApp with Hi. */}
-      <Route path="/chat" element={WEB_CHAT ? <Chat /> : <GoWhatsApp />} />
+      <Route path="/chat" element={WEB_CHAT ? <Chat /> : <ToWhatsApp />} />
       {/* THE OLD ACCOUNT PAGES ARE RETIRED (user, 2026-10-07: "sign-in on mobile goes to
           the old style"). Every one of them opens the chat, which does it all — so an
           old link in an email, a bookmark or a redirect always lands in the app view. */}
