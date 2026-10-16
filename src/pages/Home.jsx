@@ -11,6 +11,7 @@ import SisterQuizpe from '../components/SisterQuizpe.jsx';
 import { QUIZPE_ENABLED } from '../lib/api';
 import Reveal from '../components/Reveal.jsx';
 import Testimonials from '../components/Testimonials.jsx';
+import Milestone from '../components/Milestone.jsx';
 
 /**
  * The landing page, in English and Hindi.
@@ -384,9 +385,12 @@ function SoFar() {
   // not on load, when they may still be below the fold and the roll is missed.
   const seen = useSeen(ref, Boolean(s));
   const shown = s ? STATS.filter(([k]) => s[k] != null) : [];
-  if (!shown.length) return null;
+  // Every 100 customers, celebrated on each landing (user, 2026-10-16; components/Milestone.jsx).
+  const party = <Milestone value={s?.milestone || null} />;
+  if (!shown.length) return party;
   return (
     <section ref={ref} className="border-b border-line bg-shell/60">
+      {party}
       <div className="wrap py-12">
         <Reveal>
           <h2 className="text-2xl font-bold text-ink">{t('home.stats.h')}</h2>
