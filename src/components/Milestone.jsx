@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useLang } from '../lib/i18n.jsx';
 import { waLink, CHECK_ON_WHATSAPP } from '../lib/api';
 
@@ -87,7 +88,10 @@ export default function Milestone({ value }) {
 
   if (!open || !value) return null;
   const href = CHECK_ON_WHATSAPP ? waLink('Hi') : '/chat';
-  return (
+  /* DRAWN ON THE PAGE ITSELF (user, 2026-10-16: "too far down on desktop, people get confused"):
+     inside the stats section, an animated parent pinned the overlay to that section instead of
+     the screen. A portal into <body> keeps it in the middle of the screen, wherever the visitor is. */
+  return createPortal((
     <div className="fixed inset-0 z-[60] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-label={t('home.milestone.h', { n: value })}
       onClick={() => setOpen(false)} data-test="milestone">
       <div className="absolute inset-0 bg-ink/40 backdrop-blur-[2px] milestone-fade" />
@@ -107,5 +111,5 @@ export default function Milestone({ value }) {
         <button type="button" className="relative mt-2 text-sm text-muted hover:text-ink" onClick={() => setOpen(false)}>{t('home.milestone.close')}</button>
       </div>
     </div>
-  );
+  ), document.body);
 }
