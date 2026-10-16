@@ -39,7 +39,9 @@ export const WHATSAPP_ENABLED = import.meta.env.VITE_WHATSAPP_ENABLED === '1';
  *
  * Only honoured while WhatsApp is on; with neither there would be no way in.
  */
-export const WEB_LOGIN = !WHATSAPP_ENABLED || import.meta.env.VITE_WEB_LOGIN !== '0';
+// Signing in happens inside the web chat, so it hides with it (2026-10-16, WEB_CHAT below).
+export const WEB_LOGIN = !WHATSAPP_ENABLED
+  || (import.meta.env.VITE_WEB_CHAT === '1' && import.meta.env.VITE_WEB_LOGIN !== '0');
 
 /*
  * "CHECK A VEHICLE" OPENS WHATSAPP (user, 2026-10-12: "on tap of Check a vehicle
@@ -49,6 +51,13 @@ export const WEB_LOGIN = !WHATSAPP_ENABLED || import.meta.env.VITE_WEB_LOGIN !==
  * My vehicles and reports already bought.
  */
 export const CHECK_ON_WHATSAPP = WHATSAPP_ENABLED;
+/*
+ * THE WEBSITE'S OWN CHAT (/chat) — hidden while WhatsApp is the way in (user, 2026-10-16:
+ * "currently disable/hide gaadipe.in/chat"). Then /chat opens WhatsApp instead, so every old
+ * link, bookmark or installed icon lands there. It comes back by itself when WhatsApp is off
+ * (VITE_WHATSAPP_ENABLED=0), or with VITE_WEB_CHAT=1.
+ */
+export const WEB_CHAT = !WHATSAPP_ENABLED || import.meta.env.VITE_WEB_CHAT === '1';
 
 /**
  * Is the QuizPe cross-sell shown?

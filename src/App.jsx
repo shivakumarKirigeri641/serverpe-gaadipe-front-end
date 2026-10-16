@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useSession } from './lib/session';
-import { api, WEB_LOGIN } from './lib/api';
+import { api, WEB_LOGIN, WEB_CHAT } from './lib/api';
 import { startSession, pageView, watchWhatsAppLinks, startHeartbeat, journey } from './lib/track';
 import EmailPrompt from './components/EmailCard.jsx';
 import ClickTracker from './components/ClickTracker.jsx';
@@ -112,7 +112,8 @@ export default function App() {
       {/* gaadipe.in/s/<token> — a shared report's summary (2026-10-15); /r/ is the referral link. */}
       <Route path="/s/:token" element={<ShareReport />} />
       {/* The chat (2026-10-07): free check without signing in; full-screen, installable. */}
-      <Route path="/chat" element={<Chat />} />
+      {/* Hidden while WhatsApp is the way in (user, 2026-10-16): /chat opens WhatsApp with Hi. */}
+      <Route path="/chat" element={WEB_CHAT ? <Chat /> : <GoWhatsApp />} />
       {/* THE OLD ACCOUNT PAGES ARE RETIRED (user, 2026-10-07: "sign-in on mobile goes to
           the old style"). Every one of them opens the chat, which does it all — so an
           old link in an email, a bookmark or a redirect always lands in the app view. */}
