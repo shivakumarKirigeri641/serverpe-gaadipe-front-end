@@ -386,7 +386,7 @@ function SoFar() {
   const seen = useSeen(ref, Boolean(s));
   const shown = s ? STATS.filter(([k]) => s[k] != null) : [];
   // Every 100 customers, celebrated on each landing (user, 2026-10-16; components/Milestone.jsx).
-  const party = <Milestone value={s?.milestone || null} />;
+  const party = <Milestone value={s?.milestone || null} exact={s?.customers || null} />;
   if (!shown.length) return party;
   return (
     <section ref={ref} className="border-b border-line bg-shell/60">

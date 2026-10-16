@@ -69,12 +69,15 @@ function useCountUp(target, run) {
   return n;
 }
 
-export default function Milestone({ value }) {
+/* `value` is the hundred reached (it decides whether to celebrate); `exact` is the real count
+   shown — never "200+" (user, 2026-10-16: "show exact numbers"). */
+export default function Milestone({ value, exact = null }) {
   const { t } = useLang();
   const [open, setOpen] = useState(Boolean(value));
   const canvas = useRef(null);
   const reduced = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-  const n = useCountUp(value || 0, open && !reduced);
+  const shown = exact && exact >= (value || 0) ? exact : value;
+  const n = useCountUp(shown || 0, open && !reduced);
 
   useEffect(() => { setOpen(Boolean(value)); }, [value]);
   useEffect(() => {
@@ -92,7 +95,7 @@ export default function Milestone({ value }) {
      inside the stats section, an animated parent pinned the overlay to that section instead of
      the screen. A portal into <body> keeps it in the middle of the screen, wherever the visitor is. */
   return createPortal((
-    <div className="fixed inset-0 z-[60] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-label={t('home.milestone.h', { n: value })}
+    <div className="fixed inset-0 z-[60] flex items-center justify-center px-4" role="dialog" aria-modal="true" aria-label={t('home.milestone.h', { n: shown })}
       onClick={() => setOpen(false)} data-test="milestone">
       <div className="absolute inset-0 bg-ink/40 backdrop-blur-[2px] milestone-fade" />
       <canvas ref={canvas} className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden="true" />
@@ -101,9 +104,9 @@ export default function Milestone({ value }) {
         <div className="pointer-events-none absolute -bottom-12 -right-8 h-36 w-36 rounded-full" style={{ background: 'rgba(250, 204, 21, .2)' }} />
         <div className="relative text-5xl milestone-bounce" aria-hidden="true">🎉</div>
         <div className="relative mt-2 bg-gradient-to-r from-brand to-brand-deep bg-clip-text text-5xl font-black tabular-nums text-transparent">
-          {reduced ? value : n}+
+          {reduced ? shown : n}
         </div>
-        <h2 className="relative mt-1 text-xl font-extrabold text-ink">{t('home.milestone.h', { n: value })}</h2>
+        <h2 className="relative mt-1 text-xl font-extrabold text-ink">{t('home.milestone.h', { n: shown })}</h2>
         <p className="relative mt-2 text-sm text-body">{t('home.milestone.sub')}</p>
         <a href={href} className="btn-primary btn-big btn-arrow relative mt-5 w-full justify-center">
           {t('home.milestone.cta')} <span className="arrow">→</span>
