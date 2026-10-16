@@ -207,11 +207,12 @@ export const STRINGS = {
     'home.stats.h': 'GaadiPe so far',
     'home.stats.sub': 'Real numbers from our records, updated every few minutes. Our own test checks are not counted.',
     // The milestone celebration (2026-10-16): every 100 customers.
-    'home.milestone.h': '{n}+ happy customers!',
+    'home.milestone.h': '{n}+ people served!',
     'home.milestone.sub': 'Thank you for trusting GaadiPe with your vehicles. Check yours too — the basic check is free.',
     'home.milestone.cta': 'Check your vehicle free',
     'home.milestone.close': 'Close',
-    'home.stats.customers': 'Customers served',
+    // "People served" (user, 2026-10-16): not "vehicle owners" — many who check do not own the vehicle.
+    'home.stats.customers': 'People served',
     'home.stats.vehicles': 'Vehicles checked',
     'home.stats.checks': 'Vehicle checks run',
     'home.stats.records_fetched': 'Government records fetched',
@@ -736,11 +737,11 @@ export const STRINGS = {
 
     'home.stats.h': 'अब तक GaadiPe',
     'home.stats.sub': 'हमारे रिकॉर्ड से असली आँकड़े, हर कुछ मिनट में अपडेट। हमारे अपने टेस्ट चेक इसमें नहीं गिने गए।',
-    'home.milestone.h': '{n}+ खुश ग्राहक!',
+    'home.milestone.h': '{n}+ लोगों की सेवा!',
     'home.milestone.sub': 'अपने वाहन के लिए GaadiPe पर भरोसा करने के लिए धन्यवाद। अपना वाहन भी देखें — बेसिक चेक मुफ़्त है।',
     'home.milestone.cta': 'अपना वाहन मुफ़्त चेक करें',
     'home.milestone.close': 'बंद करें',
-    'home.stats.customers': 'ग्राहकों की सेवा की',
+    'home.stats.customers': 'लोगों की सेवा की',
     'home.stats.vehicles': 'गाड़ियाँ चेक हुईं',
     'home.stats.checks': 'कुल वाहन चेक',
     'home.stats.records_fetched': 'सरकारी रिकॉर्ड निकाले गए',
