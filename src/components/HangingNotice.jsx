@@ -9,21 +9,22 @@ import { WHATSAPP_ENABLED } from '../lib/api';
  * the chat too. It swings in, then sways; ✕ folds it to a "📢" tag for 3 days, and a tap
  * on the tag hangs it again.
  */
-// A new key (2026-10-19), so visitors who folded the earlier notice see the new one.
-const KEY = 'gp.hang.folded.2';
+// A new key (2026-10-20), so visitors who folded the earlier notice see the new one.
+const KEY = 'gp.hang.folded.3';
 const DAYS = 3;
-// User, 2026-10-19: "tell that whatsapp number is disabled, till then bear the web based".
-// Takes itself down at the end of November; the WhatsApp-first build hides it sooner.
-const UNTIL = new Date('2026-11-30T23:59:59+05:30');
+// User, 2026-10-20: "lets currently support web based". Meta restricted the whole business
+// portfolio, so no WhatsApp date is promised: a calm note on where GaadiPe works now.
+// Takes itself down at the end of the year; the WhatsApp-first build hides it sooner.
+const UNTIL = new Date('2026-12-31T23:59:59+05:30');
 const TEXT = {
   en: {
-    title: 'WhatsApp paused · use the web',
-    body: 'Our WhatsApp number is disabled for now, and a new GaadiPe WhatsApp number is coming soon. Until then, please bear with us and use GaadiPe right here: check vehicles, buy and download reports, with alerts by browser notifications, email and SMS.',
+    title: 'GaadiPe works right here',
+    body: 'GaadiPe is not on WhatsApp for now. Everything works on this website: check vehicles, buy and download reports, and get alerts by browser notifications, email and SMS.',
     tag: 'Notice', fold: 'Fold the notice',
   },
   hi: {
-    title: 'WhatsApp बंद · वेब पर जारी',
-    body: 'हमारा WhatsApp नंबर अभी बंद है, और GaadiPe का नया WhatsApp नंबर जल्द आ रहा है। तब तक कृपया यहीं GaadiPe इस्तेमाल करें: गाड़ी जाँचें, रिपोर्ट खरीदें व डाउनलोड करें — अलर्ट ब्राउज़र नोटिफ़िकेशन, ईमेल और SMS से।',
+    title: 'GaadiPe यहीं चलता है',
+    body: 'GaadiPe अभी WhatsApp पर नहीं है। सब कुछ इसी वेबसाइट पर चलता है: गाड़ी जाँचें, रिपोर्ट खरीदें व डाउनलोड करें, और अलर्ट पाएँ ब्राउज़र नोटिफ़िकेशन, ईमेल और SMS से।',
     tag: 'सूचना', fold: 'सूचना बंद करें',
   },
 };
