@@ -9,19 +9,21 @@ import { WHATSAPP_ENABLED } from '../lib/api';
  * the chat too. It swings in, then sways; ✕ folds it to a "📢" tag for 3 days, and a tap
  * on the tag hangs it again.
  */
-const KEY = 'gp.hang.folded';
+// A new key (2026-10-19), so visitors who folded the earlier notice see the new one.
+const KEY = 'gp.hang.folded.2';
 const DAYS = 3;
-// Shown for a month (user, 2026-10-10: "give for month"), then it takes itself down.
-const UNTIL = new Date('2026-11-10T23:59:59+05:30');
+// User, 2026-10-19: "tell that whatsapp number is disabled, till then bear the web based".
+// Takes itself down at the end of November; the WhatsApp-first build hides it sooner.
+const UNTIL = new Date('2026-11-30T23:59:59+05:30');
 const TEXT = {
   en: {
-    title: 'GaadiPe is now on the web',
-    body: 'Our WhatsApp account was disabled, so GaadiPe now serves you right here — with alerts by browser notifications, email and SMS.',
+    title: 'WhatsApp paused · use the web',
+    body: 'Our WhatsApp number is disabled for now, and a new GaadiPe WhatsApp number is coming soon. Until then, please bear with us and use GaadiPe right here: check vehicles, buy and download reports, with alerts by browser notifications, email and SMS.',
     tag: 'Notice', fold: 'Fold the notice',
   },
   hi: {
-    title: 'GaadiPe अब वेब पर है',
-    body: 'हमारा WhatsApp अकाउंट बंद कर दिया गया, इसलिए GaadiPe अब यहीं आपकी सेवा करता है — अलर्ट ब्राउज़र नोटिफ़िकेशन, ईमेल और SMS से।',
+    title: 'WhatsApp बंद · वेब पर जारी',
+    body: 'हमारा WhatsApp नंबर अभी बंद है, और GaadiPe का नया WhatsApp नंबर जल्द आ रहा है। तब तक कृपया यहीं GaadiPe इस्तेमाल करें: गाड़ी जाँचें, रिपोर्ट खरीदें व डाउनलोड करें — अलर्ट ब्राउज़र नोटिफ़िकेशन, ईमेल और SMS से।',
     tag: 'सूचना', fold: 'सूचना बंद करें',
   },
 };
