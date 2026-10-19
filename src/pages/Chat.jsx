@@ -652,7 +652,7 @@ const markFreeUsed = () => { try { localStorage.setItem('gp.free.day', istDay())
 const rupee = (p) => (p == null ? '₹19' : `₹${Math.round(p / 100)}`);
 /* The prices as set in admin (2026-10-14: "is the renewal linked to the site?"), filled from
    /pricing when the chat opens; the texts that name them read these. */
-const PRICES = { full: '₹19', renew: '₹11', perDay: 6 };   // perDay: checks a day signed in (2026-10-15)
+const PRICES = { full: '₹19', renew: '₹15', perDay: 6 };   // perDay: checks a day signed in (2026-10-15)
 const cleanPlate = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 const looksLikePlate = (s) => /^[A-Z]{2}\d{1,2}[A-Z]{0,3}\d{3,4}$/.test(cleanPlate(s)) || /^\d{2}BH\d{4}[A-Z]{1,2}$/.test(cleanPlate(s));
 const prettyMobile = (m) => { const d = String(m || '').replace(/\D/g, '').slice(-10); return d.length === 10 ? `${d.slice(0, 5)} ${d.slice(5)}` : d; };
