@@ -150,6 +150,12 @@ const T = {
     // My subscriptions (user, 2026-10-10).
     subs: {
       menu: 'My subscriptions', title: '📋 My subscriptions',
+      // Renew and Replace in the main menu (user, 2026-10-20: "I don't see menu option for renewal & replace").
+      mRenew: 'Renew monitoring', mReplace: 'Replace vehicle',
+      pickRenew: 'Which vehicle do you want to renew? Tap *Renew* on it.',
+      pickReplace: 'Which vehicle\'s monitoring should move? Tap *Replace vehicle* on it.',
+      noRenew: 'Nothing to renew right now. Renew opens in the *last few days* of paid monitoring, and any time after it ends. Your vehicles and their end dates are in *My subscriptions*.',
+      noReplace: 'Replace vehicle works on *paid monitoring that is still running*. You have none right now — buy a full report for a vehicle, and its 28 days of monitoring can then be moved to another vehicle.',
       none: 'No monitoring yet. Buy a full report (₹19) — it includes 28 days of monitoring — or start the free 14 days on a vehicle you checked.',
       paid: '★ PAID · 28 days', free: '👁 FREE · 14 days', ended: 'ENDED',
       ends: (d, n) => `Monitoring ends *${d}*${n != null ? ` · ${n} day${n === 1 ? '' : 's'} left` : ''}`,
@@ -434,6 +440,11 @@ const T = {
     get howAnswer() { return `*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 2 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ${PRICES.full}* (ख़रीदी हुई गाड़ी का रिन्यू ${PRICES.renew}) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे। *हर ख़रीद पर उस महीने 5 गाड़ी जाँच और* मिलती हैं।\n\n🔢 *गाड़ी जाँच — जितना ख़रीदेंगे, उतना ज़्यादा जाँच सकेंगे*\n• साइन इन करके: *दिन में ${PRICES.perDay}* और *महीने में 30*\n• *हर रिपोर्ट ख़रीदने पर — ${PRICES.full}, या रिन्यू के लिए ${PRICES.renew} — उस महीने 5 जाँच और*\n• एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता\n• मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती\nअपनी बाकी जाँच देखने के लिए कभी भी *बाकी जाँच* दबाएँ।`; },
     subs: {
       menu: 'मेरी सदस्यता', title: '📋 मेरी सदस्यता',
+      mRenew: 'निगरानी रिन्यू करें', mReplace: 'गाड़ी बदलें',
+      pickRenew: 'किस गाड़ी की निगरानी रिन्यू करनी है? उस पर *रिन्यू* दबाएँ।',
+      pickReplace: 'किस गाड़ी की निगरानी दूसरी गाड़ी पर ले जानी है? उस पर *गाड़ी बदलें* दबाएँ।',
+      noRenew: 'अभी रिन्यू करने को कुछ नहीं है। पेड निगरानी के *आख़िरी कुछ दिनों* में और ख़त्म होने के बाद कभी भी रिन्यू कर सकते हैं। गाड़ियाँ और उनकी तारीख़ें *मेरी सदस्यता* में हैं।',
+      noReplace: 'गाड़ी बदलना *चल रही पेड निगरानी* पर होता है। अभी आपके पास ऐसी कोई नहीं है — किसी गाड़ी की पूरी रिपोर्ट ख़रीदें, फिर उसकी 28 दिन की निगरानी दूसरी गाड़ी पर ले जा सकते हैं।',
       none: 'अभी कोई निगरानी नहीं। पूरी रिपोर्ट ख़रीदें (₹19) — इसमें 28 दिन की निगरानी शामिल है — या जाँची हुई किसी गाड़ी पर 14 दिन मुफ़्त निगरानी शुरू करें।',
       paid: '★ पेड · 28 दिन', free: '👁 मुफ़्त · 14 दिन', ended: 'समाप्त',
       ends: (d, n) => `निगरानी *${d}* को समाप्त${n != null ? ` · ${n} दिन बाकी` : ''}`,
@@ -1505,6 +1516,34 @@ export default function Chat() {
       nextStep(['checksLeft', 'myVehicles']);
     } catch (e) { bot(`⚠️ ${e.message}`, { chips: ['another'] }); } finally { setBusy(false); }
   }
+  /* RENEW / REPLACE FROM THE MENU (user, 2026-10-20: "I don't see menu option for renewal &
+     replace"). Both lived only as buttons inside My subscriptions. From the menu: one vehicle
+     that can → straight to its payment (renew) or its replace card; several → My subscriptions
+     with only those vehicles; none → why not, and when it opens. The server decides who may
+     (site/subscriptions.js: renew_paise, replace.ok), so the menu never offers what it refuses. */
+  async function showRenewOrReplace(mode) {
+    setMenuOpen(false);
+    const S = L.subs;
+    journey({ step: 'reports', section: mode === 'renew' ? 'menu renew' : 'menu replace' });
+    push({ from: 'me', kind: 'text', text: mode === 'renew' ? S.mRenew : S.mReplace });
+    setBusy(true); typing();
+    try {
+      const out = await api.subscriptions();
+      if (out.checks) setQuota(out.checks);
+      const rows = (out.rows || []).filter((r) => (mode === 'renew' ? Boolean(r.renew_paise) : Boolean(r.replace?.ok)));
+      if (!rows.length) {
+        bot(mode === 'renew' ? S.noRenew : S.noReplace, { chips: ['mySubs', 'another'] });
+        return;
+      }
+      if (rows.length === 1) {
+        if (mode === 'renew') { fullReport(rows[0].reg_no, rows[0].renew_paise); return; }
+        push({ from: 'bot', kind: 'replace', fromReg: rows[0].reg_no });
+        return;
+      }
+      bot(mode === 'renew' ? S.pickRenew : S.pickReplace);
+      push({ from: 'bot', kind: 'subs', rows, checks: out.checks || null });
+    } catch (e) { bot(`⚠️ ${e.message}`, { chips: ['another'] }); } finally { setBusy(false); }
+  }
   /* "How many checks do I have left?" — a button, a menu option and the count above
      the typing box all answer it here (user, 2026-10-10). */
   async function showChecksLeft({ fromMenu = false } = {}) {
@@ -1810,6 +1849,8 @@ export default function Chat() {
           ['✉️', L.mEmail, startEmail, 'email'],
           ['🚗', L.mHistory, () => { setMenuOpen(false); showList('vehicles'); }, 'vehicles'],
           ['📋', L.subs.menu, () => showSubscriptions({ fromMenu: true }), 'subs'],
+          ['🔄', L.subs.mRenew, () => showRenewOrReplace('renew'), 'renew'],
+          ['🔁', L.subs.mReplace, () => showRenewOrReplace('replace'), 'replace'],
           ['🔢', L.left.menu, () => showChecksLeft({ fromMenu: true }), 'checks'],
           ['📄', L.myReports, () => { setMenuOpen(false); showList('reports'); }, 'reports'],
           ['🧾', L.invoices, () => { setMenuOpen(false); showList('invoices'); }, 'invoices'],
