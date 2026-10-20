@@ -1532,7 +1532,11 @@ export default function Chat() {
       if (out.checks) setQuota(out.checks);
       const rows = (out.rows || []).filter((r) => (mode === 'renew' ? Boolean(r.renew_paise) : Boolean(r.replace?.ok)));
       if (!rows.length) {
-        bot(mode === 'renew' ? S.noRenew : S.noReplace, { chips: ['mySubs', 'another'] });
+        // Paid and running, but refused (bought more than replace_window_days ago, or replaced
+        // once already): the server's reason, not "you have none" (2026-10-20).
+        const refused = mode === 'replace' ? (out.rows || []).filter((r) => r.replace && !r.replace.ok && r.replace.message) : [];
+        const why = refused.map((r) => `• ${r.replace.message}`).join('\n');
+        bot(mode === 'renew' ? S.noRenew : why || S.noReplace, { chips: ['mySubs', 'another'] });
         return;
       }
       if (rows.length === 1) {
