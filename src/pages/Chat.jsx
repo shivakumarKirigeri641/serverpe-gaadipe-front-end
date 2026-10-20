@@ -332,8 +332,11 @@ const T = {
     helpBody: 'Write to *support@gaadipe.in* — we reply within a day. Tell us your mobile number and the vehicle number, if it is about one.',
     // Name and email (2026-10-07): highly recommended while WhatsApp is disabled.
     // After sign-in, while the email is not confirmed — with the reason (user, 2026-10-10).
-    emailNudge: '📧 *Please add and confirm your email.*\n\nThat is where we send:\n🔔 *alerts* about your vehicles — a new challan, insurance or PUC about to expire\n📄 your *full reports*\n🧾 your *GST invoices*\n\nIt takes a minute: a *4-digit code* by email.',
-    emailNudgeHave: (e) => `📧 *Please confirm your email* — *${e}*.\n\nThat is where we send:\n🔔 *alerts* about your vehicles — a new challan, insurance or PUC about to expire\n📄 your *full reports*\n🧾 your *GST invoices*\n\nTap below and type the *4-digit code* we email you.`,
+    emailNudge: '📧 *Please add and confirm your email.*\n\nThat is where we send:\n🚦 the *full challan details* — offence, place and amount\n🔔 *alerts* about your vehicles — a new challan, insurance or PUC about to expire\n📄 your *full reports*\n🧾 your *GST invoices*\n\nIt takes a minute: a *4-digit code* by email.',
+    // Right after a purchase, with no confirmed email (user, 2026-10-20: "ask user to confirm mail
+    // as mail will contain full details about the challan").
+    emailPaid: (r, e) => `📧 *Confirm your email to get the full challan details for ${r}.*\n\nYour email gets every pending challan *in full* — the offence, the place and the amount — plus alerts before insurance or PUC runs out, and your GST invoice.\n\n${e ? `Tap below and type the *4-digit code* we email to *${e}*.` : 'Tap below, type your email, then the *4-digit code* we send.'}`,
+    emailNudgeHave: (e) => `📧 *Please confirm your email* — *${e}*.\n\nThat is where we send:\n🚦 the *full challan details* — offence, place and amount\n🔔 *alerts* about your vehicles — a new challan, insurance or PUC about to expire\n📄 your *full reports*\n🧾 your *GST invoices*\n\nTap below and type the *4-digit code* we email you.`,
     verifyEmail: 'Confirm my email', addEmailOnly: 'Add my email', resendCode: 'Send the code again',
     elsewhere: 'You signed in on another device, so you were signed out here. Sign in again to use GaadiPe on this one.',
     // "Install the app" (2026-10-10).
@@ -619,8 +622,9 @@ const T = {
     notifyOffNow: 'इस फ़ोन पर नोटिफ़िकेशन बंद हैं।', turnOff: 'बंद करें', notifyIsOn: '🔔 इस फ़ोन पर नोटिफ़िकेशन *पहले से चालू हैं* — आपकी गाड़ियों की जानकारी हम यहीं देंगे।',
     helpH: '❓ मदद और सहायता',
     helpBody: '*support@gaadipe.in* पर लिखें — हम एक दिन में जवाब देते हैं। अपना मोबाइल नंबर और (अगर हो) गाड़ी नंबर ज़रूर लिखें।',
-    emailNudge: '📧 *कृपया अपना ईमेल जोड़ें और कन्फ़र्म करें।*\n\nवहीं हम भेजते हैं:\n🔔 आपकी गाड़ियों के *अलर्ट* — नया चालान, बीमा या PUC खत्म होने वाला हो\n📄 आपकी *पूरी रिपोर्ट*\n🧾 आपके *GST बिल*\n\nबस एक मिनट: ईमेल पर *4 अंकों का कोड*।',
-    emailNudgeHave: (e) => `📧 *कृपया अपना ईमेल कन्फ़र्म करें* — *${e}*।\n\nवहीं हम भेजते हैं:\n🔔 आपकी गाड़ियों के *अलर्ट* — नया चालान, बीमा या PUC खत्म होने वाला हो\n📄 आपकी *पूरी रिपोर्ट*\n🧾 आपके *GST बिल*\n\nनीचे दबाएँ और ईमेल पर आया *4 अंकों का कोड* लिखें।`,
+    emailNudge: '📧 *कृपया अपना ईमेल जोड़ें और कन्फ़र्म करें।*\n\nवहीं हम भेजते हैं:\n🚦 *चालान की पूरी जानकारी* — अपराध, जगह और राशि\n🔔 आपकी गाड़ियों के *अलर्ट* — नया चालान, बीमा या PUC खत्म होने वाला हो\n📄 आपकी *पूरी रिपोर्ट*\n🧾 आपके *GST बिल*\n\nबस एक मिनट: ईमेल पर *4 अंकों का कोड*।',
+    emailPaid: (r, e) => `📧 *${r} के चालान की पूरी जानकारी पाने के लिए अपना ईमेल कन्फ़र्म करें।*\n\nईमेल पर हर बाकी चालान *पूरा* आता है — अपराध, जगह और राशि — साथ में बीमा या PUC खत्म होने से पहले अलर्ट, और आपका GST बिल।\n\n${e ? `नीचे दबाएँ और *${e}* पर आया *4 अंकों का कोड* लिखें।` : 'नीचे दबाएँ, अपना ईमेल लिखें, फिर हमारा भेजा *4 अंकों का कोड*।'}`,
+    emailNudgeHave: (e) => `📧 *कृपया अपना ईमेल कन्फ़र्म करें* — *${e}*।\n\nवहीं हम भेजते हैं:\n🚦 *चालान की पूरी जानकारी* — अपराध, जगह और राशि\n🔔 आपकी गाड़ियों के *अलर्ट* — नया चालान, बीमा या PUC खत्म होने वाला हो\n📄 आपकी *पूरी रिपोर्ट*\n🧾 आपके *GST बिल*\n\nनीचे दबाएँ और ईमेल पर आया *4 अंकों का कोड* लिखें।`,
     verifyEmail: 'मेरा ईमेल कन्फ़र्म करें', addEmailOnly: 'मेरा ईमेल जोड़ें', resendCode: 'कोड फिर से भेजें',
     elsewhere: 'आपने किसी दूसरे डिवाइस पर साइन इन किया, इसलिए यहाँ से साइन आउट हो गए। इस डिवाइस पर GaadiPe इस्तेमाल करने के लिए फिर से साइन इन करें।',
     inst: {
@@ -982,7 +986,8 @@ export default function Chat() {
     if (me) {
       setItems(loadFor(me.id)); loadedFor.current = me.id; welcome();
       // No confirmed email yet: the recommendation again, once a day.
-      if (!me.email_verified && nudgeDue(me.id)) { setTimeout(emailNudge, 900); markNudged(me.id); }
+      // Not when back from paying: that visit asks with the purchase's own words, below.
+      if (!me.email_verified && !params.get('paid') && nudgeDue(me.id)) { setTimeout(emailNudge, 900); markNudged(me.id); }
     }
     // A number brought from the home page (?reg=) is checked at once, then dropped from the address.
     const reg = cleanPlate(params.get('reg'));
@@ -1054,6 +1059,8 @@ export default function Chat() {
       const rest = new URLSearchParams(params); rest.delete('reg'); rest.delete('paid'); rest.delete('from'); setParams(rest, { replace: true });
       if (paid && me) {
         setTimeout(() => { journey({ step: 'paid', section: `full report · ${paid}` }); bot(L.paidThanks(prettyPlate(paid))); openVehicle(paid, { afterPayment: true }); }, 600);
+        // No confirmed email: the full challan details go there — asked every purchase (2026-10-20).
+        if (!me.email_verified) { setTimeout(() => emailNudge(me, { paid }), 3200); markNudged(me.id); }
         // How useful was the report? Asked once per vehicle (2026-10-10).
         const key = `gp.rated.${paid}`;
         let asked = false; try { asked = Boolean(localStorage.getItem(key)); localStorage.setItem(key, '1'); } catch { /* private mode */ }
@@ -1304,9 +1311,11 @@ export default function Chat() {
 
   /* Not confirmed yet: why it matters, and one tap — the code is emailed at once if the
      address is already on file (user, 2026-10-10). `u` is the account just signed in. */
-  function emailNudge(u = me) {
+  function emailNudge(u = me, { paid = null } = {}) {
     const e = u?.email || '';
-    push({ from: 'bot', kind: 'text', text: e ? L.emailNudgeHave(e) : L.emailNudge, chips: ['verifyEmail', 'later'] });
+    // Right after a purchase: the full challan details go by email (user, 2026-10-20).
+    const text = paid ? L.emailPaid(prettyPlate(paid), e) : e ? L.emailNudgeHave(e) : L.emailNudge;
+    push({ from: 'bot', kind: 'text', text, chips: ['verifyEmail', 'later'] });
   }
   /* Signed in already and still no confirmed email: reminded once a day on this device, not every visit. */
   const NUDGE = (id) => `gp.emailNudge.${id}`;
