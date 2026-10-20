@@ -184,6 +184,18 @@ const T = {
         fee: (p, b) => `Fee ${p}, GST included${b ? ` (${b})` : ''} — once for this purchase.`,
         agree: 'I agree to the Terms of use, Refund policy and Privacy policy',
         pay: (p) => `Pay ${p}`, paying: 'Opening payment…', other: 'Change number',
+        // The rules, before the number is typed and again before paying (user, 2026-10-20:
+        // "you need to mention rules points before replace checkout"). Terms 'Replace Vehicle',
+        // Refund policy 'Replace Vehicle Fee', pay/replace.js eligible().
+        rulesH: 'Before you replace',
+        r1: 'Works only on paid monitoring that is still running.',
+        r2: (d) => (d ? `Open till *${d}* — replacing is allowed in the first days after buying the report or renewal.` : 'Allowed in the first days after buying the report or renewal.'),
+        r3: 'Once per purchase. To replace again, the next report or renewal is needed.',
+        r4: 'The end date stays the same — no days are added.',
+        r5: 'The new vehicle\'s full report is not included.',
+        r6: 'Check the number carefully: the fee is not refunded once the vehicle is replaced, even for a wrong number.',
+        once: 'This uses your one replace for this purchase.',
+        noRefund: 'Not refundable once replaced, even for a wrong number.',
       },
     },
     attention: (n) => (n ? `⚠️ *${n} thing${n === 1 ? '' : 's'} need attention*` : '✅ *Nothing needs attention*'),
@@ -471,6 +483,15 @@ const T = {
         fee: (p, b) => `शुल्क ${p}, GST सहित${b ? ` (${b})` : ''} — इस ख़रीद पर एक बार।`,
         agree: 'मैं उपयोग की शर्तें, रिफ़ंड नीति और गोपनीयता नीति से सहमत हूँ',
         pay: (p) => `${p} दें`, paying: 'भुगतान खुल रहा है…', other: 'नंबर बदलें',
+        rulesH: 'बदलने से पहले',
+        r1: 'सिर्फ़ चल रही पेड निगरानी पर होता है।',
+        r2: (d) => (d ? `*${d}* तक खुला है — रिपोर्ट या रिन्यू ख़रीदने के बाद के शुरुआती दिनों में ही बदल सकते हैं।` : 'रिपोर्ट या रिन्यू ख़रीदने के बाद के शुरुआती दिनों में ही बदल सकते हैं।'),
+        r3: 'हर ख़रीद पर एक बार। दोबारा बदलने के लिए अगली रिपोर्ट या रिन्यू चाहिए।',
+        r4: 'आख़िरी तारीख़ वही रहेगी — दिन नहीं जुड़ेंगे।',
+        r5: 'नई गाड़ी की पूरी रिपोर्ट शामिल नहीं है।',
+        r6: 'नंबर ध्यान से जाँचें: गाड़ी बदलने के बाद शुल्क वापस नहीं होगा, ग़लत नंबर पर भी नहीं।',
+        once: 'इससे इस ख़रीद का आपका एक बदलाव इस्तेमाल होगा।',
+        noRefund: 'बदलने के बाद वापस नहीं होगा, ग़लत नंबर पर भी नहीं।',
       },
     },
     attention: (n) => (n ? `⚠️ *${n} चीज़ों पर ध्यान चाहिए*` : '✅ *कुछ भी बाकी नहीं*'),
@@ -1541,7 +1562,7 @@ export default function Chat() {
       }
       if (rows.length === 1) {
         if (mode === 'renew') { fullReport(rows[0].reg_no, rows[0].renew_paise); return; }
-        push({ from: 'bot', kind: 'replace', fromReg: rows[0].reg_no });
+        push({ from: 'bot', kind: 'replace', fromReg: rows[0].reg_no, until: rows[0].replace?.until || null });
         return;
       }
       bot(mode === 'renew' ? S.pickRenew : S.pickReplace);
@@ -1766,9 +1787,9 @@ export default function Chat() {
             if (it.kind === 'subs') {
               return <SubsCard key={it.id} rows={it.rows} checks={it.checks} L={L} onRenew={(reg, price) => fullReport(reg, price)}
                 onResume={(reg) => api.resumeAlerts(reg).then((r) => r?.ok).catch(() => false)}
-                onReplace={(reg) => push({ from: 'bot', kind: 'replace', fromReg: reg })} />;
+                onReplace={(reg, until) => push({ from: 'bot', kind: 'replace', fromReg: reg, until: until || null })} />;
             }
-            if (it.kind === 'replace') return <ReplaceCard key={it.id} from={it.fromReg} L={L} />;
+            if (it.kind === 'replace') return <ReplaceCard key={it.id} from={it.fromReg} until={it.until} L={L} />;
             if (it.kind === 'reports' || it.kind === 'invoices') {
               return <DocsList key={it.id} kind={it.kind} rows={it.rows} L={L} onDownload={(row) => download(it.kind === 'invoices' ? 'invoice' : 'report', row)} />;
             }
@@ -2568,8 +2589,9 @@ const paise = (p) => `₹${(Number(p || 0) / 100).toFixed(Number(p || 0) % 100 ?
  * REPLACE VEHICLE (user, 2026-10-13; server pay/replace.js): the new number, looked
  * up and shown, then the terms tick and Pay — the checkout, as for a report.
  */
-function ReplaceCard({ from, L }) {
+function ReplaceCard({ from, until = null, L }) {
   const R = L.subs.rp;
+  const openTill = until ? new Date(until).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' }) : null;
   const [to, setTo] = useState('');
   const [quote, setQuote] = useState(null);
   const [agree, setAgree] = useState(false);
@@ -2597,6 +2619,14 @@ function ReplaceCard({ from, L }) {
         <div className="px-3.5 py-3 text-[13px] text-[#0b2e2b]">
           {!quote ? (
             <form onSubmit={check}>
+              {/* The rules first, before a check is spent on the new number (2026-10-20). */}
+              <div className="mb-2.5 rounded-xl bg-[#fff8db] px-3 py-2 text-[12.5px] leading-snug" data-test="replace-rules">
+                <div className="mb-1 font-black">📌 {R.rulesH}</div>
+                <ul className="space-y-0.5">
+                  {[R.r1, R.r2(openTill), R.r3, R.r4, R.r5].map((t) => <li key={t}>• <Text text={t} /></li>)}
+                  <li className="font-bold text-[#7a1a12]">• {R.r6}</li>
+                </ul>
+              </div>
               <p className="leading-snug">{R.ask}</p>
               <div className="mt-2 flex gap-2">
                 <input className="min-w-0 flex-1 rounded-xl border-2 border-black/15 px-3 py-2 font-mono text-[14px] uppercase tracking-[1.5px] outline-none focus:border-[#0f766e]"
@@ -2617,6 +2647,8 @@ function ReplaceCard({ from, L }) {
                 <li>🔔 {R.l1(prettyPlate(quote.to.reg_no), ends)}</li>
                 <li>🔕 {R.l2(prettyPlate(quote.from))}</li>
                 <li>📄 {R.l3(prettyPlate(quote.to.reg_no))}</li>
+                <li>🔒 {R.once}</li>
+                <li className="font-bold text-[#7a1a12]">⚠️ {R.noRefund}</li>
               </ul>
               {/* With what it is made of, at 18% GST (2026-10-14): ₹11 = ₹9.32 + ₹1.68 GST. */}
               <div className="mt-2 font-black">{R.fee(paise(quote.price_paise), (() => {
@@ -2693,7 +2725,7 @@ function SubsCard({ rows, checks, L, onRenew, onResume, onReplace }) {
               ) : null}
               {/* Replace vehicle (2026-10-13): while the server says it may be done. */}
               {s.replace?.ok && onReplace ? (
-                <button type="button" data-test={`sub-replace-${s.reg_no}`} onClick={() => onReplace(s.reg_no)}
+                <button type="button" data-test={`sub-replace-${s.reg_no}`} onClick={() => onReplace(s.reg_no, s.replace?.until)}
                   className="mt-2 w-full rounded-xl border-2 border-[#0a4f49] py-1.5 text-[13px] font-black text-[#0a4f49] active:bg-[#e3f2ef]">
                   {S.replace(paise(s.replace.price_paise))}
                 </button>
