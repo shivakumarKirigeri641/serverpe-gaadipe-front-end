@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLang } from '../lib/i18n.jsx';
-import { WHATSAPP_ENABLED } from '../lib/api';
+import { WHATSAPP_ENABLED, WHATSAPP, waLink } from '../lib/api';
 
 /*
  * THE HANGING NOTICE (user, 2026-10-10: "a hanging label saying GaadiPe is now serving on
@@ -9,13 +9,33 @@ import { WHATSAPP_ENABLED } from '../lib/api';
  * the chat too. It swings in, then sways; ✕ folds it to a "📢" tag for 3 days, and a tap
  * on the tag hangs it again.
  */
-// A new key (2026-10-20), so visitors who folded the earlier notice see the new one.
-const KEY = 'gp.hang.folded.3';
+// A new key per notice, so visitors who folded the earlier one see the new one.
+const KEY = WHATSAPP_ENABLED ? 'gp.hang.folded.newnumber' : 'gp.hang.folded.3';
 const DAYS = 3;
-// User, 2026-10-20: "lets currently support web based". Meta restricted the whole business
-// portfolio, so no WhatsApp date is promised: a calm note on where GaadiPe works now.
-// Takes itself down at the end of the year; the WhatsApp-first build hides it sooner.
+// Takes itself down at the end of the year.
 const UNTIL = new Date('2026-12-31T23:59:59+05:30');
+// "+91 73531 22415" from the build's number (VITE_WHATSAPP).
+const W = String(WHATSAPP);
+const NEW_NO = `+${W.slice(0, 2)} ${W.slice(2, 7)} ${W.slice(7)}`;
+const OLD_NO = '+91 97396 22631';
+/* THE NEW NUMBER (user, 2026-10-20: "back to WhatsApp based now — tell to delete the old number and
+   say Hi to the new number"). On the WhatsApp-first build: the new number, the old one to delete,
+   and a "Say Hi" button that opens the new chat. */
+const NEW_TEXT = {
+  en: {
+    title: 'New WhatsApp number',
+    body: `GaadiPe has a new WhatsApp number: ${NEW_NO}. Please delete the old number (${OLD_NO}) from your contacts, save the new one, and say Hi to continue — your vehicles, reports and alerts are all still here.`,
+    cta: 'Say Hi on WhatsApp',
+    tag: 'New number', fold: 'Fold the notice',
+  },
+  hi: {
+    title: 'नया WhatsApp नंबर',
+    body: `GaadiPe का नया WhatsApp नंबर: ${NEW_NO}। कृपया पुराना नंबर (${OLD_NO}) अपने कॉन्टैक्ट से हटाएँ, नया नंबर सेव करें और जारी रखने के लिए Hi भेजें — आपकी गाड़ियाँ, रिपोर्ट और अलर्ट सब यहीं हैं।`,
+    cta: 'WhatsApp पर Hi भेजें',
+    tag: 'नया नंबर', fold: 'सूचना बंद करें',
+  },
+};
+// User, 2026-10-20: "lets currently support web based" — the web-first build's note.
 const TEXT = {
   en: {
     title: 'GaadiPe works right here',
@@ -56,13 +76,13 @@ const foldedNow = () => {
 
 export default function HangingNotice() {
   const { lang } = useLang();
-  const t = TEXT[lang === 'hi' ? 'hi' : 'en'];
+  // WhatsApp-first build: the new number; web-first build: where GaadiPe works now.
+  const t = (WHATSAPP_ENABLED ? NEW_TEXT : TEXT)[lang === 'hi' ? 'hi' : 'en'];
   const [folded, setFolded] = useState(foldedNow);
   const nailY = useNailY(58);
   const fold = () => { try { localStorage.setItem(KEY, String(Date.now())); } catch { /* private mode */ } setFolded(true); };
   const unfold = () => { try { localStorage.removeItem(KEY); } catch { /* private mode */ } setFolded(false); };
-  // Not on the WhatsApp-first build (user, 2026-10-12: "revert back to WhatsApp based logics").
-  if (WHATSAPP_ENABLED || Date.now() > UNTIL.getTime()) return null;
+  if (Date.now() > UNTIL.getTime()) return null;
   return (
     <div className="pointer-events-none fixed right-3 z-40" style={{ top: `${nailY}px` }} data-test="hanging-notice">
       <div className={`hang-sign pointer-events-auto relative pt-4 ${folded ? 'hang-sway' : 'hang-swing'}`} key={folded ? 'tag' : 'sign'}>
@@ -83,6 +103,12 @@ export default function HangingNotice() {
                 className="-mr-1 ml-auto shrink-0 rounded-full px-1.5 text-[15px] font-black leading-none text-[#0a4f49]/70 hover:text-[#0a4f49]">✕</button>
             </div>
             <p className="mt-1 text-[12.5px] font-semibold leading-snug">{t.body}</p>
+            {t.cta && (
+              <a href={waLink('Hi')} target="_blank" rel="noopener noreferrer" data-test="hanging-wa"
+                className="mt-2 inline-block rounded-full bg-[#0a4f49] px-3 py-1.5 text-[12px] font-black text-white">
+                💬 {t.cta}
+              </a>
+            )}
           </div>
         )}
       </div>

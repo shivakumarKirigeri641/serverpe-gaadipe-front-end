@@ -17,7 +17,7 @@ const SITE = `${BASE}/site/api`;
 const PUBLIC = `${BASE}/serverpe/platform/gaadipe/v1/public/users`;
 const KEY = 'gaadipe.site.token';
 
-export const WHATSAPP = import.meta.env.VITE_WHATSAPP || '919739622631';
+export const WHATSAPP = import.meta.env.VITE_WHATSAPP || '917353122415';   // new number, 2026-10-20
 
 /**
  * Is WhatsApp offered as a way in?
