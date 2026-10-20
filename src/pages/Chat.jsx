@@ -196,6 +196,13 @@ const T = {
         r6: 'Check the number carefully: the fee is not refunded once the vehicle is replaced, even for a wrong number.',
         once: 'This uses your one replace for this purchase.',
         noRefund: 'Not refundable once replaced, even for a wrong number.',
+        // Why Replace is not offered on a paid vehicle (user, 2026-10-20: "if replace not possible, mention the reason").
+        noH: 'Replace vehicle not available',
+        no: {
+          late: 'Replacing is allowed only in the first days after buying the report or renewal, and that time has passed. It opens again when you renew.',
+          used: 'This purchase has already been used to replace a vehicle once. It opens again when you renew.',
+          off: 'Replacing a vehicle is not available right now.',
+        },
       },
     },
     attention: (n) => (n ? `⚠️ *${n} thing${n === 1 ? '' : 's'} need attention*` : '✅ *Nothing needs attention*'),
@@ -492,6 +499,12 @@ const T = {
         r6: 'नंबर ध्यान से जाँचें: गाड़ी बदलने के बाद शुल्क वापस नहीं होगा, ग़लत नंबर पर भी नहीं।',
         once: 'इससे इस ख़रीद का आपका एक बदलाव इस्तेमाल होगा।',
         noRefund: 'बदलने के बाद वापस नहीं होगा, ग़लत नंबर पर भी नहीं।',
+        noH: 'गाड़ी बदलना अभी उपलब्ध नहीं',
+        no: {
+          late: 'गाड़ी सिर्फ़ रिपोर्ट या रिन्यू ख़रीदने के बाद के शुरुआती दिनों में बदल सकते हैं, और वह समय निकल गया है। रिन्यू करने पर यह फिर से खुलेगा।',
+          used: 'इस ख़रीद पर गाड़ी एक बार बदली जा चुकी है। रिन्यू करने पर यह फिर से खुलेगा।',
+          off: 'गाड़ी बदलना अभी उपलब्ध नहीं है।',
+        },
       },
     },
     attention: (n) => (n ? `⚠️ *${n} चीज़ों पर ध्यान चाहिए*` : '✅ *कुछ भी बाकी नहीं*'),
@@ -1555,9 +1568,9 @@ export default function Chat() {
       if (!rows.length) {
         // Paid and running, but refused (bought more than replace_window_days ago, or replaced
         // once already): the server's reason, not "you have none" (2026-10-20).
-        const refused = mode === 'replace' ? (out.rows || []).filter((r) => r.replace && !r.replace.ok && r.replace.message) : [];
-        const why = refused.map((r) => `• ${r.replace.message}`).join('\n');
-        bot(mode === 'renew' ? S.noRenew : why || S.noReplace, { chips: ['mySubs', 'another'] });
+        const refused = mode === 'replace' ? (out.rows || []).filter((r) => r.replace && !r.replace.ok && r.replace.reason !== 'not_paid') : [];
+        const why = refused.map((r) => `• *${prettyPlate(r.reg_no)}*: ${S.rp.no[r.replace.reason] || r.replace.message || S.rp.no.off}`).join('\n');
+        bot(mode === 'renew' ? S.noRenew : why ? `🔁 *${S.rp.noH}*\n\n${why}` : S.noReplace, { chips: ['mySubs', 'another'] });
         return;
       }
       if (rows.length === 1) {
@@ -2729,6 +2742,12 @@ function SubsCard({ rows, checks, L, onRenew, onResume, onReplace }) {
                   className="mt-2 w-full rounded-xl border-2 border-[#0a4f49] py-1.5 text-[13px] font-black text-[#0a4f49] active:bg-[#e3f2ef]">
                   {S.replace(paise(s.replace.price_paise))}
                 </button>
+              ) : s.replace && !s.replace.ok && s.replace.reason !== 'not_paid' ? (
+                /* Paid and running but refused: say why, and when it opens again (2026-10-20). */
+                <div className="mt-2 rounded-xl bg-black/[.04] px-3 py-2 text-[12px] leading-snug text-[#3d524f]" data-test={`sub-replace-no-${s.reg_no}`}>
+                  <div className="font-bold">🔁 {S.rp.noH}</div>
+                  <div>{S.rp.no[s.replace.reason] || s.replace.message || S.rp.no.off}</div>
+                </div>
               ) : null}
             </div>
           ))}
