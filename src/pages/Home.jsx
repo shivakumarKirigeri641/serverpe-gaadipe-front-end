@@ -55,6 +55,9 @@ export default function Home() {
   const price = pricing ? rupees(pricing.price_paise) : '₹19';
   // The renewal price as set in admin (2026-10-14), not typed into the text.
   const renew = pricing?.renewal_paise ? rupees(pricing.renewal_paise) : '₹15';
+  // Replace vehicle (2026-10-20): its price and window from /pricing; hidden until they arrive.
+  const replacePrice = pricing?.replace_paise ? rupees(pricing.replace_paise) : null;
+  const replaceDays = pricing?.replace_window_days ?? 7;
   const days = pricing?.duration_days ?? 28;
   const validDays = pricing?.report_valid_days ?? 7;
   // WhatsApp on: every check door on this page opens the WhatsApp chat with "Hi" (2026-10-12).
@@ -291,6 +294,26 @@ export default function Home() {
               <a className="btn-quiet mt-2 w-full" href={waLink('Hi')}>WhatsApp</a>
             )}
             <p className="mt-3 text-2xs text-muted">{t('home.price.final')}</p>
+            {/* RENEW AND REPLACE (user, 2026-10-20: "update marketing site that we give renewal &
+                replace"): what a buyer can do later, at the prices set in admin. */}
+            <div className="mt-4 border-t border-line pt-4" data-test="price-after">
+              <div className="text-2xs font-semibold uppercase tracking-wider text-muted">{t('home.price.after')}</div>
+              <div className="mt-2 space-y-2.5 text-sm">
+                <div className="flex gap-2.5">
+                  <span aria-hidden="true">🔄</span>
+                  <div><b className="text-ink">{t('home.price.renew.t')} · {renew}</b>
+                    <div className="text-2xs text-muted">{t('home.price.renew.b', { renew, days })}</div></div>
+                </div>
+                {replacePrice && (
+                  <div className="flex gap-2.5">
+                    <span aria-hidden="true">🔁</span>
+                    <div><b className="text-ink">{t('home.price.replace.t')} · {replacePrice}</b>
+                      <div className="text-2xs text-muted">{t('home.price.replace.b', { replace: replacePrice,
+                        window: replaceDays > 0 ? t('home.price.replace.window', { n: replaceDays }) : t('home.price.replace.any') })}</div></div>
+                  </div>
+                )}
+              </div>
+            </div>
           </Reveal>
         </div>
       </section>
