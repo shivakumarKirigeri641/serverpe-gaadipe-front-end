@@ -40,7 +40,7 @@ const T = {
     /* ONE FREE LOOK FIRST (user, 2026-10-08: visitors came to type a vehicle
        number and left when asked for their phone). The first check needs no
        sign-in and shows make and model; the rest, and a second check, after it. */
-    hello: 'Namaste! 🙏 Welcome to *GaadiPe* — the complete record of any vehicle registered in India.\n\nInsurance, PUC, road tax and fitness validity, pending challans, loan (hypothecation), blacklist status and number of owners — from Government VAHAN and e-Challan records, with a downloadable PDF report.\n\n*Type a vehicle number to start* — like *KA01AB1234*. Your first check is free, no sign-in needed.',
+    hello: 'Namaste! 🙏 Welcome to *GaadiPe* — the complete record of any vehicle registered in India.\n\nInsurance, PUC, road tax and fitness validity, pending challans, loan (hypothecation), blacklist status and number of owners — from vehicle registration and e-challan records, with a downloadable PDF report.\n\n*Type a vehicle number to start* — like *KA01AB1234*. Your first check is free, no sign-in needed.',
     // When every check needs a sign-in (check_sign_in_required, 2026-10-08).
     // Sign in first, then the vehicle (user, 2026-10-08: asking for a number and
     // then for a mobile "may be a bit weird") — the greeting asks for the mobile.
@@ -52,23 +52,23 @@ const T = {
        fully described — then 'start checking vehicles by signing in'; then it is
        up to the user"). No vehicle details at all without signing in. */
     // The short opening (user, 2026-10-08: 110+ visitors, most gone in 10 seconds) — the full text is one tap away.
-    helloShort: 'Namaste! 🙏 *GaadiPe* shows any Indian vehicle’s insurance, PUC, challans, loan and owners — from Government records.\n'
+    helloShort: 'Namaste! 🙏 *GaadiPe* shows any Indian vehicle’s insurance, PUC, challans, loan and owners — in seconds.\n'
       + 'Free check after sign-in · full report *₹19* with PDF.\n'
       + '*Sign in with your mobile to start* 👇',
     // The free check before sign-in (2026-10-08, migration 142).
     // The opening for a first-time visitor (user, 2026-10-10): just "type a number" — no buttons, no sign-in.
-    helloFree: 'Namaste! 🙏 I’m *GaadiPe* — I read any Indian vehicle’s record from Government data.\n'
+    helloFree: 'Namaste! 🙏 I’m *GaadiPe* — I read any Indian vehicle’s record in seconds.\n'
       + '*Type a vehicle number below* 👇 — like *KA01AB1234* — and I’ll show you the vehicle, *free*.',
     free: {
       // GaadiPe talking (user, 2026-10-08: "make the conversation look like GaadiPe replying, attractive").
       ask: (r) => `Great — let’s look up *${r}* 🔎\nOne quick thing before I do:`,
-      foundIntro: (r) => `Here you go! ✨ This is what Government records say about *${r}*:`,
+      foundIntro: (r) => `Here you go! ✨ This is what the vehicle records say about *${r}*:`,
       nudge: '💡 Buying this vehicle? The ₹19 report shows if there’s a *loan*, *pending challans*, *expired insurance or PUC* and *how many owners* — before you pay the seller.',
       consentH: (r) => `Check ${r}`,
       consent: 'By continuing you agree to GaadiPe’s Terms of use, Privacy policy and Refund policy, and confirm you are checking this vehicle for a lawful purpose (for example buying it, or it is your own). Your device and network details are recorded with this check.',
       agree: '✅ Agree & check',
       links: ['Terms of use', 'Privacy policy', 'Refund policy'],
-      found: '✅ Found in Government records',
+      found: '✅ Found in vehicle records',
       hidden: 'Model variant hidden — sign in free to see the full model and variant.',
       inReport: '*Full report ₹19:* loan, blacklist & NOC, every challan with amount, number of owners, a clear verdict, PDF + 28 days of alerts.',
       buy: (p) => `🔓 Get full report — ${p}`,
@@ -86,9 +86,9 @@ const T = {
     },
     sample: { chip: '📄 See a sample report', more: '📋 Full details', intro: 'Here is what a full report looks like — on a *made-up vehicle*, so nothing real is shown 👇',
       badge: 'SAMPLE', ribbon: 'SAMPLE — made-up vehicle, not real data', cta: '🔐 Sign in to check your vehicle' },
-    helloSignIn: 'Namaste! 🙏 Welcome to *GaadiPe* — the complete record of any vehicle registered in India, from the Government’s VAHAN and e-Challan records.\n\n'
+    helloSignIn: 'Namaste! 🙏 Welcome to *GaadiPe* — the complete record of any vehicle registered in India, from vehicle registration and e-challan records.\n\n'
       + '*Free check* — after you sign in\n• Make, model and variant\n• Fuel and vehicle type\n• How many things need attention — expired or expiring documents and pending challans\n\n'
-      + '*Full report — ₹19* · PDF with a GST invoice\n• Insurance (insurer and policy), PUC and road tax — and fitness and permit for commercial vehicles — each with its valid-until date\n• Every pending challan, with offence, place and amount\n• Loan / hypothecation, blacklist and NOC status\n• Number of owners, registration date and RTO\n• Owner name, chassis and engine number — masked, as on Parivahan\n• Alerts before documents expire, for 28 days\n\n'
+      + '*Full report — ₹19* · PDF with a GST invoice\n• Insurance (insurer and policy), PUC and road tax — and fitness and permit for commercial vehicles — each with its valid-until date\n• Every pending challan, with offence, place and amount\n• Loan / hypothecation, blacklist and NOC status\n• Number of owners, registration date and RTO\n• Owner name, chassis and engine number — masked\n• Alerts before documents expire, for 28 days\n\n'
       + '*Start checking vehicles by signing in* with your mobile number — a one-time code by SMS. No password, no app.',
     termsByUse: ['By signing in, you agree to GaadiPe’s', 'Terms of use', 'Privacy policy', 'and', 'Refund policy'],
     // Agreeing by entering a number (user, 2026-10-10: "say that by entering a vehicle you agree to the terms — no button").
@@ -209,7 +209,7 @@ const T = {
     /* Honest about what signing in gives (user, 2026-10-08: "this fools the
        user — the details are ₹19"). Signing in is free and keeps the vehicle and
        allows more checks; the details are the paid report, said with its price. */
-    identityOnly: (p) => '✅ *Vehicle found in the Government records.*\n\n*Sign in free* with your mobile to save it to your account and check more vehicles.\n\nThe *full report* — insurance, PUC, road tax and fitness validity, challans, loan, blacklist and number of owners — is *' + p + '*, with a PDF and GST invoice.',
+    identityOnly: (p) => '✅ *Vehicle found in the records.*\n\n*Sign in free* with your mobile to save it to your account and check more vehicles.\n\nThe *full report* — insurance, PUC, road tax and fitness validity, challans, loan, blacklist and number of owners — is *' + p + '*, with a PDF and GST invoice.',
     expired: 'Expired', dueSoon: 'Due soon', challans: 'Pending challans',
     locked: 'In the full report',
     youHave: '📄 You have the full report for this vehicle.',
@@ -255,7 +255,7 @@ const T = {
     signOutAllDone: (n) => `Signed out of ${n} device${n === 1 ? '' : 's'}.`,
     deactPaid: (list) => `You still have monitoring running: ${list}. Deactivating ends it now, and it is not refunded.`,
     open: 'Open report',
-    trust: '🔒 Official Government records · Secure payments · Data protected',
+    trust: '🔒 Live vehicle records · Secure payments · Data protected',
     online: 'online',
     leftToday: (n) => `${n} free check${n === 1 ? '' : 's'} left today without signing in.`,
     invoices: 'Invoices',
@@ -283,7 +283,7 @@ const T = {
       report: 'Your report and invoice stay in My reports and Invoices.', alerts: 'Alerts for this vehicle will stop.',
       yes: '🗑 Remove', no: 'Cancel', done: (r) => `🗑 ${r} removed from My vehicles.`, label: (r) => `Remove ${r}`, empty: 'No vehicles left in your list. Send any vehicle number to check it.' },
     // Never "Registration Certificate" (user, 2026-10-08): this is GaadiPe's summary, not an RC.
-    rc: { title: 'Vehicle Summary', sub: 'By GaadiPe from VAHAN records · not an RC or official document', flip: '↔ Swipe or tap Flip for more',
+    rc: { title: 'Vehicle Summary', sub: 'By GaadiPe from vehicle records · not an RC or official document', flip: '↔ Swipe or tap Flip for more',
       flipBtn: 'Flip', back: 'My vehicles', prev: 'Previous', next: 'Next', report: 'Report', invoice: 'Invoice',
       loading: 'Opening the card…', noRecord: 'No saved record yet.', recheck: 'Check it again',
       owner: 'Owner', ownerNo: 'Owner no.', chassis: 'Chassis', engine: 'Engine', regDate: 'Registered on', rto: 'RTO',
@@ -375,21 +375,21 @@ const T = {
     deactWhy: 'Why are you leaving?', deactOther: 'Tell us a little more', deactFresh: 'If you sign in again later, it will be a completely new, empty account — your old vehicles and reports will not come back.',
   },
   hi: {
-    hello: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है — भारत में रजिस्टर्ड किसी भी गाड़ी का पूरा रिकॉर्ड।\n\nइंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, बाकी चालान, लोन (हाइपोथिकेशन), ब्लैकलिस्ट स्थिति और कितने मालिक — सरकारी VAHAN और e-Challan रिकॉर्ड से, PDF रिपोर्ट के साथ।\n\n*शुरू करने के लिए गाड़ी नंबर लिखें* — जैसे *KA01AB1234*। पहली जाँच मुफ़्त है, साइन इन की ज़रूरत नहीं।',
-    helloShort: 'नमस्ते! 🙏 *GaadiPe* किसी भी भारतीय गाड़ी का इंश्योरेंस, PUC, चालान, लोन और मालिक दिखाता है — सरकारी रिकॉर्ड से।\n'
+    hello: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है — भारत में रजिस्टर्ड किसी भी गाड़ी का पूरा रिकॉर्ड।\n\nइंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, बाकी चालान, लोन (हाइपोथिकेशन), ब्लैकलिस्ट स्थिति और कितने मालिक — वाहन पंजीकरण और ई-चालान रिकॉर्ड से, PDF रिपोर्ट के साथ।\n\n*शुरू करने के लिए गाड़ी नंबर लिखें* — जैसे *KA01AB1234*। पहली जाँच मुफ़्त है, साइन इन की ज़रूरत नहीं।',
+    helloShort: 'नमस्ते! 🙏 *GaadiPe* किसी भी भारतीय गाड़ी का इंश्योरेंस, PUC, चालान, लोन और मालिक दिखाता है — सेकंडों में।\n'
       + 'साइन इन के बाद मुफ़्त जाँच · पूरी रिपोर्ट *₹19* में, PDF के साथ।\n'
       + '*शुरू करने के लिए मोबाइल से साइन इन करें* 👇',
-    helloFree: 'नमस्ते! 🙏 मैं *GaadiPe* हूँ — सरकारी डेटा से किसी भी भारतीय गाड़ी का रिकॉर्ड पढ़ता हूँ।\n'
+    helloFree: 'नमस्ते! 🙏 मैं *GaadiPe* हूँ — सेकंडों में किसी भी भारतीय गाड़ी का रिकॉर्ड पढ़ता हूँ।\n'
       + '*नीचे कोई भी गाड़ी नंबर लिखें* 👇 — जैसे *KA01AB1234* — मैं गाड़ी की जानकारी *मुफ़्त* दिखाऊँगा।',
     free: {
       ask: (r) => `बढ़िया — *${r}* देखते हैं 🔎\nउससे पहले एक छोटी सी बात:`,
-      foundIntro: (r) => `यह रहा! ✨ सरकारी रिकॉर्ड में *${r}* के बारे में:`,
+      foundIntro: (r) => `यह रहा! ✨ वाहन रिकॉर्ड में *${r}* के बारे में:`,
       nudge: '💡 यह गाड़ी ख़रीद रहे हैं? ₹19 की रिपोर्ट बताती है कि इस पर *लोन* है या नहीं, *बाकी चालान*, *इंश्योरेंस या PUC समाप्त* और *कितने मालिक* — विक्रेता को पैसे देने से पहले।',
       consentH: (r) => `${r} जाँचें`,
       consent: 'आगे बढ़ने पर आप GaadiPe के उपयोग की शर्तें, गोपनीयता नीति और रिफ़ंड नीति से सहमत होते हैं, और पुष्टि करते हैं कि आप यह गाड़ी किसी वैध उद्देश्य से जाँच रहे हैं (जैसे इसे ख़रीदना, या यह आपकी अपनी है)। इस जाँच के साथ आपके डिवाइस और नेटवर्क की जानकारी दर्ज की जाती है।',
       agree: '✅ सहमत हूँ, जाँचें',
       links: ['उपयोग की शर्तें', 'गोपनीयता नीति', 'रिफ़ंड नीति'],
-      found: '✅ सरकारी रिकॉर्ड में मिली',
+      found: '✅ वाहन रिकॉर्ड में मिली',
       hidden: 'मॉडल का वेरिएंट छिपा है — पूरा मॉडल और वेरिएंट देखने के लिए मुफ़्त साइन इन करें।',
       inReport: '*पूरी रिपोर्ट ₹19:* लोन, ब्लैकलिस्ट व NOC, हर चालान राशि के साथ, कितने मालिक, साफ़ फ़ैसला, PDF + 28 दिन अलर्ट।',
       buy: (p) => `🔓 पूरी रिपोर्ट लें — ${p}`,
@@ -404,7 +404,7 @@ const T = {
     },
     sample: { chip: '📄 नमूना रिपोर्ट देखें', more: '📋 पूरी जानकारी', intro: 'पूरी रिपोर्ट ऐसी दिखती है — एक *काल्पनिक गाड़ी* पर, कुछ भी असली नहीं 👇',
       badge: 'नमूना', ribbon: 'नमूना — काल्पनिक गाड़ी, असली डेटा नहीं', cta: '🔐 अपनी गाड़ी जाँचने के लिए साइन इन करें' },
-    helloSignIn: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है — भारत में रजिस्टर्ड किसी भी गाड़ी का पूरा रिकॉर्ड, सरकारी VAHAN और e-Challan रिकॉर्ड से।\n\n'
+    helloSignIn: 'नमस्ते! 🙏 *GaadiPe* में आपका स्वागत है — भारत में रजिस्टर्ड किसी भी गाड़ी का पूरा रिकॉर्ड, वाहन पंजीकरण और ई-चालान रिकॉर्ड से।\n\n'
       + '*मुफ़्त जाँच* — साइन इन के बाद\n• कंपनी, मॉडल और वेरिएंट\n• फ़्यूल और गाड़ी का प्रकार\n• कितनी चीज़ों पर ध्यान चाहिए — समाप्त या जल्द समाप्त होने वाले दस्तावेज़ और बाकी चालान\n\n'
       + '*पूरी रिपोर्ट — ₹19* · PDF, GST बिल के साथ\n• इंश्योरेंस (कंपनी और पॉलिसी), PUC और रोड टैक्स — और व्यावसायिक गाड़ियों के लिए फिटनेस और परमिट — हर एक की वैधता की तारीख़\n• हर बाकी चालान — अपराध, जगह और राशि के साथ\n• लोन / हाइपोथिकेशन, ब्लैकलिस्ट और NOC की स्थिति\n• कितने मालिक, रजिस्ट्रेशन की तारीख़ और RTO\n• मालिक का नाम, चेसिस और इंजन नंबर — छिपे हुए, जैसे परिवहन पर\n• दस्तावेज़ समाप्त होने से पहले अलर्ट, 28 दिनों तक\n\n'
       + '*गाड़ियाँ जाँचना शुरू करने के लिए साइन इन करें* — मोबाइल नंबर पर SMS से एक बार का कोड। कोई पासवर्ड नहीं, कोई ऐप नहीं।',
@@ -508,7 +508,7 @@ const T = {
       },
     },
     attention: (n) => (n ? `⚠️ *${n} चीज़ों पर ध्यान चाहिए*` : '✅ *कुछ भी बाकी नहीं*'),
-    identityOnly: (p) => '✅ *गाड़ी सरकारी रिकॉर्ड में मिल गई।*\n\nइसे अपने खाते में सेव करने और और गाड़ियाँ जाँचने के लिए मोबाइल से *मुफ़्त साइन इन* करें।\n\n*पूरी रिपोर्ट* — इंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, चालान, लोन, ब्लैकलिस्ट और कितने मालिक — *' + p + '* में, PDF और GST बिल के साथ।',
+    identityOnly: (p) => '✅ *गाड़ी रिकॉर्ड में मिल गई।*\n\nइसे अपने खाते में सेव करने और और गाड़ियाँ जाँचने के लिए मोबाइल से *मुफ़्त साइन इन* करें।\n\n*पूरी रिपोर्ट* — इंश्योरेंस, PUC, रोड टैक्स और फिटनेस की वैधता, चालान, लोन, ब्लैकलिस्ट और कितने मालिक — *' + p + '* में, PDF और GST बिल के साथ।',
     expired: 'समाप्त', dueSoon: 'जल्द', challans: 'बाकी चालान',
     locked: 'पूरी रिपोर्ट में',
     youHave: '📄 इस गाड़ी की पूरी रिपोर्ट आपके पास है।',
@@ -549,7 +549,7 @@ const T = {
     signOutAllDone: (n) => `${n} डिवाइस से साइन आउट हो गए।`,
     deactPaid: (list) => `आपकी निगरानी अभी चल रही है: ${list}। खाता बंद करने पर यह अभी खत्म हो जाएगी, और पैसे वापस नहीं होंगे।`,
     open: 'रिपोर्ट खोलें',
-    trust: '🔒 आधिकारिक सरकारी रिकॉर्ड · सुरक्षित भुगतान · डेटा सुरक्षित',
+    trust: '🔒 लाइव वाहन रिकॉर्ड · सुरक्षित भुगतान · डेटा सुरक्षित',
     online: 'ऑनलाइन',
     leftToday: (n) => `बिना साइन इन आज ${n} मुफ़्त जाँच बाकी।`,
     invoices: 'बिल',
@@ -575,7 +575,7 @@ const T = {
     rm: { q: (r) => `${r} को मेरी गाड़ियों से हटाएँ?`, body: 'यह आपकी सूची में नहीं दिखेगी। आप इसे कभी भी फिर से जाँच सकते हैं — यह नई एंट्री की तरह वापस आएगी।',
       report: 'आपकी रिपोर्ट और बिल "मेरी रिपोर्ट" और "बिल" में बने रहेंगे।', alerts: 'इस गाड़ी के अलर्ट बंद हो जाएँगे।',
       yes: '🗑 हटाएँ', no: 'रद्द करें', done: (r) => `🗑 ${r} मेरी गाड़ियों से हटा दी गई।`, label: (r) => `${r} हटाएँ`, empty: 'आपकी सूची में कोई गाड़ी नहीं बची। जाँच के लिए कोई भी गाड़ी नंबर भेजें।' },
-    rc: { title: 'गाड़ी का सारांश', sub: 'GaadiPe द्वारा VAHAN रिकॉर्ड से · यह RC या सरकारी दस्तावेज़ नहीं है', flip: '↔ और देखने के लिए स्वाइप करें या पलटें',
+    rc: { title: 'गाड़ी का सारांश', sub: 'GaadiPe द्वारा वाहन रिकॉर्ड से · यह RC या आधिकारिक दस्तावेज़ नहीं है', flip: '↔ और देखने के लिए स्वाइप करें या पलटें',
       flipBtn: 'पलटें', back: 'मेरी गाड़ियाँ', prev: 'पिछली', next: 'अगली', report: 'रिपोर्ट', invoice: 'बिल',
       loading: 'कार्ड खुल रहा है…', noRecord: 'अभी कोई सहेजा रिकॉर्ड नहीं।', recheck: 'फिर से जाँचें',
       owner: 'मालिक', ownerNo: 'मालिक क्रमांक', chassis: 'चेसिस', engine: 'इंजन', regDate: 'पंजीकरण तिथि', rto: 'RTO',

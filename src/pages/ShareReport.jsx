@@ -80,7 +80,7 @@ export default function ShareReport() {
             {s.rc_active === false && <Row icon="🪪" label="RC status" value="⚠️ Not active" tone="warn" />}
           </ul>
           <p className="border-t border-line px-4 py-3 text-2xs text-muted">
-            Checked on GaadiPe on <b className="text-ink">{day(s.checked_at)}</b> from Government records. A summary only —
+            Checked on GaadiPe on <b className="text-ink">{day(s.checked_at)}</b> from vehicle records. A summary only —
             the owner&apos;s details are never shared, and the full report (dates, amounts, each challan) stays with the person who bought it.
           </p>
         </div>
