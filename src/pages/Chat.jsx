@@ -76,13 +76,14 @@ const T = {
       // When today's free check is used (the server's limit), in the visitor's language (2026-10-08).
       limit: '🔐 You’ve used today’s free check. Sign in with your mobile to check more — *basic details free* (make, model, variant, fuel, vehicle type), *full report ₹19*.',
       // A second number after today's free check (user, 2026-10-09: "say politely that 1 free check is done for the day").
-      usedToday: (r) => `🙏 Today’s *free checks* are used up.\n\n*Sign in free* with your mobile number to check *${r}* and more vehicles — you also see every validity date and the challans, and get *14 days of free monitoring* for one vehicle. I’ll check *${r}* right after you sign in.`,
+      usedToday: (r) => `🙏 Today’s *free checks* are used up.\n\n*Sign in free* with your mobile number to check *${r}* and more vehicles — you also see how many of its documents and challans need attention, and get *14 days of free monitoring* for one vehicle. I’ll check *${r}* right after you sign in.`,
       signIn: '🔐 Sign in to check more',
       // The blurred preview of what signing in shows (2026-10-10) — labels only, the values are dummies.
-      blurRows: ['Registered on', 'Insurance valid till', 'PUC valid till', 'Road tax valid till', 'Fitness valid till', 'Pending challans'],
+      // What sign-in shows (free_view_detail 'count', 2026-10-21): how many things need attention, not which.
+      blurRows: ['Documents expired or due', 'Pending challans', 'Things needing attention'],
       unlock: '🔓 Sign in free to see',
       signInTag: 'Free',
-      unlockNote: 'Every date and the challan count — free with your mobile number.',
+      unlockNote: 'What needs attention on the vehicle — free with your mobile number.',
     },
     sample: { chip: '📄 See a sample report', more: '📋 Full details', intro: 'Here is what a full report looks like — on a *made-up vehicle*, so nothing real is shown 👇',
       badge: 'SAMPLE', ribbon: 'SAMPLE — made-up vehicle, not real data', cta: '🔐 Sign in to check your vehicle' },
@@ -135,7 +136,7 @@ const T = {
     waDivider: 'Your WhatsApp chat with GaadiPe',
     nowHere: 'Now on gaadipe.in',
     loadEarlier: 'Load earlier messages',
-    signInMore: 'Sign in free to see every validity date and the challans — and get 14 days of free monitoring for one vehicle. Then ₹19 for 28 days.',
+    signInMore: 'Sign in free to see how many of its documents and challans need attention — and get 14 days of free monitoring for one vehicle. The dates and details are in the ₹19 full report.',
     fullReport: (p) => `Full report ${p}`,
     renewFor: (p) => `Renew 28 days · ${p}`,
     another: 'Check another',
@@ -146,7 +147,7 @@ const T = {
     profile: 'Profile',
     howWorks: 'What do I get?',
     // As the site is now (2026-10-10): the three levels, in plain words.
-    get howAnswer() { return `*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 2 vehicles a day.\n\n*Free, signed in* — every validity date (insurance, PUC, road tax, fitness, permit), the challan count and total, and *14 days of free monitoring* for one vehicle.\n\n*Full report ${PRICES.full}* (${PRICES.renew} to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears. *Every purchase also adds 5 more vehicle checks* that month.\n\n🔢 *Vehicle checks — the more you buy, the more you can check*\n• Signed in: *${PRICES.perDay} a day* and *30 a month*\n• *Every report you buy — ${PRICES.full}, or ${PRICES.renew} to renew — adds 5 more checks* that month\n• The same vehicle again within an hour does not count\n• Removing a vehicle from My vehicles does *not* give a check back\nTap *Checks left* any time to see yours.\n\nℹ️ *Please note:* GaadiPe gives *reports, alerts and reminders* only — it does *not* issue an RC card, PUC, insurance or any certificate. For the documents themselves, contact your RTO, insurer or PUC centre.`; },
+    get howAnswer() { return `*Free, no sign-in* — make, model and variant, fuel, the owner’s name (masked) and the RTO. Up to 2 vehicles a day.\n\n*Free, signed in* — how many of its documents (insurance, PUC, road tax, fitness, permit) and challans need attention, and *14 days of free monitoring* for one vehicle.\n\n*Full report ${PRICES.full}* (${PRICES.renew} to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears. *Every purchase also adds 5 more vehicle checks* that month.\n\n🔢 *Vehicle checks — the more you buy, the more you can check*\n• Signed in: *${PRICES.perDay} a day* and *30 a month*\n• *Every report you buy — ${PRICES.full}, or ${PRICES.renew} to renew — adds 5 more checks* that month\n• The same vehicle again within an hour does not count\n• Removing a vehicle from My vehicles does *not* give a check back\nTap *Checks left* any time to see yours.\n\nℹ️ *Please note:* GaadiPe gives *reports, alerts and reminders* only — it does *not* issue an RC card, PUC, insurance or any certificate. For the documents themselves, contact your RTO, insurer or PUC centre.`; },
     // My subscriptions (user, 2026-10-10).
     subs: {
       menu: 'My subscriptions', title: '📋 My subscriptions',
@@ -397,13 +398,13 @@ const T = {
       inReport: '*पूरी रिपोर्ट ₹19:* लोन, ब्लैकलिस्ट व NOC, हर चालान राशि के साथ, कितने मालिक, साफ़ फ़ैसला, PDF + 28 दिन अलर्ट।',
       buy: (p) => `🔓 पूरी रिपोर्ट लें — ${p}`,
       more: 'यह आज की मुफ़्त जाँच थी। हर तारीख और चालानों की गिनती के लिए *मुफ़्त साइन इन* करें; लोन, चालान राशि और फ़ैसले के लिए *पूरी रिपोर्ट ₹19*।',
-      usedToday: (r) => `🙏 आज की *मुफ़्त जाँचें* पूरी हो गईं।\n\n*${r}* और दूसरी गाड़ियाँ जाँचने के लिए मोबाइल नंबर से *मुफ़्त साइन इन* करें — साथ में हर वैधता की तारीख और चालान दिखेंगे, और एक गाड़ी की *14 दिन मुफ़्त निगरानी* मिलेगी। साइन इन होते ही मैं *${r}* जाँच दूँगा।`,
+      usedToday: (r) => `🙏 आज की *मुफ़्त जाँचें* पूरी हो गईं।\n\n*${r}* और दूसरी गाड़ियाँ जाँचने के लिए मोबाइल नंबर से *मुफ़्त साइन इन* करें — साथ में दिखेगा कि उसके कितने दस्तावेज़ों और चालानों पर ध्यान चाहिए, और एक गाड़ी की *14 दिन मुफ़्त निगरानी* मिलेगी। साइन इन होते ही मैं *${r}* जाँच दूँगा।`,
       limit: '🔐 आज की मुफ़्त जाँच हो चुकी है। और जाँचने के लिए मोबाइल से साइन इन करें — *बेसिक जानकारी मुफ़्त* (कंपनी, मॉडल, वेरिएंट, ईंधन, गाड़ी का प्रकार), *पूरी रिपोर्ट ₹19*।',
       signIn: '🔐 और जाँचने के लिए साइन इन करें',
-      blurRows: ['पंजीकरण की तारीख', 'इंश्योरेंस की वैधता', 'PUC की वैधता', 'रोड टैक्स की वैधता', 'फिटनेस की वैधता', 'बाकी चालान'],
+      blurRows: ['समाप्त या जल्द समाप्त दस्तावेज़', 'बाकी चालान', 'ध्यान देने वाली चीज़ें'],
       unlock: '🔓 देखने के लिए मुफ़्त साइन इन करें',
       signInTag: 'मुफ़्त',
-      unlockNote: 'हर तारीख और चालानों की गिनती — आपके मोबाइल नंबर से मुफ़्त।',
+      unlockNote: 'गाड़ी में किस पर ध्यान चाहिए — आपके मोबाइल नंबर से मुफ़्त।',
     },
     sample: { chip: '📄 नमूना रिपोर्ट देखें', more: '📋 पूरी जानकारी', intro: 'पूरी रिपोर्ट ऐसी दिखती है — एक *काल्पनिक गाड़ी* पर, कुछ भी असली नहीं 👇',
       badge: 'नमूना', ribbon: 'नमूना — काल्पनिक गाड़ी, असली डेटा नहीं', cta: '🔐 अपनी गाड़ी जाँचने के लिए साइन इन करें' },
@@ -449,7 +450,7 @@ const T = {
     waDivider: 'GaadiPe के साथ आपकी WhatsApp चैट',
     nowHere: 'अब gaadipe.in पर',
     loadEarlier: 'पुराने संदेश देखें',
-    signInMore: 'हर वैधता की तारीख और चालान देखने के लिए मुफ़्त साइन इन करें — और एक गाड़ी की 14 दिन मुफ़्त निगरानी पाएँ। फिर ₹19 में 28 दिन।',
+    signInMore: 'मुफ़्त साइन इन करें और देखें कि इसके कितने दस्तावेज़ों और चालानों पर ध्यान चाहिए — और एक गाड़ी की 14 दिन मुफ़्त निगरानी पाएँ। तारीखें और पूरी जानकारी ₹19 की पूरी रिपोर्ट में।',
     fullReport: (p) => `पूरी रिपोर्ट ${p}`,
     renewFor: (p) => `28 दिन रिन्यू करें · ${p}`,
     another: 'दूसरी गाड़ी',
@@ -459,7 +460,7 @@ const T = {
     myReports: 'मेरी रिपोर्ट',
     profile: 'प्रोफ़ाइल',
     howWorks: 'मुझे क्या मिलेगा?',
-    get howAnswer() { return `*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 2 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — हर वैधता की तारीख (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट), चालानों की संख्या और कुल राशि, और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ${PRICES.full}* (ख़रीदी हुई गाड़ी का रिन्यू ${PRICES.renew}) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे। *हर ख़रीद पर उस महीने 5 गाड़ी जाँच और* मिलती हैं।\n\n🔢 *गाड़ी जाँच — जितना ख़रीदेंगे, उतना ज़्यादा जाँच सकेंगे*\n• साइन इन करके: *दिन में ${PRICES.perDay}* और *महीने में 30*\n• *हर रिपोर्ट ख़रीदने पर — ${PRICES.full}, या रिन्यू के लिए ${PRICES.renew} — उस महीने 5 जाँच और*\n• एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता\n• मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती\nअपनी बाकी जाँच देखने के लिए कभी भी *बाकी जाँच* दबाएँ।\n\nℹ️ *ध्यान दें:* GaadiPe सिर्फ़ *रिपोर्ट, अलर्ट और रिमाइंडर* देता है — यह RC कार्ड, PUC, बीमा या कोई प्रमाणपत्र *जारी नहीं* करता। दस्तावेज़ों के लिए अपने RTO, बीमा कंपनी या PUC सेंटर से संपर्क करें।`; },
+    get howAnswer() { return `*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन, मालिक का नाम (छिपा हुआ) और RTO। दिन में 2 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — इसके कितने दस्तावेज़ों (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट) और चालानों पर ध्यान चाहिए, और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ${PRICES.full}* (ख़रीदी हुई गाड़ी का रिन्यू ${PRICES.renew}) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे। *हर ख़रीद पर उस महीने 5 गाड़ी जाँच और* मिलती हैं।\n\n🔢 *गाड़ी जाँच — जितना ख़रीदेंगे, उतना ज़्यादा जाँच सकेंगे*\n• साइन इन करके: *दिन में ${PRICES.perDay}* और *महीने में 30*\n• *हर रिपोर्ट ख़रीदने पर — ${PRICES.full}, या रिन्यू के लिए ${PRICES.renew} — उस महीने 5 जाँच और*\n• एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता\n• मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती\nअपनी बाकी जाँच देखने के लिए कभी भी *बाकी जाँच* दबाएँ।\n\nℹ️ *ध्यान दें:* GaadiPe सिर्फ़ *रिपोर्ट, अलर्ट और रिमाइंडर* देता है — यह RC कार्ड, PUC, बीमा या कोई प्रमाणपत्र *जारी नहीं* करता। दस्तावेज़ों के लिए अपने RTO, बीमा कंपनी या PUC सेंटर से संपर्क करें।`; },
     subs: {
       menu: 'मेरी सदस्यता', title: '📋 मेरी सदस्यता',
       mRenew: 'निगरानी रिन्यू करें', mReplace: 'गाड़ी बदलें',
@@ -2225,7 +2226,7 @@ function FreeVehicleCard({ it, L, onBuy, onSignIn, onFeedback }) {
           {L.free.blurRows.map((k, i) => (
             <div key={k} className="flex items-center justify-between gap-2 text-[12.5px]">
               <span className="font-semibold text-[#0b2e2b]">✓ {k}</span>
-              <span className="select-none font-bold text-[#0b2e2b]" aria-hidden="true" style={{ filter: 'blur(4px)' }}>{i === L.free.blurRows.length - 1 ? '0 0' : '00 Xxx 2000'}</span>
+              <span className="select-none font-bold text-[#0b2e2b]" aria-hidden="true" style={{ filter: 'blur(4px)' }}>0</span>
             </div>
           ))}
           <div className="mt-1 rounded-lg bg-[#fff8e1] px-2.5 py-2">
