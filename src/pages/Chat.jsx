@@ -783,7 +783,8 @@ export default function Chat() {
      The button says "Menu" in words, and the first time someone is signed in a
      small note points at it, with a soft pulse, until they tap it or "Got it". */
   const [menuHint, setMenuHint] = useState(false);
-  const HINT_KEY = 'gp.menuHint.seen';
+  // A new key with the animated options (2026-10-21), so everyone sees the menu once more.
+  const HINT_KEY = 'gp.menuHint.seen.2';
   const hideMenuHint = () => { setMenuHint(false); try { localStorage.setItem(HINT_KEY, '1'); } catch { /* private mode */ } };
   useEffect(() => {
     if (!me) { setMenuHint(false); return undefined; }
@@ -1746,6 +1747,15 @@ export default function Chat() {
             <div className="gp-pop absolute right-3 top-1 z-30 w-[min(17rem,80vw)] rounded-2xl bg-[#ffd84d] p-3 text-[13px] text-[#0a4f49] shadow-xl" style={{ transformOrigin: '90% 0' }} role="status">
               <span className="absolute -top-1.5 right-7 h-3 w-3 rotate-45 bg-[#ffd84d]" />
               <div className="font-semibold leading-snug">👆 {L.menuHint}</div>
+              {/* THE MENU'S OWN OPTIONS, popping in one by one (user, 2026-10-21: "once signed in the first
+                  time, animate the menu options so the user knows the menu is there"). Each opens the menu. */}
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {[['🚗', L.mHistory], ['📄', L.myReports], ['🧾', L.invoices], ['🔄', L.subs.mRenew], ['🔔', L.mNotify], ['👤', L.profile]].map(([icon, label], i) => (
+                  <button key={label} type="button" onClick={() => { hideMenuHint(); setMenuOpen(true); }}
+                    className="gp-menu-chip rounded-full bg-white/85 px-2.5 py-1 text-[11.5px] font-bold text-[#0a4f49] shadow-sm"
+                    style={{ animationDelay: `${0.25 + i * 0.18}s` }}>{icon} {label}</button>
+                ))}
+              </div>
               <div className="mt-2 flex justify-end gap-2">
                 <button type="button" onClick={hideMenuHint} className="rounded-full px-3 py-1 text-[12px] font-bold text-[#0a4f49]/70">{L.gotIt}</button>
                 <button type="button" onClick={() => { hideMenuHint(); setMenuOpen(true); }} className="rounded-full bg-[#0a4f49] px-3 py-1 text-[12px] font-bold text-white">☰ {L.menu}</button>
