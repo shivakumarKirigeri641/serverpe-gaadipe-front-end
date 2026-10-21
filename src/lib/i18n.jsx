@@ -162,7 +162,7 @@ export const STRINGS = {
 
     // No "Government", "VAHAN", "Parivahan" or "official" anywhere on the site (user, 2026-10-20:
     // "must never be present" — Meta reviews the page an ad links to; the WhatsApp bans were SCAM).
-    'footer.about': "Vehicle records for any Indian vehicle, in one place. A private service and a product of ServerPe App Solutions, Karnataka — makers of QuizPe, the daily learning quiz for school students. GSTIN 29BSMPK7696H1ZT.",
+    'footer.about': "Records for your own vehicles, and for the one you're about to buy, in one place. A private service and a product of ServerPe App Solutions, Karnataka — makers of QuizPe, the daily learning quiz for school students. GSTIN 29BSMPK7696H1ZT.",
     'footer.product': 'Product',
     'footer.legal': 'Legal',
     'footer.support': 'Support',
@@ -405,7 +405,7 @@ export const STRINGS = {
     "ref.yourLink": "Your link",
     "ref.share": "Share my link",
     "ref.copied": "Link copied ✓",
-    "ref.shareText": "Check any vehicle on GaadiPe — challans, insurance, PUC and road tax, in seconds. {url}",
+    "ref.shareText": "Check your vehicle on GaadiPe —challans, insurance, PUC and road tax, in seconds. {url}",
     "ref.rule": "They pay {price}. You get a full report free, to use within {days} days.",
     "ref.howH": "How it works",
     "ref.how1": "Share your link with anyone who has a vehicle.",
@@ -427,7 +427,7 @@ export const STRINGS = {
     "ref.small": "Up to {cap} free reports a month. A referral counts when they pay — not when they sign in. If their payment is refunded, an unused free report goes back.",
     "refl.h": "You have been sent a GaadiPe link",
     "refl.hFrom": "{name} sent you GaadiPe",
-    "refl.b": "Check any Indian vehicle's record — the basics are free.",
+    "refl.b": "Check your vehicle's record, or one you're buying — the basics are free.",
     "refl.l1": "Maker, model, fuel and class, free",
     "refl.l2": "Every challan, with the offence, place and amount",
     "refl.l3": "Insurance, PUC, road tax and fitness — and a warning before they expire",
@@ -703,7 +703,7 @@ export const STRINGS = {
     'nav.privacy': 'गोपनीयता',
     'nav.refunds': 'रिफ़ंड',
 
-    'footer.about': "किसी भी भारतीय वाहन का रिकॉर्ड, एक जगह। एक निजी सेवा — ServerPe App Solutions, कर्नाटक का एक प्रोडक्ट — स्कूली छात्रों के रोज़ाना क्विज़ QuizPe के निर्माता। GSTIN 29BSMPK7696H1ZT.",
+    'footer.about': "आपकी अपनी गाड़ियों और जो गाड़ी आप ख़रीदने वाले हैं, उनका रिकॉर्ड, एक जगह। एक निजी सेवा — ServerPe App Solutions, कर्नाटक का एक प्रोडक्ट — स्कूली छात्रों के रोज़ाना क्विज़ QuizPe के निर्माता। GSTIN 29BSMPK7696H1ZT.",
     'footer.product': 'प्रोडक्ट',
     'footer.legal': 'कानूनी',
     'footer.support': 'सहायता',
@@ -962,7 +962,7 @@ export const STRINGS = {
     "ref.small": "महीने में ज़्यादा से ज़्यादा {cap} मुफ़्त रिपोर्ट। रेफ़रल तब गिना जाता है जब वे पैसे देते हैं — साइन इन पर नहीं। पैसे वापस हुए तो बिना इस्तेमाल की मुफ़्त रिपोर्ट वापस ले ली जाती है।",
     "refl.h": "आपको GaadiPe का लिंक भेजा गया है",
     "refl.hFrom": "{name} ने आपको GaadiPe भेजा है",
-    "refl.b": "किसी भी भारतीय गाड़ी का रिकॉर्ड चेक कीजिए — बेसिक जानकारी मुफ़्त।",
+    "refl.b": "अपनी गाड़ी या जो गाड़ी आप ख़रीद रहे हैं, उसका रिकॉर्ड चेक कीजिए — बेसिक जानकारी मुफ़्त।",
     "refl.l1": "कंपनी, मॉडल, ईंधन और श्रेणी — मुफ़्त",
     "refl.l2": "हर चालान — अपराध, जगह और रक़म के साथ",
     "refl.l3": "बीमा, PUC, रोड टैक्स और फ़िटनेस — और ख़त्म होने से पहले चेतावनी",
