@@ -110,7 +110,7 @@ export default function App() {
     <PageViews />
     <EmailPrompt />
     <ClickTracker />
-    {/* On every page, the chat too (2026-10-10): GaadiPe is on the web, WhatsApp is gone. */}
+    {/* The landing page, and the chat on the first visit only (2026-10-21; components/HangingNotice). */}
     <HangingNotice />
     <Routes>
       <Route path="/" element={<Home />} />

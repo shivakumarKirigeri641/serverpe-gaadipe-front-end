@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useLang } from '../lib/i18n.jsx';
 import { WHATSAPP_ENABLED, WHATSAPP, waLink } from '../lib/api';
 
@@ -6,12 +7,10 @@ import { WHATSAPP_ENABLED, WHATSAPP, waLink } from '../lib/api';
  * THE HANGING NOTICE (user, 2026-10-10: "a hanging label saying GaadiPe is now serving on
  * the web, with browser notifications, mail and SMS alerts, because the WhatsApp account
  * was disabled"). A small sign hanging on two strings below the header, on every page —
- * the chat too. It swings in, then sways; ✕ folds it to a "📢" tag for 3 days, and a tap
- * on the tag hangs it again.
+ * now only on the landing page and on the first chat visit (see below). It swings in; ✕ closes it for good.
  */
 // A new key per notice, so visitors who folded the earlier one see the new one.
 const KEY = WHATSAPP_ENABLED ? 'gp.hang.folded.newnumber' : 'gp.hang.folded.web';
-const DAYS = 3;
 // Takes itself down at the end of January — long enough for every old WhatsApp customer to see it.
 const UNTIL = new Date('2027-01-31T23:59:59+05:30');
 // "+91 73531 22415" from the build's number (VITE_WHATSAPP).
@@ -72,32 +71,40 @@ export function useNailY(fallback) {
   return y;
 }
 
-const foldedNow = () => {
-  try { return Date.now() - Number(localStorage.getItem(KEY) || 0) < DAYS * 864e5; } catch { return false; }
-};
+/*
+ * WHERE AND HOW OFTEN (user, 2026-10-21: "show it on the landing page, or once the user has seen it in the
+ * chat — showing it again and again is annoying"): only on the landing page (/) and the chat (/chat).
+ *   ✕ closes it for good — no tag left behind.
+ *   In the chat it shows on the first visit only: once it has been shown there, it is not shown again.
+ */
+const CLOSED_KEY = `${KEY}.closed`;
+const CHAT_SEEN_KEY = `${KEY}.chat-seen`;
+const flag = (k) => { try { return Boolean(localStorage.getItem(k)); } catch { return false; } };
+const setFlag = (k) => { try { localStorage.setItem(k, String(Date.now())); } catch { /* private mode */ } };
 
 export default function HangingNotice() {
   const { lang } = useLang();
   // WhatsApp-first build: the new number; web-first build: where GaadiPe works now.
   const t = (WHATSAPP_ENABLED ? NEW_TEXT : TEXT)[lang === 'hi' ? 'hi' : 'en'];
-  const [folded, setFolded] = useState(foldedNow);
+  const { pathname } = useLocation();
+  const onHome = pathname === '/';
+  const onChat = pathname.startsWith('/chat');
+  // Decided once per page: in the chat, shown only if it was never shown there before.
+  const [show, setShow] = useState(() => !flag(CLOSED_KEY) && (onHome || (onChat && !flag(CHAT_SEEN_KEY))));
+  useEffect(() => { setShow(!flag(CLOSED_KEY) && (onHome || (onChat && !flag(CHAT_SEEN_KEY)))); }, [onHome, onChat]);
+  // Seen in the chat now: not again on a later chat visit.
+  useEffect(() => { if (show && onChat) setFlag(CHAT_SEEN_KEY); }, [show, onChat]);
   const nailY = useNailY(58);
-  const fold = () => { try { localStorage.setItem(KEY, String(Date.now())); } catch { /* private mode */ } setFolded(true); };
-  const unfold = () => { try { localStorage.removeItem(KEY); } catch { /* private mode */ } setFolded(false); };
-  if (Date.now() > UNTIL.getTime()) return null;
+  const fold = () => { setFlag(CLOSED_KEY); setShow(false); };
+  if (Date.now() > UNTIL.getTime() || !show || (!onHome && !onChat)) return null;
   return (
     <div className="pointer-events-none fixed right-3 z-40" style={{ top: `${nailY}px` }} data-test="hanging-notice">
-      <div className={`hang-sign pointer-events-auto relative pt-4 ${folded ? 'hang-sway' : 'hang-swing'}`} key={folded ? 'tag' : 'sign'}>
+      <div className="hang-sign hang-swing pointer-events-auto relative pt-4">
         {/* the strings and the nail */}
         <span aria-hidden="true" className="absolute left-1/2 top-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#0a4f49]" />
         <span aria-hidden="true" className="absolute top-0.5 h-[1.15rem] w-px origin-top bg-[#0a4f49]/60" style={{ left: '50%', transform: 'rotate(38deg)' }} />
         <span aria-hidden="true" className="absolute top-0.5 h-[1.15rem] w-px origin-top bg-[#0a4f49]/60" style={{ left: '50%', transform: 'rotate(-38deg)' }} />
-        {folded ? (
-          <button type="button" onClick={unfold} data-test="hanging-open"
-            className="rounded-full border-2 border-[#0a4f49] bg-[#ffd84d] px-3 py-1 text-[12px] font-black text-[#0a4f49] shadow-md">
-            📢 {t.tag}
-          </button>
-        ) : (
+        {(
           <div role="status" className="w-[17.5rem] max-w-[calc(100vw-1.5rem)] rounded-2xl border-2 border-[#0a4f49] bg-[#ffd84d] px-3.5 pb-3 pt-2.5 text-[#0a4f49] shadow-xl">
             <div className="flex items-start gap-2">
               <div className="text-[13.5px] font-black leading-snug">📢 {t.title}</div>
