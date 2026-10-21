@@ -115,7 +115,7 @@ const T = {
     welcomeBack: (n) => `🎉 Welcome back${n ? `, *${n}*` : ''}!`,
     welcomeNew: '👋 Welcome to GaadiPe! Send any vehicle number to begin.',
     // In the welcome too (user, 2026-10-10), with the hanging notice: WhatsApp is gone.
-    webNote: '📢 _GaadiPe now serves you here on the web — our WhatsApp account was disabled. Alerts reach you by browser notifications, email and SMS._',
+    webNote: '📢 _GaadiPe has moved permanently to the web — Meta closed our WhatsApp account. Everything is here, and alerts reach you by browser notifications, email and SMS._',
     askVehicle: '🔍 Type a vehicle number below to check it now — like *KA01AB1234*.',
     // Its own reply after the welcome and the terms line (user, 2026-10-10).
     typeNow: '👇 *Type a vehicle number below* — like *KA01AB1234*.\nOr tap a button.',
@@ -432,7 +432,7 @@ const T = {
     signedIn: '✅ आप साइन इन हो गए हैं।',
     welcomeBack: (n) => `🎉 वापसी पर स्वागत है${n ? `, *${n}*` : ''}!`,
     welcomeNew: '👋 GaadiPe में स्वागत है! शुरू करने के लिए कोई भी गाड़ी नंबर भेजें।',
-    webNote: '📢 _GaadiPe अब यहीं वेब पर आपकी सेवा करता है — हमारा WhatsApp अकाउंट बंद कर दिया गया। अलर्ट ब्राउज़र नोटिफ़िकेशन, ईमेल और SMS से आते हैं।_',
+    webNote: '📢 _GaadiPe हमेशा के लिए वेब पर आ गया है — Meta ने हमारा WhatsApp अकाउंट बंद कर दिया। सब कुछ यहीं है, और अलर्ट ब्राउज़र नोटिफ़िकेशन, ईमेल और SMS से आते हैं।_',
     askVehicle: '🔍 जाँच के लिए नीचे कोई भी गाड़ी नंबर लिखें — जैसे *KA01AB1234*।',
     typeNow: '👇 *नीचे गाड़ी नंबर लिखें* — जैसे *KA01AB1234*।\nया कोई बटन दबाएँ।',
     hint: { plate: 'गाड़ी नंबर लिखें', tap: ' — या ऊपर कोई बटन दबाएँ', mobile: 'अपना 10 अंकों का मोबाइल नंबर लिखें',

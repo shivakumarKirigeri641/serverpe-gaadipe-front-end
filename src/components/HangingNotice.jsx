@@ -10,10 +10,10 @@ import { WHATSAPP_ENABLED, WHATSAPP, waLink } from '../lib/api';
  * on the tag hangs it again.
  */
 // A new key per notice, so visitors who folded the earlier one see the new one.
-const KEY = WHATSAPP_ENABLED ? 'gp.hang.folded.newnumber' : 'gp.hang.folded.3';
+const KEY = WHATSAPP_ENABLED ? 'gp.hang.folded.newnumber' : 'gp.hang.folded.web';
 const DAYS = 3;
-// Takes itself down at the end of the year.
-const UNTIL = new Date('2026-12-31T23:59:59+05:30');
+// Takes itself down at the end of January — long enough for every old WhatsApp customer to see it.
+const UNTIL = new Date('2027-01-31T23:59:59+05:30');
 // "+91 73531 22415" from the build's number (VITE_WHATSAPP).
 const W = String(WHATSAPP);
 const NEW_NO = `+${W.slice(0, 2)} ${W.slice(2, 7)} ${W.slice(7)}`;
@@ -35,17 +35,19 @@ const NEW_TEXT = {
     tag: 'नया नंबर', fold: 'सूचना बंद करें',
   },
 };
-// User, 2026-10-20: "lets currently support web based" — the web-first build's note.
+/* PERMANENTLY ON THE WEB (user, 2026-10-21: "modify the marketing site that we are permanently moved to
+   the web platform as Meta disabled our WhatsApp account"). Why, what still works, where their things
+   are — and that a WhatsApp message claiming to be GaadiPe is not from us. */
 const TEXT = {
   en: {
-    title: 'GaadiPe works right here',
-    body: 'GaadiPe is not on WhatsApp for now. Everything works on this website: check vehicles, buy and download reports, and get alerts by browser notifications, email and SMS.',
-    tag: 'Notice', fold: 'Fold the notice',
+    title: 'GaadiPe is now fully on the web',
+    body: 'Meta has closed GaadiPe’s WhatsApp account, so we have moved permanently to this website. Check vehicles, buy reports and get alerts by browser notification, email and SMS — your vehicles, reports and payments are all here. GaadiPe will not message you on WhatsApp any more.',
+    tag: 'We moved', fold: 'Fold the notice',
   },
   hi: {
-    title: 'GaadiPe यहीं चलता है',
-    body: 'GaadiPe अभी WhatsApp पर नहीं है। सब कुछ इसी वेबसाइट पर चलता है: गाड़ी जाँचें, रिपोर्ट खरीदें व डाउनलोड करें, और अलर्ट पाएँ ब्राउज़र नोटिफ़िकेशन, ईमेल और SMS से।',
-    tag: 'सूचना', fold: 'सूचना बंद करें',
+    title: 'GaadiPe अब पूरी तरह वेब पर है',
+    body: 'Meta ने GaadiPe का WhatsApp अकाउंट बंद कर दिया है, इसलिए हम हमेशा के लिए इस वेबसाइट पर आ गए हैं। गाड़ी जाँचें, रिपोर्ट खरीदें और अलर्ट पाएँ ब्राउज़र नोटिफ़िकेशन, ईमेल और SMS से — आपकी गाड़ियाँ, रिपोर्ट और भुगतान सब यहीं हैं। GaadiPe अब आपको WhatsApp पर मैसेज नहीं करेगा।',
+    tag: 'हम बदल गए', fold: 'सूचना बंद करें',
   },
 };
 
