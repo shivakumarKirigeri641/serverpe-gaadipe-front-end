@@ -518,6 +518,8 @@ export const STRINGS = {
     'buy.l1': '{price} one time, inclusive of GST. Nothing renews automatically.',
     'buy.l2': 'The report is delivered the moment you pay, so the purchase is final.',
     'buy.l3': 'Your confirmation is recorded with the time and printed on the report.',
+    // User, 2026-10-21: nobody should pay expecting a document.
+    'buy.l4': 'GaadiPe gives reports, alerts and reminders only — it does not issue an RC card, PUC, insurance or any certificate.',
     'buy.accept': 'By paying you accept the {terms}, {refund} and {privacy}.',
 
     'docs.reportsH': 'My reports',
@@ -1053,6 +1055,7 @@ export const STRINGS = {
     'buy.l1': '{price} एक बार, GST सहित। कुछ भी अपने आप रिन्यू नहीं होता।',
     'buy.l2': 'भुगतान होते ही रिपोर्ट मिल जाती है, इसलिए यह खरीद अंतिम है।',
     'buy.l3': 'आपकी पुष्टि समय के साथ दर्ज होती है और रिपोर्ट पर छपती है।',
+    'buy.l4': 'GaadiPe सिर्फ़ रिपोर्ट, अलर्ट और रिमाइंडर देता है — यह RC कार्ड, PUC, बीमा या कोई प्रमाणपत्र जारी नहीं करता।',
     'buy.accept': 'भुगतान करके आप {terms}, {refund} और {privacy} स्वीकार करते हैं।',
 
     'docs.reportsH': 'मेरी रिपोर्ट',

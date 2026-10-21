@@ -123,6 +123,7 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
         <li>· {t('buy.l1', { price })}</li>
         <li>· {t('buy.l2')}</li>
         <li>· {t('buy.l3')}</li>
+        <li className="font-semibold text-body">ℹ️ {t('buy.l4')}</li>
       </ul>
 
       {/* THE POLICIES, TICKED (user, 2026-10-08): never pre-ticked, required to pay. */}
