@@ -311,6 +311,9 @@ export const STRINGS = {
     'home.faq.source.a': 'From the national vehicle registration, e-challan and NETC FASTag records, through the Unified Logistics Interface Platform (ULIP). We reproduce those records as they stand; we do not create, alter or verify them. GaadiPe is a private service.',
     'home.faq.cover.q': 'Which vehicles are covered?',
     'home.faq.cover.a': 'Two, three and four wheelers and above, registered anywhere in India, across every state and RTO. FASTag details apply to four-wheelers and above.',
+    // User, 2026-10-21: GaadiPe issues no document; the official digital RC is free elsewhere.
+    'home.faq.rc.q': 'Do I get an RC card or a certificate?',
+    'home.faq.rc.a': 'No. GaadiPe gives reports, alerts and reminders about your vehicle — it does not issue an RC card, PUC, insurance or any certificate, and its report is not an official document. For the official digital RC, which is valid to show, use DigiLocker or the mParivahan app — both free.',
     'home.faq.app.q': 'Do I need to install an app?',
     'home.faq.app.a': 'No. Everything happens in your browser. You sign in with your mobile number and a one-time code — there is no password and nothing to download.',
     'home.faq.current.q': 'How current is it?',
@@ -849,6 +852,8 @@ export const STRINGS = {
     'home.faq.source.a': 'राष्ट्रीय वाहन पंजीकरण, ई-चालान और NETC FASTag रिकॉर्ड से, Unified Logistics Interface Platform (ULIP) के ज़रिए। हम ये रिकॉर्ड जैसे हैं वैसे दिखाते हैं; न बनाते हैं, न बदलते हैं, न सत्यापित करते हैं। GaadiPe एक निजी सेवा है।',
     'home.faq.cover.q': 'कौन-से वाहन शामिल हैं?',
     'home.faq.cover.a': 'दो, तीन और चार पहिया और बड़े वाहन, भारत में कहीं भी पंजीकृत, हर राज्य और RTO में। FASTag की जानकारी चार पहिया और बड़े वाहनों के लिए है।',
+    'home.faq.rc.q': 'क्या मुझे RC कार्ड या कोई प्रमाणपत्र मिलेगा?',
+    'home.faq.rc.a': 'नहीं। GaadiPe आपकी गाड़ी की रिपोर्ट, अलर्ट और रिमाइंडर देता है — यह RC कार्ड, PUC, बीमा या कोई प्रमाणपत्र जारी नहीं करता, और इसकी रिपोर्ट कोई आधिकारिक दस्तावेज़ नहीं है। आधिकारिक डिजिटल RC के लिए, जो दिखाने के लिए मान्य है, DigiLocker या mParivahan ऐप इस्तेमाल करें — दोनों मुफ़्त।',
     'home.faq.app.q': 'क्या कोई ऐप इंस्टॉल करना होगा?',
     'home.faq.app.a': 'नहीं। सब कुछ आपके ब्राउज़र में होता है। आप अपने मोबाइल नंबर और एक बार के कोड से साइन इन करते हैं — न पासवर्ड, न कुछ डाउनलोड।',
     'home.faq.current.q': 'यह कितना ताज़ा है?',

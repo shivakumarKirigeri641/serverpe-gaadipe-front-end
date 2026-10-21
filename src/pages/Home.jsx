@@ -365,7 +365,7 @@ export default function Home() {
         <div className="wrap py-14">
           <Reveal><h2 className="text-2xl font-bold text-ink">{t('home.faq.h')}</h2></Reveal>
           <div className="mt-6 space-y-3 stagger">
-            {['vahan', 'owner', 'source', 'cover', 'app', 'current', 'notfound', 'again'].map((k) => (
+            {['vahan', 'owner', 'source', 'cover', 'rc', 'app', 'current', 'notfound', 'again'].map((k) => (
               <Faq key={k} q={t(`home.faq.${k}.q`)}>{t(`home.faq.${k}.a${wa && k === 'app' ? '.wa' : ''}`)}</Faq>
             ))}
           </div>
