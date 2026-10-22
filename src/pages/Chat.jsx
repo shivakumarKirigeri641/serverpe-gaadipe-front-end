@@ -785,6 +785,11 @@ export default function Chat() {
   const [buying, setBuying] = useState(null);       // { reg, price } — the payment window over the chat
   const [rcAt, setRcAt] = useState(null);           // { rows, index } — the RC card over the chat
   const [menuOpen, setMenuOpen] = useState(false);
+  // The menu over everything: the hanging "we moved" tag steps out while it is open (index.css).
+  useEffect(() => {
+    document.body.classList.toggle('gp-menu-open', menuOpen);
+    return () => document.body.classList.remove('gp-menu-open');
+  }, [menuOpen]);
   /* WHERE THE MENU IS (user, 2026-10-08: "the 3 dots, users may not recognise").
      The button says "Menu" in words, and the first time someone is signed in a
      small note points at it, with a soft pulse, until they tap it or "Got it". */

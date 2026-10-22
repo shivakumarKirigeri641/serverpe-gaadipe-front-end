@@ -300,3 +300,6 @@
 .hang-swing { animation: hang-swing 2.4s ease-out both, hang-sway 9s ease-in-out 2.4s infinite; }
 .hang-sway { animation: hang-sway 9s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .hang-swing, .hang-sway { animation: none; } }
+
+/* The chat's menu is open: the hanging notice steps out of the way (2026-10-22, phones). */
+body.gp-menu-open [data-test="hanging-notice"] { display: none; }

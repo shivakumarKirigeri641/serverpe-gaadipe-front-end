@@ -110,9 +110,27 @@ export default function HangingNotice() {
   useEffect(() => { if (show && onChat) setFlag(CHAT_SEEN_KEY); }, [show, onChat]);
   const nailY = useNailY(58);
   const fold = () => { setFlag(CLOSED_KEY); setShow(false); };
+  /* ON A PHONE, A SMALL TAG FIRST (user, 2026-10-22: "make sure it is mobile responsive" — the full sign
+     covered the vehicle result on a 320 px phone and sat over the menu). Under 480 px wide it hangs as one
+     line, "📢 GaadiPe is now fully on the web ›"; a tap opens the full sign. Below the menu (z-30). */
+  const [small] = useState(() => { try { return window.innerWidth < 480; } catch { return false; } });
+  const [open, setOpen] = useState(!small);
   if (Date.now() > UNTIL.getTime() || !show || (!onHome && !onChat) || flag(AD_KEY)) return null;
+  if (!open) {
+    return (
+      <div className="pointer-events-none fixed right-3 z-30" style={{ top: `${nailY}px` }} data-test="hanging-notice">
+        <div className="hang-sign hang-swing pointer-events-auto relative pt-3">
+          <span aria-hidden="true" className="absolute left-1/2 top-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#0a4f49]" />
+          <div className="flex max-w-[calc(100vw-1.5rem)] items-center gap-1 rounded-full border-2 border-[#0a4f49] bg-[#ffd84d] py-1 pl-3 pr-1 text-[#0a4f49] shadow-lg">
+            <button type="button" onClick={() => setOpen(true)} data-test="hanging-open" className="truncate text-[12px] font-black">📢 {t.title} ›</button>
+            <button type="button" onClick={fold} aria-label={t.fold} data-test="hanging-fold" className="shrink-0 rounded-full px-1.5 text-[13px] font-black text-[#0a4f49]/70">✕</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
-    <div className="pointer-events-none fixed right-3 z-40" style={{ top: `${nailY}px` }} data-test="hanging-notice">
+    <div className="pointer-events-none fixed right-3 z-30" style={{ top: `${nailY}px` }} data-test="hanging-notice">
       <div className="hang-sign hang-swing pointer-events-auto relative pt-4">
         {/* the strings and the nail */}
         <span aria-hidden="true" className="absolute left-1/2 top-0 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#0a4f49]" />
