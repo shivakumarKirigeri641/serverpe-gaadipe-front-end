@@ -8,6 +8,7 @@ import EmailPrompt from './components/EmailCard.jsx';
 import ClickTracker from './components/ClickTracker.jsx';
 import HangingNotice from './components/HangingNotice.jsx';
 import Chat from './pages/Chat.jsx';
+import GoApp from './go/GoApp.jsx';
 
 /* THE CHAT LOADS FIRST (user, 2026-10-22: 84% of ad visitors left the chat within 5 seconds, most in
    Instagram's in-app browser). The ads open /chat, so only the chat is in the first download; every
@@ -140,6 +141,9 @@ export default function App() {
       {/* The chat (2026-10-07): free check without signing in; full-screen, installable. */}
       {/* Hidden while WhatsApp is the way in (user, 2026-10-16): /chat opens WhatsApp with Hi. */}
       <Route path="/chat" element={WEB_CHAT ? <Chat /> : <ToWhatsApp />} />
+      {/* THE GAADIPE APP (user, 2026-10-22): a dashboard of warning lights — Check, Garage, Reports, Me.
+          Where the ads point; the chat stays for existing customers and the deeper settings. */}
+      <Route path="/go/*" element={<GoApp />} />
       {/* THE OLD ACCOUNT PAGES ARE RETIRED (user, 2026-10-07: "sign-in on mobile goes to
           the old style"). Every one of them opens the chat, which does it all — so an
           old link in an email, a bookmark or a redirect always lands in the app view. */}
