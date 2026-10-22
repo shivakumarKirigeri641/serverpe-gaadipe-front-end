@@ -754,15 +754,23 @@ export default function Chat() {
   const [checkNotice, setCheckNotice] = useState(null);
   const noticeSaid = useRef(false);
   // Sign in for every check (2026-10-08; check_sign_in_required) — known before the first number is typed.
-  const [signInRequired, setSignInRequired] = useState(true);   // the default on the server too
-  /* The greeting waits for this answer (2026-10-08): whether the first check
-     needs a sign-in decides which welcome is shown. 1 s at most (was 2.5 s; user, 2026-10-22:
-     most ad visitors left within 5 seconds) — a later answer still sets the notice and the rule. */
+  // The last answer seen on this browser, so a returning visitor's greeting needs no wait.
+  const SIGN_IN_KEY = 'gp.signInRequired';
+  const [signInRequired, setSignInRequired] = useState(() => {
+    try { const v = localStorage.getItem(SIGN_IN_KEY); return v == null ? true : v === '1'; } catch { return true; }   // the server's default too
+  });
+  /* The greeting waits for this answer (2026-10-08): whether the first check needs a sign-in decides
+     which welcome is shown. 2.5 s at most — BACK FROM 1 s (2026-10-22: on a slow phone the answer came
+     later, the chat assumed "sign in first" and asked a new visitor for their mobile before any check). */
   const [noticeReady, setNoticeReady] = useState(false);
   useEffect(() => {
-    const t = setTimeout(() => setNoticeReady(true), 1000);
-    api.notice().then((n) => { setCheckNotice(n?.check || null); setSignInRequired(Boolean(n?.sign_in_required)); })
-      .catch(() => {}).finally(() => { clearTimeout(t); setNoticeReady(true); });
+    const t = setTimeout(() => setNoticeReady(true), 2500);
+    api.notice().then((n) => {
+      setCheckNotice(n?.check || null);
+      const need = Boolean(n?.sign_in_required);
+      setSignInRequired(need);
+      try { localStorage.setItem(SIGN_IN_KEY, need ? '1' : '0'); } catch { /* private mode */ }
+    }).catch(() => {}).finally(() => { clearTimeout(t); setNoticeReady(true); });
     return () => clearTimeout(t);
   }, []);
   const noticeText = checkNotice ? (lang === 'hi' ? checkNotice.hi : checkNotice.en) : '';
