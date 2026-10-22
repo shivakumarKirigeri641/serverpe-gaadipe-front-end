@@ -13,7 +13,10 @@ import obfuscator from 'vite-plugin-javascript-obfuscator';
 const obfuscate = obfuscator({
   apply: 'build',
   include: [/src\/.*\.(js|jsx)$/],
-  exclude: [/node_modules/],
+  /* App.jsx is the list of pages and loads most of them on demand — import('./pages/Home.jsx').
+     Obfuscated, those paths become hidden strings the build cannot link to the page files, and the
+     browser asks for /assets/pages/Home.jsx (2026-10-22: the landing page broke). It holds no secret. */
+  exclude: [/node_modules/, /src\/App\.jsx$/],
   options: {
     compact: true,
     identifierNamesGenerator: 'hexadecimal',
