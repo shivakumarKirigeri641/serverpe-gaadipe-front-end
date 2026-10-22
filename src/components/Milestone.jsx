@@ -7,7 +7,7 @@ import { waLink, CHECK_ON_WHATSAPP } from '../lib/api';
  * THE CELEBRATION (user, 2026-10-16: "every increment of 100 customers, launch a celebration
  * animation" — "it must always trigger for any user when landing on that page, once").
  * The server sends the latest hundred reached (site/stats.js `milestone`: 100, 200, 300 …).
- * Every landing on the home page shows it once: confetti from both sides, the number counting
+ * Each hundred is shown once per browser (2026-10-22, below — no longer on every landing): confetti from both sides, the number counting
  * up, and a way in. It closes itself after a few seconds, or on a tap. With reduced motion,
  * the card alone, no confetti.
  */
@@ -71,15 +71,25 @@ function useCountUp(target, run) {
 
 /* `value` is the hundred reached (it decides whether to celebrate); `exact` is the real count
    shown — never "200+" (user, 2026-10-16: "show exact numbers"). */
+/* ONCE PER HUNDRED (user, 2026-10-22: "avoid the popup every time — celebrate at 300, 400, 500"). A
+   browser that has seen the celebration for this hundred does not see it again until the next one. */
+const SEEN_KEY = 'gp.milestone.seen';
+const seenUpTo = () => { try { return Number(localStorage.getItem(SEEN_KEY)) || 0; } catch { return 0; } };
+
 export default function Milestone({ value, exact = null }) {
   const { t } = useLang();
-  const [open, setOpen] = useState(Boolean(value));
+  const [open, setOpen] = useState(() => Boolean(value) && value > seenUpTo());
+  // The stats arrive after the first render: decide then, and remember this hundred as seen.
+  useEffect(() => {
+    if (!value || value <= seenUpTo()) return;
+    setOpen(true);
+    try { localStorage.setItem(SEEN_KEY, String(value)); } catch { /* private mode */ }
+  }, [value]);
   const canvas = useRef(null);
   const reduced = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const shown = exact && exact >= (value || 0) ? exact : value;
   const n = useCountUp(shown || 0, open && !reduced);
 
-  useEffect(() => { setOpen(Boolean(value)); }, [value]);
   useEffect(() => {
     if (!open) return undefined;
     const stop = !reduced && canvas.current ? confetti(canvas.current) : () => {};
