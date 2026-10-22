@@ -1706,7 +1706,9 @@ export default function Chat() {
       <header className="gp-bar-in z-10 bg-gradient-to-r from-[#0a4f49] via-[#0f766e] to-[#14a08f] text-white shadow-md"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="mx-auto flex max-w-2xl items-center gap-2 px-2 py-2 sm:gap-3 sm:px-3 sm:py-2.5">
-          <div className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-sm font-black text-[#0f766e] shadow">GP
+          {/* GaadiPe's own logo, the app icon (user, 2026-10-22: "at top left, put the logo"). */}
+          <div className="relative h-10 w-10 shrink-0">
+            <img src="/icon-192.png" alt="GaadiPe" width="40" height="40" className="h-10 w-10 rounded-xl bg-white shadow" />
             <span className="gp-online absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[#0a4f49] bg-[#22c55e]" aria-hidden="true" />
           </div>
           <div className="min-w-0 flex-1 leading-tight">
