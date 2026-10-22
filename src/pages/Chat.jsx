@@ -28,13 +28,6 @@ import { saveBlob } from '../components/ui.jsx';
  * verified (the sign-in answers every number the same).
  */
 
-/* Asked before a language is chosen, so in both at once (2026-10-10). */
-const LANG_ASK = {
-  hello: '👋 Welcome to *GaadiPe*!\nGaadiPe में आपका स्वागत है!',
-  which: 'Which language would you like to chat in?\nआप किस भाषा में बात करना चाहेंगे?',
-  hint: 'Tap a language above · ऊपर भाषा चुनें',
-};
-
 const T = {
   en: {
     /* ONE FREE LOOK FIRST (user, 2026-10-08: visitors came to type a vehicle
@@ -733,7 +726,7 @@ const time = (at) => {
 
 export default function Chat() {
   const { me, ready, signIn, signOut, setMe } = useSession();
-  const { lang, setLang, chosen } = useLang();
+  const { lang, setLang } = useLang();
   const L = T[lang === 'hi' ? 'hi' : 'en'];
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
@@ -759,10 +752,11 @@ export default function Chat() {
   // Sign in for every check (2026-10-08; check_sign_in_required) — known before the first number is typed.
   const [signInRequired, setSignInRequired] = useState(true);   // the default on the server too
   /* The greeting waits for this answer (2026-10-08): whether the first check
-     needs a sign-in decides which welcome is shown. 2.5 s at most. */
+     needs a sign-in decides which welcome is shown. 1 s at most (was 2.5 s; user, 2026-10-22:
+     most ad visitors left within 5 seconds) — a later answer still sets the notice and the rule. */
   const [noticeReady, setNoticeReady] = useState(false);
   useEffect(() => {
-    const t = setTimeout(() => setNoticeReady(true), 2500);
+    const t = setTimeout(() => setNoticeReady(true), 1000);
     api.notice().then((n) => { setCheckNotice(n?.check || null); setSignInRequired(Boolean(n?.sign_in_required)); })
       .catch(() => {}).finally(() => { clearTimeout(t); setNoticeReady(true); });
     return () => clearTimeout(t);
@@ -958,30 +952,14 @@ export default function Chat() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const bot = useCallback((text, extra = {}) => push({ from: 'bot', kind: 'text', text, ...extra }), [push]);
 
-  /* LANGUAGE FIRST, IN THE CHAT (user, 2026-10-10: "ask for language after welcome,
-     then the full conversation in the selected language"). A visitor who has not
-     chosen yet gets a welcome in both languages and two buttons; the opening below
-     then runs once, in the language picked — never both languages again. */
-  const openAfterLang = useRef(false);
+  /* STRAIGHT TO THE OPENING (user, 2026-10-22: visitors left on "Tap a language above"). The language
+     is no longer asked: the phone's language is used (lib/i18n.jsx), and 🌐 at the top switches it. */
   useEffect(() => {
     if (!ready || !noticeReady || greeted.current) return;
     greeted.current = true;
-    if (!chosen) {
-      openAfterLang.current = true;
-      bot(LANG_ASK.hello, { pace: 500 });
-      bot(LANG_ASK.which, { pace: 600, chips: ['lang:en', 'lang:hi'] });
-      return;
-    }
     opening();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, me, noticeReady]);
-  // Picked (a button here, or the header switch): the opening, in that language.
-  useEffect(() => {
-    if (!chosen || !openAfterLang.current) return;
-    openAfterLang.current = false;
-    opening();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chosen, lang]);
 
   /* First open: greet, once. Signed in: welcome back + their WhatsApp history. */
   function opening() {
@@ -1616,11 +1594,9 @@ export default function Chat() {
   /* ────────────────────────────── chips and buttons ── */
 
   function chip(key) {
-    // The language, asked in the chat; the opening follows in it (the effect on `chosen`).
+    // A language button left in an older saved chat (the question is gone, 2026-10-22): switch, as 🌐 does.
     if (key.startsWith('lang:')) {
-      const l = key.slice(5) === 'hi' ? 'hi' : 'en';
-      push({ from: 'me', kind: 'text', text: l === 'hi' ? 'हिंदी' : 'English' });
-      setLang(l);
+      if ((key.slice(5) === 'hi' ? 'hi' : 'en') !== lang) switchLang();
       return;
     }
     // "What do I get?" lives with the signed-in options now (user, 2026-10-08: the welcome already says it all).
@@ -1694,9 +1670,8 @@ export default function Chat() {
   const lastBot = [...items].reverse().find((x) => x.from === 'bot' && x.kind !== 'typing');
   const tapToo = mode === 'plate' && Boolean(lastBot && (lastBot.chips?.length
     || !['text', 'welcome', 'note', 'freeTerms', 'file'].includes(lastBot.kind)));
-  // No language yet: only the two buttons — typing waits, so the terms line is read in the chosen language first.
-  const hintText = !chosen ? LANG_ASK.hint : (mode === 'ecode' ? L.placeholderEmailCode : L.hint[mode] || L.hint.plate) + (tapToo ? L.hint.tap : '');
-  const placeholder = !chosen ? LANG_ASK.hint : { mobile: L.placeholderMobile, code: L.placeholderCode, ecode: L.placeholderEmailCode, name: L.placeholderName, email: L.placeholderEmail }[mode] || L.placeholderPlate;
+  const hintText = (mode === 'ecode' ? L.placeholderEmailCode : L.hint[mode] || L.hint.plate) + (tapToo ? L.hint.tap : '');
+  const placeholder = { mobile: L.placeholderMobile, code: L.placeholderCode, ecode: L.placeholderEmailCode, name: L.placeholderName, email: L.placeholderEmail }[mode] || L.placeholderPlate;
   const typed = mode === 'name' || mode === 'email';   // free text: no capitals forced, no digit spacing
   const plateHint = mode === 'plate' && looksLikePlate(input);
 
@@ -1726,7 +1701,7 @@ export default function Chat() {
           </div>
           {/* Hindi / English in one tap (user, 2026-10-08: "I don't see the Hindi toggle") — it
               was only inside the menu. Shows the language it switches TO. */}
-          <button type="button" data-test="lang-toggle" onClick={() => (chosen ? switchLang() : setLang(lang === 'hi' ? 'en' : 'hi'))}
+          <button type="button" data-test="lang-toggle" onClick={switchLang}
             aria-label={lang === 'hi' ? 'Switch to English' : 'हिंदी में बदलें'}
             className="flex items-center gap-1 rounded-full border border-white/40 bg-white/10 px-2.5 py-1 text-[12px] font-bold hover:bg-white/25 active:scale-95">
             <span aria-hidden="true">🌐</span>{lang === 'hi' ? 'EN' : 'हिंदी'}
@@ -1883,7 +1858,7 @@ export default function Chat() {
                 inputMode={mode === 'email' ? 'email' : mode === 'plate' || mode === 'name' ? 'text' : 'numeric'}
                 autoComplete={{ mobile: 'tel', code: 'one-time-code', ecode: 'one-time-code', name: 'name', email: 'email' }[mode] || 'off'}
                 autoCapitalize={mode === 'name' ? 'words' : mode === 'email' ? 'none' : undefined}
-                maxLength={{ code: 6, ecode: 4, name: 60, email: 160 }[mode] || 20} disabled={busy || !chosen}
+                maxLength={{ code: 6, ecode: 4, name: 60, email: 160 }[mode] || 20} disabled={busy}
                 className={`w-full rounded-2xl border bg-[#f6f9f9] px-4 py-3 text-[15px] outline-none transition focus:border-[#0f766e] focus:bg-white ${mode === 'plate' ? 'uppercase tracking-wider' : typed ? '' : 'tracking-widest'} placeholder:normal-case placeholder:tracking-normal ${plateHint ? 'border-[#12a150]' : 'border-black/10'}`} />
               {plateHint && <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#12a150]">✓ {prettyPlate(input)}</span>}
             </div>

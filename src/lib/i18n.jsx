@@ -1121,11 +1121,15 @@ const Ctx = createContext(null);
 
 const stored = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
 
+/* NO LANGUAGE QUESTION (user, 2026-10-22: visitors left on "Tap a language above"). Until someone picks
+   one with the 🌐 switch, the phone's own language decides: Hindi when the phone is set to Hindi,
+   English otherwise. A guess is not saved, so the phone's setting keeps deciding until they pick. */
+const fromPhone = () => {
+  try { return (navigator.languages || [navigator.language]).some((l) => /^hi\b/i.test(String(l))) ? 'hi' : 'en'; } catch { return 'en'; }
+};
+
 export function LanguageProvider({ children }) {
-  const [lang, setLangState] = useState(() => {
-    const s = stored();
-    return s === 'hi' || s === 'en' ? s : null;
-  });
+  const [lang, setLangState] = useState(() => { const s = stored(); return s === 'hi' || s === 'en' ? s : fromPhone(); });
 
   // The page's own language, so screen readers and the browser's translate
   // offer both know what they are looking at.

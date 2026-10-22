@@ -49,7 +49,9 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- The fonts never hold up the first paint (2026-10-22): the phone's own font shows until they arrive. -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet" /></noscript>
 
     <!-- Structured data: what GaadiPe is, what it sells, and the answers to the
          questions people search for. The prices here are the ones charged. -->
@@ -107,7 +109,17 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Shown the moment the page arrives, until the app replaces it (2026-10-22: Instagram's in-app
+         browser showed a blank page while the script loaded, and most ad visitors left in 5 seconds). -->
+    <div id="root"><div style="position:fixed;inset:0;display:grid;place-items:center;background:#0b4f4a;font-family:system-ui,sans-serif;text-align:center;color:#fff">
+      <div>
+        <div style="margin:0 auto;width:44px;height:44px;border-radius:12px;background:#ffd84d;color:#0a4f49;display:grid;place-items:center;font-weight:800;font-size:14px">GP</div>
+        <div style="margin-top:12px;font-size:18px;font-weight:700">GaadiPe</div>
+        <div style="margin-top:4px;font-size:12px;opacity:.75">Check any vehicle · गाड़ी जाँचें</div>
+        <div style="margin:16px auto 0;width:22px;height:22px;border-radius:50%;border:3px solid rgba(255,255,255,.25);border-top-color:#ffd84d;animation:gp-spin .8s linear infinite"></div>
+      </div>
+      <style>@keyframes gp-spin{to{transform:rotate(360deg)}}</style>
+    </div></div>
     <script type="module" src="/src/main.jsx"></script>
     <noscript>
       <div style="padding:40px;font-family:system-ui;max-width:640px;margin:0 auto">

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useSession } from './lib/session';
 import { api, WEB_LOGIN, WEB_CHAT } from './lib/api';
@@ -6,18 +6,35 @@ import { startSession, pageView, watchWhatsAppLinks, startHeartbeat, journey } f
 import EmailPrompt from './components/EmailCard.jsx';
 import ClickTracker from './components/ClickTracker.jsx';
 import HangingNotice from './components/HangingNotice.jsx';
-import Home from './pages/Home.jsx';
-import Policy from './pages/Policy.jsx';
-import Support from './pages/Support.jsx';
-import Feedback from './pages/Feedback.jsx';
-import Refer from './pages/Refer.jsx';
-import ReferLanding from './pages/ReferLanding.jsx';
-import SupportTicket from './pages/SupportTicket.jsx';
-import ReferralLanding from './pages/ReferralLanding.jsx';
-import OnWhatsApp from './pages/OnWhatsApp.jsx';
-import GoWhatsApp from './pages/GoWhatsApp.jsx';
-import ShareReport from './pages/ShareReport.jsx';
 import Chat from './pages/Chat.jsx';
+
+/* THE CHAT LOADS FIRST (user, 2026-10-22: 84% of ad visitors left the chat within 5 seconds, most in
+   Instagram's in-app browser). The ads open /chat, so only the chat is in the first download; every
+   other page is fetched when it is opened. */
+const Home = lazy(() => import('./pages/Home.jsx'));
+const Policy = lazy(() => import('./pages/Policy.jsx'));
+const Support = lazy(() => import('./pages/Support.jsx'));
+const Feedback = lazy(() => import('./pages/Feedback.jsx'));
+const Refer = lazy(() => import('./pages/Refer.jsx'));
+const ReferLanding = lazy(() => import('./pages/ReferLanding.jsx'));
+const SupportTicket = lazy(() => import('./pages/SupportTicket.jsx'));
+const ReferralLanding = lazy(() => import('./pages/ReferralLanding.jsx'));
+const OnWhatsApp = lazy(() => import('./pages/OnWhatsApp.jsx'));
+const GoWhatsApp = lazy(() => import('./pages/GoWhatsApp.jsx'));
+const ShareReport = lazy(() => import('./pages/ShareReport.jsx'));
+
+// While a page's code arrives: the same "Opening…" screen as index.html's.
+function Opening() {
+  return (
+    <div className="grid min-h-screen place-items-center bg-brand-deep px-6">
+      <div className="text-center">
+        <span className="mx-auto grid h-11 w-11 place-items-center rounded-xl bg-brand-accent text-sm font-bold text-white">GP</span>
+        <p className="mt-3 text-lg font-semibold text-white">GaadiPe</p>
+        <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-white/50">Opening…</p>
+      </div>
+    </div>
+  );
+}
 
 /**
  * The public pages render for anybody. The account area waits until the panel
@@ -112,6 +129,7 @@ export default function App() {
     <ClickTracker />
     {/* The landing page, and the chat on the first visit only (2026-10-21; components/HangingNotice). */}
     <HangingNotice />
+    <Suspense fallback={<Opening />}>
     <Routes>
       <Route path="/" element={<Home />} />
       {/* gaadipe.in/wa — straight into the WhatsApp chat; the link the DLT SMS carries (2026-10-13). */}
@@ -160,6 +178,7 @@ export default function App() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </Suspense>
     </>
   );
 }

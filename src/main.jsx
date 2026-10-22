@@ -4,7 +4,6 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import { SessionProvider } from './lib/session.jsx';
 import { LanguageProvider } from './lib/i18n.jsx';
-import LanguageGate from './components/LanguageGate.jsx';
 import './index.css';
 import { capture as installCapture } from './lib/install';
 
@@ -22,7 +21,6 @@ createRoot(document.getElementById('root')).render(
       <LanguageProvider>
         <SessionProvider>
           <App />
-          <LanguageGate />
         </SessionProvider>
       </LanguageProvider>
     </BrowserRouter>
