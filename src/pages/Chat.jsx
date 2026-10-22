@@ -8,6 +8,7 @@ import BuyDialog from '../components/BuyDialog.jsx';
 import * as notify from '../lib/notify';
 import * as install from '../lib/install';
 import { journey, interaction, scrollSource, onEnded } from '../lib/track';
+import { pixelChecked, pixelCodeAsked, pixelSignedIn, pixelPaid } from '../lib/pixel';
 import EmailVerify from '../components/EmailVerify.jsx';
 import VehicleArt from '../components/VehicleArt.jsx';
 import { saveBlob } from '../components/ui.jsx';
@@ -94,6 +95,8 @@ const T = {
     plateNoted: (r) => `👍 Noted *${r}* — I’ll check it right after you sign in. Your *mobile number*, please.`,
     checking: (r) => `Checking *${r}* …`,
     placeholderPlate: 'Type a vehicle number…',
+    // Above the typing box for a new visitor, until their first answer (user, 2026-10-22: trust for strangers from the ads).
+    newcomer: { free: 'First check free', noApp: 'No app, no sign-up', open: 'All India' },
     placeholderMobile: 'Your 10-digit mobile number',
     placeholderCode: '6-digit code from SMS',
     termsH: '📜 Before you sign in',
@@ -413,6 +416,7 @@ const T = {
     plateNoted: (r) => `👍 *${r}* नोट कर लिया — साइन इन होते ही इसकी जाँच करूँगा। कृपया अपना *मोबाइल नंबर* लिखें।`,
     checking: (r) => `*${r}* की जाँच हो रही है…`,
     placeholderPlate: 'गाड़ी नंबर लिखें…',
+    newcomer: { free: 'पहली जाँच मुफ़्त', noApp: 'कोई ऐप या साइन-अप नहीं', open: 'पूरे भारत में' },
     placeholderMobile: 'अपना 10 अंकों का मोबाइल नंबर',
     placeholderCode: 'SMS का 6 अंकों का कोड',
     termsH: '📜 साइन इन से पहले',
@@ -1028,15 +1032,18 @@ export default function Chat() {
       else afterSignIn.current = { ...(afterSignIn.current || {}), open };
     }
     if (params.get('signin') || open || next) {
-      const rest = new URLSearchParams(params); ['signin', 'open', 'next'].forEach((k) => rest.delete(k)); setParams(rest, { replace: true });
+      const rest = new URLSearchParams(params); ['signin', 'open', 'next', 'amt'].forEach((k) => rest.delete(k)); setParams(rest, { replace: true });
       // The greeting above has already asked for the mobile (both modes).
     }
     // Back from paying (?paid=REG): the report opens right here in the chat.
     const paid = cleanPlate(params.get('paid'));
+    // The amount paid (?amt=, rupees, from the checkout's return link) for the Meta Pixel's Purchase.
+    const amt = Number(params.get('amt')) || 0;
+    if (amt > 0) pixelPaid(amt, `${paid || params.get('open') || 'pay'}.${amt}`);
     // From the "free monitoring ends" reminder (?from=free_end): one tap on why, if they do not continue.
     const fromFreeEnd = params.get('from') === 'free_end';
     if ((reg && looksLikePlate(reg)) || paid) {
-      const rest = new URLSearchParams(params); rest.delete('reg'); rest.delete('paid'); rest.delete('from'); setParams(rest, { replace: true });
+      const rest = new URLSearchParams(params); rest.delete('reg'); rest.delete('paid'); rest.delete('from'); rest.delete('amt'); setParams(rest, { replace: true });
       if (paid && me) {
         setTimeout(() => { journey({ step: 'paid', section: `full report · ${paid}` }); bot(L.paidThanks(prettyPlate(paid))); openVehicle(paid, { afterPayment: true }); }, 600);
         // No confirmed email: the full challan details go there — asked every purchase (2026-10-20).
@@ -1204,6 +1211,7 @@ export default function Chat() {
       // Not marked as used after one any more (2026-10-10: 2 a day) — the server says when they are used up.
       journey({ step: 'viewing', section: `free check result · ${reg}` });
       interaction('view', `Saw the free check of ${reg}`, { reg_no: reg });
+      pixelChecked();
       bot(L.free.foundIntro(prettyPlate(reg)), { pace: 500 });
       push({ from: 'bot', kind: 'freeVehicle', vehicle: out.vehicle, price: out.price_paise });
       bot(L.free.nudge, { pace: 1300, chips: ['another', 'howWorks'] });
@@ -1240,6 +1248,7 @@ export default function Chat() {
     try {
       const out = await api.requestCode(m);
       if (!out.ok) { bot(`⚠️ ${out.message}`); return; }
+      pixelCodeAsked();
       setMobile(m); setMode('code');
       saveSigning({ stage: 'code', mobile: m });
       bot(L.codeSent(`${m.slice(0, 5)} ${m.slice(5)}`));
@@ -1255,6 +1264,7 @@ export default function Chat() {
       const out = await api.verifyCode(mobile, code, false, offersOptIn, termsOk);
       if (!out.ok) { bot(`⚠️ ${out.message}`); return; }
       await signIn(out.token, out.user);
+      pixelSignedIn();
       // Their earlier conversation (saved on this device) first, then this visit's messages.
       if (out.user?.id) {
         const earlier = loadFor(out.user.id);
@@ -1839,6 +1849,16 @@ export default function Chat() {
       {/* Quick actions and the composer, above the keyboard. */}
       <footer className="gp-composer border-t border-black/5 bg-white/95 backdrop-blur" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="mx-auto max-w-2xl">
+          {/* WHY TRUST IT, for a new visitor (user, 2026-10-22): until their first answer, a line of plain
+              facts above the box — only while the first check needs no sign-in. (The header's strip already
+              says where the records come from.) */}
+          {!me && !signInRequired && mode === 'plate' && !items.some((x) => x.kind === 'freeVehicle') && (
+            <div data-test="trust-line" className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 px-4 pt-2 text-[11px] font-semibold text-[#0f766e]">
+              {[L.newcomer.free, L.newcomer.noApp, L.newcomer.open].map((s) => (
+                <span key={s} className="flex items-center gap-1"><span aria-hidden="true">✓</span>{s}</span>
+              ))}
+            </div>
+          )}
           {/* What to do next, always in sight: type this — or tap a button above (user, 2026-10-10). */}
           <div className="flex items-center justify-between gap-2 px-4 pt-2 text-[12px] font-medium text-[#0a4f49]/70">
             <span data-test="compose-hint" className="flex min-w-0 items-center gap-1.5"><span aria-hidden="true">⌨️</span><span className="truncate">{hintText}</span></span>

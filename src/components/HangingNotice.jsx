@@ -82,6 +82,20 @@ const CHAT_SEEN_KEY = `${KEY}.chat-seen`;
 const flag = (k) => { try { return Boolean(localStorage.getItem(k)); } catch { return false; } };
 const setFlag = (k) => { try { localStorage.setItem(k, String(Date.now())); } catch { /* private mode */ } };
 
+/* NOT FOR NEW PEOPLE FROM THE ADS (user, 2026-10-22: to a stranger from Instagram, "Meta has closed
+   GaadiPe's WhatsApp account" reads like a warning, not news — and some closed it and left). The notice
+   is for the old WhatsApp customers. A visit that came from a Meta ad — utm_source meta/facebook/instagram,
+   a Facebook click id, or Instagram's or Facebook's own browser — never shows it, now or on a later visit. */
+const AD_KEY = 'gp.hang.from-ad';
+(() => {
+  try {
+    const q = new URLSearchParams(window.location.search);
+    const fromAd = /^(meta|facebook|fb|instagram|ig)$/i.test(q.get('utm_source') || '') || q.has('fbclid')
+      || /Instagram|FBAN|FBAV|FB_IAB/i.test(navigator.userAgent || '');
+    if (fromAd) setFlag(AD_KEY);
+  } catch { /* never break the page */ }
+})();
+
 export default function HangingNotice() {
   const { lang } = useLang();
   // WhatsApp-first build: the new number; web-first build: where GaadiPe works now.
@@ -96,7 +110,7 @@ export default function HangingNotice() {
   useEffect(() => { if (show && onChat) setFlag(CHAT_SEEN_KEY); }, [show, onChat]);
   const nailY = useNailY(58);
   const fold = () => { setFlag(CLOSED_KEY); setShow(false); };
-  if (Date.now() > UNTIL.getTime() || !show || (!onHome && !onChat)) return null;
+  if (Date.now() > UNTIL.getTime() || !show || (!onHome && !onChat) || flag(AD_KEY)) return null;
   return (
     <div className="pointer-events-none fixed right-3 z-40" style={{ top: `${nailY}px` }} data-test="hanging-notice">
       <div className="hang-sign hang-swing pointer-events-auto relative pt-4">

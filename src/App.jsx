@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useSession } from './lib/session';
 import { api, WEB_LOGIN, WEB_CHAT } from './lib/api';
 import { startSession, pageView, watchWhatsAppLinks, startHeartbeat, journey } from './lib/track';
+import { pixelPage } from './lib/pixel';
 import EmailPrompt from './components/EmailCard.jsx';
 import ClickTracker from './components/ClickTracker.jsx';
 import HangingNotice from './components/HangingNotice.jsx';
@@ -99,7 +100,7 @@ function PageViews() {
   useEffect(() => {
     if (pathname !== '/chat') journey({ step: pathname === '/' ? 'home' : pathname.replace(/^\//, '').split('/')[0] || 'home', section: null });
   }, [pathname]);
-  useEffect(() => { pageView(); }, [pathname, search]);
+  useEffect(() => { pageView(); pixelPage(); }, [pathname, search]);
   /* Also recorded for the Live screen (user, 2026-09-21): which page a
      signed-in customer is on. Re-sent when they sign in on the same page. */
   useEffect(() => {
