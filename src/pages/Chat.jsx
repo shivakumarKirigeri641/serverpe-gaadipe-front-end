@@ -668,8 +668,10 @@ const T = {
    with the welcome; nothing from an earlier sign-in is ever shown to them.
    gp.chat.v1 was the old shared key, removed on load. */
 // The "WhatsApp account was disabled" line only on the web-first build (WhatsApp-first again, user 2026-10-12).
-const noteAfter = (L) => (WHATSAPP_ENABLED ? '' : `\n\n${L.webNote}`);
-const noteLines = (L) => (WHATSAPP_ENABLED ? [] : ['', L.webNote]);
+/* The "moved to the web — Meta closed our WhatsApp" line under the chat's welcomes is no longer said
+   (user, 2026-10-23: "remove this"). L.webNote stays in the dictionary, unused, should it be needed again. */
+const noteAfter = () => '';
+const noteLines = () => [];
 
 const STORE = 'gp.chat.u.';
 const OLD_STORE = 'gp.chat.v1';
