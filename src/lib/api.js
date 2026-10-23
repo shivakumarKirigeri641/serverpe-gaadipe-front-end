@@ -28,6 +28,9 @@ export const WHATSAPP = import.meta.env.VITE_WHATSAPP || '917353122415';   // ne
  * this hides the doors to it, it does not close them.
  */
 export const WHATSAPP_ENABLED = import.meta.env.VITE_WHATSAPP_ENABLED === '1';
+/* "Try in WhatsApp" on the landing page (user, 2026-10-23): GaadiPe's WhatsApp number for that one button,
+   shown even while the site is web-first. Empty = no button. */
+export const WHATSAPP_TRY = String(import.meta.env.VITE_WHATSAPP_TRY || '').replace(/\D/g, '');
 
 /**
  * Is there a web account at all? (user, 2026-09-25)

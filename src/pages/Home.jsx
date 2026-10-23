@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '../lib/session.jsx';
-import { api, waLink, WHATSAPP_ENABLED, WEB_LOGIN, CHECK_ON_WHATSAPP } from '../lib/api';
+import { api, waLink, WHATSAPP_ENABLED, WEB_LOGIN, CHECK_ON_WHATSAPP, WHATSAPP_TRY } from '../lib/api';
 import WhatsAppCta from '../components/WhatsAppCta.jsx';
 import { rupees } from '../lib/format';
 import { useLang, Rich } from '../lib/i18n.jsx';
@@ -141,6 +141,18 @@ export default function Home() {
                 </button>
               </form>
             )}
+            {/* TRY IN WHATSAPP (user, 2026-10-23): a second way in, beside the web check — opens a chat with
+                GaadiPe's WhatsApp number with "Hi" already typed. Its own number (VITE_WHATSAPP_TRY), so it
+                does not depend on the site's WhatsApp-first switch. */}
+            {!wa && WHATSAPP_TRY ? (
+              <a href={`https://wa.me/${WHATSAPP_TRY}?text=${encodeURIComponent('Hi')}`} target="_blank" rel="noopener noreferrer"
+                data-test="home-try-wa"
+                className="anim-up mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#25d366] bg-white px-5 py-3 text-[15px] font-bold text-[#128c4a] transition hover:bg-[#f0fdf4] sm:w-auto"
+                style={{ animationDelay: '.26s' }}>
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="#25d366" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1.9 2 1.2 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z" /></svg>
+                Try in WhatsApp
+              </a>
+            ) : null}
             {/* Typing and sending a number is agreeing (user, 2026-10-14). */}
             {!wa && (
               <p className="mt-2 text-2xs text-muted" data-test="home-send-terms">
