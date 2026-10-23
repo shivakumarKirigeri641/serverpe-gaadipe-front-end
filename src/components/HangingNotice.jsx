@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useLang } from '../lib/i18n.jsx';
-import { WHATSAPP_ENABLED, WHATSAPP, waLink } from '../lib/api';
+import { api, WHATSAPP_ENABLED, WHATSAPP, waLink } from '../lib/api';
 
 /*
  * THE HANGING NOTICE (user, 2026-10-10: "a hanging label saying GaadiPe is now serving on
@@ -103,11 +103,16 @@ export default function HangingNotice() {
   const { pathname } = useLocation();
   const onHome = pathname === '/';
   const onChat = pathname.startsWith('/chat');
+  /* ONLY WHILE THE SERVER SAYS SO (user, 2026-10-23: WhatsApp live again — "remove 'GaadiPe is now fully on
+     the web'"): /notice moved_notice, switched by scripts/wa-button.js web-only | whatsapp. Hidden until the
+     server answers yes, so it never flashes up when it is off. */
+  const [serverOn, setServerOn] = useState(false);
+  useEffect(() => { api.notice().then((n) => setServerOn(n?.moved_notice === true)).catch(() => setServerOn(false)); }, []);
   // Decided once per page: in the chat, shown only if it was never shown there before.
   const [show, setShow] = useState(() => !flag(CLOSED_KEY) && (onHome || (onChat && !flag(CHAT_SEEN_KEY))));
   useEffect(() => { setShow(!flag(CLOSED_KEY) && (onHome || (onChat && !flag(CHAT_SEEN_KEY)))); }, [onHome, onChat]);
-  // Seen in the chat now: not again on a later chat visit.
-  useEffect(() => { if (show && onChat) setFlag(CHAT_SEEN_KEY); }, [show, onChat]);
+  // Seen in the chat now: not again on a later chat visit (only when it was actually shown).
+  useEffect(() => { if (show && serverOn && onChat) setFlag(CHAT_SEEN_KEY); }, [show, serverOn, onChat]);
   const nailY = useNailY(58);
   const fold = () => { setFlag(CLOSED_KEY); setShow(false); };
   /* ON A PHONE, A SMALL TAG FIRST (user, 2026-10-22: "make sure it is mobile responsive" — the full sign
@@ -115,7 +120,7 @@ export default function HangingNotice() {
      line, "📢 GaadiPe is now fully on the web ›"; a tap opens the full sign. Below the menu (z-30). */
   const [small] = useState(() => { try { return window.innerWidth < 480; } catch { return false; } });
   const [open, setOpen] = useState(!small);
-  if (Date.now() > UNTIL.getTime() || !show || (!onHome && !onChat) || flag(AD_KEY)) return null;
+  if (!serverOn || Date.now() > UNTIL.getTime() || !show || (!onHome && !onChat) || flag(AD_KEY)) return null;
   if (!open) {
     return (
       <div className="pointer-events-none fixed right-3 z-30" style={{ top: `${nailY}px` }} data-test="hanging-notice">
