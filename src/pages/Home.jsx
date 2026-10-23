@@ -31,6 +31,10 @@ export default function Home() {
   const { t, lang } = useLang();
   const [pricing, setPricing] = useState(null);
   const [reg, setReg] = useState('');
+  /* "Try in WhatsApp" follows the server's switch (site_whatsapp_try, scripts/wa-button.js): hidden until the
+     server says yes, so a WhatsApp outage hides it at once without a new build. */
+  const [tryWa, setTryWa] = useState(false);
+  useEffect(() => { api.notice().then((n) => setTryWa(n?.whatsapp_try === true)).catch(() => setTryWa(false)); }, []);
   const navigate = useNavigate();
 
   /* gaadipe.in IS the home page, on a phone too (user, 2026-10-08: "you are
@@ -144,7 +148,7 @@ export default function Home() {
             {/* TRY IN WHATSAPP (user, 2026-10-23): a second way in, beside the web check — opens a chat with
                 GaadiPe's WhatsApp number with "Hi" already typed. Its own number (VITE_WHATSAPP_TRY), so it
                 does not depend on the site's WhatsApp-first switch. */}
-            {!wa && WHATSAPP_TRY ? (
+            {!wa && WHATSAPP_TRY && tryWa ? (
               <a href={`https://wa.me/${WHATSAPP_TRY}?text=${encodeURIComponent('Hi')}`} target="_blank" rel="noopener noreferrer"
                 data-test="home-try-wa"
                 className="anim-up mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#25d366] bg-white px-5 py-3 text-[15px] font-bold text-[#128c4a] transition hover:bg-[#f0fdf4] sm:w-auto"
