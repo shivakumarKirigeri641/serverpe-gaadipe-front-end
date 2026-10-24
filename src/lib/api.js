@@ -74,9 +74,9 @@ export const WEB_CHAT = !WHATSAPP_ENABLED || import.meta.env.VITE_WEB_CHAT === '
 export const QUIZPE_ENABLED = import.meta.env.VITE_QUIZPE_ENABLED === '1';
 // Every link into the chat carries the visitor's code ("Hi #K7Q2M"), which the
 // bot reads to join this visit to the conversation (lib/track.js).
-export const waLink = (text) => {
+export const waLink = (text, number = WHATSAPP) => {
   const t = withCode(text || 'Hi');
-  return `https://wa.me/${WHATSAPP}${t ? `?text=${encodeURIComponent(t)}` : ''}`;
+  return `https://wa.me/${number}${t ? `?text=${encodeURIComponent(t)}` : ''}`;
 };
 
 /* The sign-in is kept SEALED on the device (lib/vault.js, 2026-10-07): AES-256
