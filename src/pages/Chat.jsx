@@ -371,7 +371,7 @@ const T = {
     askEmailOnly: (cur, ok) => `${cur ? `Your email now is *${cur}*${ok ? ' ✓' : ' (not confirmed yet)'}.\n\n` : ''}Type the *email address* for your reports, invoices and vehicle alerts — I’ll send a *4-digit code* to confirm it.`,
     placeholderEmailCode: '4-digit code from the email',
     signOutH: '↪ Sign out?', signOutBody: 'You will need your mobile number and an SMS code to sign in again on this phone. Notifications to this phone stop; SMS and email alerts for your vehicles continue — to stop everything, deactivate your account.',
-    signOutYes: 'Sign out', deactReasons: ['I don’t need GaadiPe any more', 'I sold my vehicle', 'Too expensive', 'I got wrong or old information', 'Privacy concerns', 'Other'],
+    signOutYes: 'Sign out', deactReasons: ['I don’t need GaadiPe any more', 'I sold my vehicle', 'Too expensive', 'I got wrong or old information', 'Privacy concerns', 'I don’t want my number stored', 'Other'],
     deactWhy: 'Why are you leaving?', deactOther: 'Tell us a little more', deactFresh: 'If you sign in again later, it will be a completely new, empty account — your old vehicles and reports will not come back.',
   },
   hi: {
@@ -658,7 +658,7 @@ const T = {
     askEmailOnly: (cur, ok) => `${cur ? `अभी आपका ईमेल *${cur}* है${ok ? ' ✓' : ' (अभी कन्फ़र्म नहीं)'}।\n\n` : ''}रिपोर्ट, बिल और गाड़ियों के अलर्ट के लिए अपना *ईमेल पता* लिखें — कन्फ़र्म करने के लिए मैं *4 अंकों का कोड* भेजूँगा।`,
     placeholderEmailCode: 'ईमेल का 4 अंकों का कोड',
     signOutH: '↪ साइन आउट करें?', signOutBody: 'इस फ़ोन पर दोबारा साइन इन के लिए मोबाइल नंबर और SMS कोड लगेगा। इस फ़ोन पर नोटिफ़िकेशन बंद हो जाएँगे; आपकी गाड़ियों के SMS और ईमेल अलर्ट जारी रहेंगे — सब कुछ बंद करने के लिए खाता बंद करें।',
-    signOutYes: 'साइन आउट', deactReasons: ['अब GaadiPe की ज़रूरत नहीं', 'मैंने गाड़ी बेच दी', 'बहुत महँगा', 'जानकारी गलत या पुरानी मिली', 'प्राइवेसी की चिंता', 'अन्य'],
+    signOutYes: 'साइन आउट', deactReasons: ['अब GaadiPe की ज़रूरत नहीं', 'मैंने गाड़ी बेच दी', 'बहुत महँगा', 'जानकारी गलत या पुरानी मिली', 'प्राइवेसी की चिंता', 'मैं नहीं चाहता कि मेरा नंबर रखा जाए', 'अन्य'],
     deactWhy: 'आप क्यों जा रहे हैं?', deactOther: 'थोड़ा और बताएँ', deactFresh: 'बाद में दोबारा साइन इन करने पर बिल्कुल नया, खाली खाता बनेगा — पुरानी गाड़ियाँ और रिपोर्ट वापस नहीं आएँगी।',
   },
 };
