@@ -1,7 +1,7 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useSession } from '../lib/session';
-import { api, waLink, WHATSAPP_ENABLED, QUIZPE_ENABLED, WEB_LOGIN, CHECK_ON_WHATSAPP } from '../lib/api';
+import { api, waLink, WHATSAPP_ENABLED, QUIZPE_ENABLED, WEB_LOGIN, CHECK_ON_WHATSAPP, WHATSAPP_TRY } from '../lib/api';
 import { useLang } from '../lib/i18n.jsx';
 
 /**
@@ -25,8 +25,16 @@ export default function Layout({ children, wide = false }) {
   // The notice from the admin panel (2026-10-07: WhatsApp unavailable). Read
   // once per visit; a failure simply shows nothing.
   const [notice, setNotice] = useState(null);
-  useEffect(() => { api.notice().then((n) => setNotice(n?.on ? n : null)).catch(() => {}); }, []);
+  /* "Check in WhatsApp" beside "Check a vehicle" in the header (user, 2026-10-25) — only while the server's
+     switch says so (site_whatsapp_try; the failsafe turns it off on a ban). Read with the notice. */
+  const [tryWa, setTryWa] = useState(false);
+  useEffect(() => {
+    api.notice().then((n) => { setNotice(n?.on ? n : null); setTryWa(n?.whatsapp_try === true); }).catch(() => {});
+  }, []);
   const noticeText = notice && ((lang === 'hi' && notice.hi) || notice.en);
+  const waTry = tryWa && WHATSAPP_TRY && !CHECK_ON_WHATSAPP && !inApp
+    ? `https://wa.me/${WHATSAPP_TRY}?text=${encodeURIComponent('Hi')}` : null;
+  const waTryLabel = lang === 'hi' ? 'WhatsApp पर जाँचें' : 'Check in WhatsApp';
 
   useEffect(() => {
     if (!me || me.language === lang) return;
@@ -98,7 +106,17 @@ export default function Layout({ children, wide = false }) {
                  while it is on (2026-10-12). */
               CHECK_ON_WHATSAPP
                 ? <a className="btn-primary !py-2" href={waLink('Hi')} rel="noopener">{t('common.checkVehicle')}</a>
-                : <Link className="btn-primary !py-2" to="/chat">{t('common.checkVehicle')}</Link>
+                : <Link className="btn-primary whitespace-nowrap !py-2" to="/chat">
+                    {/* On a phone beside the WhatsApp icon, one word (2026-10-25); the full label from sm up. */}
+                    {waTry ? <><span className="sm:hidden">{lang === 'hi' ? 'चेक करें' : 'Check'}</span><span className="hidden sm:inline">{t('common.checkVehicle')}</span></> : t('common.checkVehicle')}
+                  </Link>
+            )}
+            {waTry && (
+              <a href={waTry} target="_blank" rel="noopener noreferrer" aria-label={waTryLabel} data-test="header-try-wa"
+                className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl border-2 border-[#25d366] bg-white px-2 py-[7px] text-sm font-bold text-[#128c4a] transition hover:bg-[#f0fdf4] sm:px-3">
+                <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" fill="#25d366" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1.9 2 1.2 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z" /></svg>
+                <span className="hidden sm:inline">{waTryLabel}</span>
+              </a>
             )}
             <button className="btn-quiet !px-2.5 !py-2 md:hidden" onClick={() => setOpen(!open)} aria-label="Menu">☰</button>
           </div>
@@ -115,6 +133,7 @@ export default function Layout({ children, wide = false }) {
                  WEB_LOGIN && me ? ['/chat', t('common.myVehicles')]
                    : CHECK_ON_WHATSAPP ? [waLink('Hi'), t('common.checkVehicle')]
                    : WEB_LOGIN ? ['/chat', t('common.checkVehicle')] : [waLink('Hi'), t('wa.short')],
+                 ...(waTry ? [[waTry, `🟢 ${waTryLabel}`]] : []),
                  ['/help', t('footer.help')], ['/feedback?src=menu', lang === 'hi' ? '⭐ फ़ीडबैक' : '⭐ Feedback'],
                  ['/terms', t('nav.terms')], ['/privacy', t('nav.privacy')], ['/refund', t('nav.refunds')]]
             ).map(([to, label]) => (
