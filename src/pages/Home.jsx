@@ -283,6 +283,12 @@ export default function Home() {
       </section>
 
       {/* ------------------------------------------------------------ price */}
+      {/* TWO PRICES, ONE TABLE (user, 2026-10-25: "put a grid table for 11 & 19, it is confusing"): what each
+          buys, row by row. Shown while the server sells the one-time report; the single-price card otherwise. */}
+      {oncePrice ? (
+        <PriceTable lang={lang} once={oncePrice} full={price} renew={renew} days={days} validDays={validDays}
+          wa={wa} replacePrice={replacePrice} replaceDays={replaceDays} t={t} />
+      ) : (
       <section id="price" className="wrap py-14">
         <div className="grid gap-8 lg:grid-cols-2">
           <Reveal>
@@ -302,15 +308,6 @@ export default function Home() {
               <span className="text-sm text-muted">{t('home.price.per')}</span>
             </div>
             <p className="mt-2 text-2xs text-muted">{t('home.price.incl')}</p>
-            {oncePrice && (
-              <div className="mt-4 flex items-start justify-between gap-3 rounded-xl border border-brand/25 bg-brand/5 p-3" data-test="price-once">
-                <div>
-                  <b className="text-sm text-ink">{t('home.price.once.t')}</b>
-                  <div className="text-2xs text-muted">{t('home.price.once.b')}</div>
-                </div>
-                <span className="shrink-0 text-2xl font-extrabold tabular text-brand-deep">{oncePrice}</span>
-              </div>
-            )}
             {wa ? (
               <WhatsAppCta className="mt-5 w-full" />
             ) : (
@@ -348,6 +345,7 @@ export default function Home() {
           </Reveal>
         </div>
       </section>
+      )}
 
       {/* ---------------------------------------------------------- privacy */}
       <section className="border-y border-line bg-shell/60">
@@ -565,6 +563,110 @@ const Tick = ({ children }) => (
     <span className="mt-0.5 shrink-0 text-brand">✓</span>{children}
   </li>
 );
+
+/*
+ * ₹11 ONCE OR ₹19 WITH ALERTS, SIDE BY SIDE (user, 2026-10-25: "a grid table for 11 & 19, it is confusing").
+ * One row per thing bought, a tick or a cross under each price — readable on a phone (two narrow price
+ * columns, the feature text wraps). The prices come from /pricing like every price on this page.
+ */
+function PriceTable({ lang, once, full, renew, days, validDays, wa, replacePrice, replaceDays, t }) {
+  const hi = lang === 'hi';
+  const W = hi ? {
+    h: 'दो आसान दाम, कोई भी गाड़ी', sub: 'कार, बाइक, स्कूटर, ऑटो, ट्रक या बस — दाम वही। पहले मुफ़्त बेसिक जाँच, फिर चुनें। कोई सब्सक्रिप्शन नहीं, कुछ भी अपने आप चार्ज नहीं।',
+    what: 'आपको क्या मिलता है', once: 'पूरी रिपोर्ट', onceSub: 'एक बार', full: 'रिपोर्ट + अलर्ट', fullSub: `${days} दिन`, best: 'सबसे फ़ायदेमंद',
+    rows: [
+      'गाड़ी की पूरी जानकारी — हर वैधता तारीख़ (इंश्योरेंस, PUC, टैक्स, फिटनेस, परमिट)',
+      'लोन / हाइपोथिकेशन, ब्लैकलिस्ट और NOC',
+      'हर चालान — अपराध, जगह और रकम',
+      'मालिकों की संख्या, बीमा कंपनी और पॉलिसी, FASTag',
+      `PDF रिपोर्ट + GST इनवॉइस (${validDays} दिन तक दोबारा डाउनलोड)`,
+      'उस महीने 5 और मुफ़्त जाँच',
+      `${days} दिन तक नए चालान का अलर्ट`,
+      'इंश्योरेंस, PUC, टैक्स, फिटनेस, परमिट खत्म होने से पहले चेतावनी',
+      `बाद में ${renew} में अलर्ट रिन्यू करें`,
+    ],
+    forOnce: 'गाड़ी खरीदने से पहले — एक बार जाँच', forFull: 'अपनी गाड़ी — हमेशा अपडेट', bestFor: 'किसके लिए',
+    incl: 'दोनों दाम GST सहित — जो दिखता है, वही आप देते हैं।',
+  } : {
+    h: 'Two simple prices, any vehicle', sub: 'Car, bike, scooter, auto, truck or bus — the price does not change. Free basic check first, then choose. No subscription, nothing charged automatically.',
+    what: 'What you get', once: 'Full report', onceSub: 'one time', full: 'Report + alerts', fullSub: `${days} days`, best: 'Best value',
+    rows: [
+      'Full vehicle details — every validity date (insurance, PUC, road tax, fitness, permit)',
+      'Loan / hypothecation, blacklist and NOC',
+      'Every challan — offence, place and amount',
+      'Number of owners, insurer and policy, FASTag',
+      `PDF report + GST invoice (download again for ${validDays} days)`,
+      '5 extra free checks that month',
+      `New-challan alerts for ${days} days`,
+      'Warning before insurance, PUC, road tax, fitness or permit expires',
+      `Renew the alerts later for ${renew}`,
+    ],
+    forOnce: 'Buying a used vehicle — check it once', forFull: 'Your own vehicle — stay on top of it', bestFor: 'Best for',
+    incl: 'Both prices include GST — the amount shown is the amount you pay.',
+  };
+  const both = 6;                     // the first six rows come with both
+  const mark = (yes) => (yes
+    ? <span className="text-lg font-bold text-good-700" aria-label="yes">✓</span>
+    : <span className="text-lg font-bold text-black/25" aria-label="no">✕</span>);
+  return (
+    <section id="price" className="wrap py-14" data-test="price-table">
+      <Reveal>
+        <h2 className="text-2xl font-bold text-ink">{W.h}</h2>
+        <p className="mt-3 max-w-2xl text-body">{W.sub}</p>
+      </Reveal>
+      <Reveal delay={80} className="card mt-6 overflow-hidden p-0">
+        <table className="w-full table-fixed border-collapse text-sm">
+          <colgroup><col /><col className="w-[86px] sm:w-[150px]" /><col className="w-[96px] sm:w-[170px]" /></colgroup>
+          <thead>
+            <tr className="border-b border-line align-bottom">
+              <th className="p-3 text-left text-2xs font-semibold uppercase tracking-wider text-muted sm:p-4">{W.what}</th>
+              <th className="p-2 text-center sm:p-4">
+                <div className="text-2xs font-semibold text-muted sm:text-xs">{W.once}</div>
+                <div className="text-2xl font-extrabold tabular text-ink sm:text-3xl">{once}</div>
+                <div className="text-2xs text-muted">{W.onceSub}</div>
+              </th>
+              <th className="relative bg-brand/5 p-2 text-center sm:p-4">
+                <span className="mb-1 inline-block whitespace-nowrap rounded-full bg-[#ffd84d] px-1.5 py-0.5 text-[9.5px] font-black text-[#0a4f49] sm:px-2 sm:text-[10px]">⭐ {W.best}</span>
+                <div className="text-2xs font-semibold text-muted sm:text-xs">{W.full}</div>
+                <div className="text-2xl font-extrabold tabular text-brand-deep sm:text-3xl">{full}</div>
+                <div className="text-2xs text-muted">{W.fullSub}</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {W.rows.map((r, i) => (
+              <tr key={i} className="border-b border-line/70">
+                <td className="p-3 leading-snug text-body sm:px-4">{r}</td>
+                <td className="p-2 text-center">{mark(i < both)}</td>
+                <td className="bg-brand/5 p-2 text-center">{mark(true)}</td>
+              </tr>
+            ))}
+            <tr>
+              <td className="p-3 text-2xs font-semibold uppercase tracking-wider text-muted sm:px-4">{W.bestFor}</td>
+              <td className="p-2 text-center text-2xs font-semibold leading-snug text-ink">{W.forOnce}</td>
+              <td className="bg-brand/5 p-2 text-center text-2xs font-semibold leading-snug text-brand-deep">{W.forFull}</td>
+            </tr>
+          </tbody>
+        </table>
+      </Reveal>
+      <p className="mt-3 text-2xs text-muted">{W.incl}</p>
+      <div className="mt-5 grid gap-2 sm:flex sm:items-center">
+        {wa ? <WhatsAppCta className="w-full sm:w-auto" /> : (
+          <a className="btn-primary btn-big btn-arrow w-full sm:w-auto" href="/chat">{t('home.price.cta')} <span className="arrow">→</span></a>
+        )}
+        <a className="btn-quiet w-full sm:w-auto" href={hi ? '/sample-report-hi.pdf' : '/sample-report.pdf'} target="_blank" rel="noopener">
+          {t('home.price.sample')}
+        </a>
+      </div>
+      {replacePrice && (
+        <p className="mt-4 text-2xs text-muted" data-test="price-after">
+          🔁 {t('home.price.replace.t')} · {replacePrice} — {t('home.price.replace.b', { replace: replacePrice,
+            window: replaceDays > 0 ? t('home.price.replace.window', { n: replaceDays }) : t('home.price.replace.any') })}
+        </p>
+      )}
+    </section>
+  );
+}
 
 const Faq = ({ q, children }) => (
   <details className="card group px-5 py-4">
