@@ -142,19 +142,15 @@ export default function Home() {
                 <WhatsAppCta className="w-full sm:w-auto" showNumber />
               </div>
             ) : (
-              <form onSubmit={go} className="anim-up mt-6 flex flex-col gap-3 sm:flex-row"
+              <form onSubmit={go} className="anim-up mt-6 grid gap-3 sm:max-w-xl"
                 style={{ animationDelay: '.22s' }}>
-                <input className="input sm:flex-1" placeholder="KA01AB1234" value={reg}
+                <input className="input" placeholder="KA01AB1234" value={reg}
                   onChange={(e) => setReg(e.target.value)} aria-label={t('home.sticky.placeholder')} />
-                <button className="btn-primary btn-big btn-arrow">
-                  {t('home.cta')} <span className="arrow">→</span>
-                </button>
+                {/* The two ways in, side by side (user, 2026-10-25: "let the user choose"). */}
+                <CheckPair tryWa={tryWa} test="home-try-wa"
+                  check={<button className={CHECK_BTN}>{t('common.checkVehicle')} <span className="arrow">→</span></button>} />
               </form>
             )}
-            {/* TRY IN WHATSAPP (user, 2026-10-23): a second way in, beside the web check — opens a chat with
-                GaadiPe's WhatsApp number with "Hi" already typed. Its own number (VITE_WHATSAPP_TRY), so it
-                does not depend on the site's WhatsApp-first switch. */}
-            {!wa && tryWa ? <TryWa className="anim-up mt-3" style={{ animationDelay: '.26s' }} test="home-try-wa" /> : null}
             {/* Typing and sending a number is agreeing (user, 2026-10-14). */}
             {!wa && (
               <p className="mt-2 text-2xs text-muted" data-test="home-send-terms">
@@ -399,12 +395,8 @@ export default function Home() {
             {wa ? (
               <WhatsAppCta className="mt-4" />
             ) : (
-              <div className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-                <a className="btn-primary btn-big btn-arrow inline-flex" href="/chat">
-                  {t('common.checkVehicle')} <span className="arrow">→</span>
-                </a>
-                {tryWa && <TryWa test="final-try-wa" />}
-              </div>
+              <CheckPair tryWa={tryWa} test="final-try-wa" className="mx-auto mt-4 sm:max-w-xl"
+                check={<a className={CHECK_BTN} href="/chat">{t('common.checkVehicle')} <span className="arrow">→</span></a>} />
             )}
           </Reveal>
         </div>
@@ -586,6 +578,19 @@ function TryWa({ className = '', style, iconOnly = false, test }) {
   );
 }
 
+/* "Check a vehicle" and "Check in WhatsApp" as two equal buttons, side by side even on a phone (user, 2026-10-25:
+   "let the user choose whatever they want"). Without WhatsApp (the switch off), the check button takes the row. */
+const CHECK_BTN = 'btn-primary btn-arrow w-full justify-center whitespace-nowrap !px-2 !py-3 text-[12.5px] min-[380px]:text-[13.5px] sm:text-base';
+function CheckPair({ check, tryWa, test, className = '' }) {
+  const both = tryWa && WHATSAPP_TRY;
+  return (
+    <div className={`grid gap-2 ${both ? 'grid-cols-2' : 'grid-cols-1'} ${className}`}>
+      {check}
+      {both ? <TryWa test={test} className="!w-full !gap-1 whitespace-nowrap !px-1.5 !py-3 !text-[12.5px] min-[380px]:!gap-1.5 min-[380px]:!text-[13.5px] sm:!text-base" /> : null}
+    </div>
+  );
+}
+
 /*
  * ₹11 ONCE OR ₹19 WITH ALERTS, SIDE BY SIDE (user, 2026-10-25: "a grid table for 11 & 19, it is confusing").
  * One row per thing bought, a tick or a cross under each price — readable on a phone (two narrow price
@@ -672,12 +677,12 @@ function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, repla
         </table>
       </Reveal>
       <p className="mt-3 text-2xs text-muted">{W.incl}</p>
-      <div className="mt-5 grid gap-2 sm:flex sm:items-center">
+      <div className="mt-5 grid gap-2 sm:max-w-xl">
         {wa ? <WhatsAppCta className="w-full sm:w-auto" /> : (
-          <a className="btn-primary btn-big btn-arrow w-full sm:w-auto" href="/chat">{t('home.price.cta')} <span className="arrow">→</span></a>
+          <CheckPair tryWa={tryWa} test="price-try-wa"
+            check={<a className={CHECK_BTN} href="/chat">{t('common.checkVehicle')} <span className="arrow">→</span></a>} />
         )}
-        {!wa && tryWa && <TryWa test="price-try-wa" />}
-        <a className="btn-quiet w-full sm:w-auto" href={hi ? '/sample-report-hi.pdf' : '/sample-report.pdf'} target="_blank" rel="noopener">
+        <a className="btn-quiet w-full" href={hi ? '/sample-report-hi.pdf' : '/sample-report.pdf'} target="_blank" rel="noopener">
           {t('home.price.sample')}
         </a>
       </div>
