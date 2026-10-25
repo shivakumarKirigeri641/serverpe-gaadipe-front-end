@@ -1146,6 +1146,16 @@ export default function Chat() {
     // A mobile number typed in the vehicle box: they want to sign in.
     if (!me && /^[6-9]\d{9}$/.test(ten(text)) && String(text).replace(/\D/g, '').length >= 10) return sendMobile(text);
     push({ from: 'me', kind: 'text', text });
+    /* Signed in and typing a phone number (2026-10-25: a visitor tried four, hoping to look people up). Said
+       plainly: GaadiPe checks vehicles, never people by phone. */
+    if (/^[\d\s+()-]{10,}$/.test(text) && String(text).replace(/\D/g, '').length >= 10) {
+      interaction('error', 'Typed a mobile number in the vehicle box');
+      bot(lang === 'hi'
+        ? 'यह मोबाइल नंबर लगता है। GaadiPe गाड़ी को उसकी नंबर प्लेट से जाँचता है — जैसे *KA01AB1234*। हम कभी फ़ोन नंबर से किसी व्यक्ति की जानकारी नहीं खोजते।'
+        : 'That looks like a mobile number. GaadiPe checks a vehicle by its number plate — like *KA01AB1234*. We never look up people by phone number.',
+      { chips: ['myVehicles', 'howWorks'] });
+      return;
+    }
     bot(lang === 'hi'
       ? 'मैं गाड़ी नंबर समझता हूँ — जैसे *KA01AB1234*। या नीचे से कोई विकल्प चुनें।'
       : 'I understand vehicle numbers — like *KA01AB1234*. Or pick an option below.', { chips: me ? ['myVehicles', 'mySubs', 'checksLeft', 'howWorks'] : ['sample', 'howWorks', 'signIn'] });
