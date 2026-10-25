@@ -154,15 +154,7 @@ export default function Home() {
             {/* TRY IN WHATSAPP (user, 2026-10-23): a second way in, beside the web check — opens a chat with
                 GaadiPe's WhatsApp number with "Hi" already typed. Its own number (VITE_WHATSAPP_TRY), so it
                 does not depend on the site's WhatsApp-first switch. */}
-            {!wa && WHATSAPP_TRY && tryWa ? (
-              <a href={`https://wa.me/${WHATSAPP_TRY}?text=${encodeURIComponent('Hi')}`} target="_blank" rel="noopener noreferrer"
-                data-test="home-try-wa"
-                className="anim-up mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#25d366] bg-white px-5 py-3 text-[15px] font-bold text-[#128c4a] transition hover:bg-[#f0fdf4] sm:w-auto"
-                style={{ animationDelay: '.26s' }}>
-                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="#25d366" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1.9 2 1.2 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z" /></svg>
-                Try in WhatsApp
-              </a>
-            ) : null}
+            {!wa && tryWa ? <TryWa className="anim-up mt-3" style={{ animationDelay: '.26s' }} test="home-try-wa" /> : null}
             {/* Typing and sending a number is agreeing (user, 2026-10-14). */}
             {!wa && (
               <p className="mt-2 text-2xs text-muted" data-test="home-send-terms">
@@ -287,7 +279,7 @@ export default function Home() {
           buys, row by row. Shown while the server sells the one-time report; the single-price card otherwise. */}
       {oncePrice ? (
         <PriceTable lang={lang} once={oncePrice} full={price} renew={renew} days={days} validDays={validDays}
-          wa={wa} replacePrice={replacePrice} replaceDays={replaceDays} t={t} />
+          wa={wa} tryWa={tryWa} replacePrice={replacePrice} replaceDays={replaceDays} t={t} />
       ) : (
       <section id="price" className="wrap py-14">
         <div className="grid gap-8 lg:grid-cols-2">
@@ -381,6 +373,8 @@ export default function Home() {
             <input className="input !py-2.5 flex-1" placeholder={t('home.sticky.placeholder')} value={reg}
               onChange={(e) => setReg(e.target.value)} aria-label={t('home.sticky.placeholder')} />
             <button className="btn-primary !px-5">{t('home.sticky.cta')}</button>
+            {/* WhatsApp beside it, icon only on the phone's bottom bar (2026-10-25); hidden with the switch. */}
+            {tryWa && <TryWa iconOnly test="sticky-try-wa" />}
           </form>
         )}
       </div>
@@ -405,9 +399,12 @@ export default function Home() {
             {wa ? (
               <WhatsAppCta className="mt-4" />
             ) : (
-              <a className="btn-primary btn-big btn-arrow mt-4 inline-flex" href="/chat">
-                {t('common.checkVehicle')} <span className="arrow">→</span>
-              </a>
+              <div className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+                <a className="btn-primary btn-big btn-arrow inline-flex" href="/chat">
+                  {t('common.checkVehicle')} <span className="arrow">→</span>
+                </a>
+                {tryWa && <TryWa test="final-try-wa" />}
+              </div>
             )}
           </Reveal>
         </div>
@@ -565,11 +562,36 @@ const Tick = ({ children }) => (
 );
 
 /*
+ * "CHECK IN WHATSAPP" BESIDE EVERY CHECK BUTTON (user, 2026-10-23 and 2026-10-25: two buttons — "check vehicle" and
+ * "check in WhatsApp", the second hidden if Meta disables WhatsApp). GaadiPe's WhatsApp number (VITE_WHATSAPP_TRY)
+ * with "Hi" typed; shown only while the server's switch says so (site_whatsapp_try — the failsafe turns it off).
+ */
+const WA_ICON = <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" fill="#25d366" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1.9 2 1.2 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z" /></svg>;
+function TryWa({ className = '', style, iconOnly = false, test }) {
+  const { lang } = useLang();
+  if (!WHATSAPP_TRY) return null;
+  const href = `https://wa.me/${WHATSAPP_TRY}?text=${encodeURIComponent('Hi')}`;
+  const label = lang === 'hi' ? 'WhatsApp पर जाँचें' : 'Check in WhatsApp';
+  if (iconOnly) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" data-test={test} aria-label={label}
+        className="grid shrink-0 place-items-center rounded-xl border-2 border-[#25d366] bg-white px-3">{WA_ICON}</a>
+    );
+  }
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" data-test={test} style={style}
+      className={`inline-flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#25d366] bg-white px-5 py-3 text-[15px] font-bold text-[#128c4a] transition hover:bg-[#f0fdf4] sm:w-auto ${className}`}>
+      {WA_ICON}{label}
+    </a>
+  );
+}
+
+/*
  * ₹11 ONCE OR ₹19 WITH ALERTS, SIDE BY SIDE (user, 2026-10-25: "a grid table for 11 & 19, it is confusing").
  * One row per thing bought, a tick or a cross under each price — readable on a phone (two narrow price
  * columns, the feature text wraps). The prices come from /pricing like every price on this page.
  */
-function PriceTable({ lang, once, full, renew, days, validDays, wa, replacePrice, replaceDays, t }) {
+function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, replacePrice, replaceDays, t }) {
   const hi = lang === 'hi';
   const W = hi ? {
     h: 'दो आसान दाम, कोई भी गाड़ी', sub: 'कार, बाइक, स्कूटर, ऑटो, ट्रक या बस — दाम वही। पहले मुफ़्त बेसिक जाँच, फिर चुनें। कोई सब्सक्रिप्शन नहीं, कुछ भी अपने आप चार्ज नहीं।',
@@ -654,6 +676,7 @@ function PriceTable({ lang, once, full, renew, days, validDays, wa, replacePrice
         {wa ? <WhatsAppCta className="w-full sm:w-auto" /> : (
           <a className="btn-primary btn-big btn-arrow w-full sm:w-auto" href="/chat">{t('home.price.cta')} <span className="arrow">→</span></a>
         )}
+        {!wa && tryWa && <TryWa test="price-try-wa" />}
         <a className="btn-quiet w-full sm:w-auto" href={hi ? '/sample-report-hi.pdf' : '/sample-report.pdf'} target="_blank" rel="noopener">
           {t('home.price.sample')}
         </a>
