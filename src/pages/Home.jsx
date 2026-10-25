@@ -57,6 +57,8 @@ export default function Home() {
   const priceRef = useRef(null);
   const priceSeen = useSeen(priceRef, Boolean(pricing));
   const price = pricing ? rupees(pricing.price_paise) : '₹19';
+  // The one-time report, no alerts (2026-10-25, REPORT11): shown only when the server sells it.
+  const oncePrice = pricing?.one_time_paise ? rupees(pricing.one_time_paise) : null;
   // The renewal price as set in admin (2026-10-14), not typed into the text.
   const renew = pricing?.renewal_paise ? rupees(pricing.renewal_paise) : '₹15';
   // Replace vehicle (2026-10-20): its price and window from /pricing; hidden until they arrive.
@@ -121,6 +123,10 @@ export default function Home() {
               <div className="mt-2 grid gap-1 text-sm text-body">
                 <span className="flex items-center gap-1.5"><span className="text-good-700">✓</span>{t('home.offer.l1')}</span>
                 <span className="flex items-center gap-1.5"><span className="text-good-700">✓</span>{t('home.offer.l2', { days })}</span>
+                {oncePrice && (
+                  <span className="flex items-center gap-1.5 font-semibold text-brand-deep" data-test="offer-once">
+                    <span aria-hidden="true">📋</span>{t('home.offer.once', { price: oncePrice })}</span>
+                )}
               </div>
               {/* A reassurance, not a warning (user, 2026-10-01): personal details are masked. */}
               <p className="mt-2.5 flex items-start gap-1.5 border-t border-line pt-2.5 text-2xs font-medium leading-snug text-body">
@@ -296,6 +302,15 @@ export default function Home() {
               <span className="text-sm text-muted">{t('home.price.per')}</span>
             </div>
             <p className="mt-2 text-2xs text-muted">{t('home.price.incl')}</p>
+            {oncePrice && (
+              <div className="mt-4 flex items-start justify-between gap-3 rounded-xl border border-brand/25 bg-brand/5 p-3" data-test="price-once">
+                <div>
+                  <b className="text-sm text-ink">{t('home.price.once.t')}</b>
+                  <div className="text-2xs text-muted">{t('home.price.once.b')}</div>
+                </div>
+                <span className="shrink-0 text-2xl font-extrabold tabular text-brand-deep">{oncePrice}</span>
+              </div>
+            )}
             {wa ? (
               <WhatsAppCta className="mt-5 w-full" />
             ) : (

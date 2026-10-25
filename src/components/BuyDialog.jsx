@@ -39,6 +39,15 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
   const [email, setEmail] = useState(me?.email || '');
   /* …AND CONFIRMED (user, 2026-10-07): the report, invoice and alerts go there, so
      Pay waits until the address has been confirmed with its code. */
+  /* ₹11 ONCE OR ₹19 WITH ALERTS (user, 2026-10-25): the one-time report beside the full one, when the server
+     sells it (/pricing one_time_paise). The ₹19 is chosen to start — "Best value", just ₹8 more. */
+  const [oneTimePaise, setOneTimePaise] = useState(null);
+  const [alertsDays, setAlertsDays] = useState(28);
+  const [oneTime, setOneTime] = useState(false);
+  useEffect(() => {
+    api.pricing().then((p) => { setOneTimePaise(p?.one_time_paise || null); if (p?.duration_days) setAlertsDays(p.duration_days); })
+      .catch(() => {});
+  }, []);
   const verified = me?.email_verified ? me.email : null;
   const emailOk = Boolean(verified) && email.trim().toLowerCase() === String(verified).toLowerCase();
   const ready = agreed && termsAgreed && text && name.trim().length >= 2 && stateCode && emailOk;
@@ -56,7 +65,8 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
   const pay = async () => {
     setBusy(true); setError(null);
     try {
-      const out = await api.buy(regNo, true, lang, { name: name.trim(), state_code: stateCode, email: email.trim(), terms_accepted: termsAgreed });
+      const out = await api.buy(regNo, true, lang, { name: name.trim(), state_code: stateCode, email: email.trim(), terms_accepted: termsAgreed,
+        ...(oneTime && oneTimePaise ? { one_time: true } : {}) });
       if (out.pay_path || out.pay_url) {
         // Same tab: a payment page opened in a new tab that the browser blocks
         // is a payment that never happens. Opened through the site's own API
@@ -75,8 +85,21 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
     }
   };
 
-  const price = rupees(pricePaise);
+  const price = rupees(oneTime && oneTimePaise ? oneTimePaise : pricePaise);
   const link = (to, label) => `<${to}|${label}>`;
+  const hi = lang === 'hi';
+  const more = oneTimePaise && pricePaise > oneTimePaise ? Math.round((pricePaise - oneTimePaise) / 100) : null;
+  const choice = (on, title, sub, amount, tag) => (
+    <button type="button" onClick={() => setOneTime(on)} data-test={on ? 'buy-once' : 'buy-alerts'}
+      className={`relative rounded-xl border-2 p-3 text-left transition ${oneTime === on ? 'border-brand bg-brand/5' : 'border-line bg-white'}`}>
+      {tag && <span className="absolute -top-2.5 right-2 rounded-full bg-[#ffd84d] px-2 py-0.5 text-[10px] font-black text-[#0a4f49]">{tag}</span>}
+      <span className="flex items-baseline justify-between gap-2">
+        <span className="text-sm font-bold text-body">{title}</span>
+        <span className="text-base font-black text-brand">{rupees(amount)}</span>
+      </span>
+      <span className="mt-1 block text-2xs leading-snug text-muted">{sub}</span>
+    </button>
+  );
 
   return (
     <Modal title={t('buy.title', { reg: plate(regNo) })} onClose={() => !busy && onClose()}
@@ -88,6 +111,20 @@ export default function BuyDialog({ regNo, pricePaise, onClose, onAlreadyBought 
           </button>
         </>
       }>
+      {oneTimePaise && (
+        <div className="grid gap-3 sm:grid-cols-2" data-test="buy-choice">
+          {choice(true,
+            hi ? 'पूरी रिपोर्ट · एक बार' : 'Full report · one time',
+            hi ? 'पूरी PDF रिपोर्ट। कोई अलर्ट नहीं — गाड़ी खरीदने से पहले एक बार जाँच के लिए।' : 'The complete PDF report. No alerts — for checking a vehicle once, before you buy.',
+            oneTimePaise)}
+          {choice(false,
+            hi ? `पूरी रिपोर्ट + ${alertsDays} दिन अलर्ट` : `Full report + ${alertsDays} days of alerts`,
+            hi ? 'वही रिपोर्ट, साथ में नए चालान के अलर्ट और इंश्योरेंस, PUC, टैक्स, फिटनेस खत्म होने से पहले चेतावनी।'
+              : 'The same report, plus new-challan alerts and a warning before insurance, PUC, road tax or fitness expires.',
+            pricePaise,
+            more ? (hi ? `सबसे फ़ायदेमंद · सिर्फ़ ₹${more} ज़्यादा` : `Best value · just ₹${more} more`) : (hi ? 'सबसे फ़ायदेमंद' : 'Best value'))}
+        </div>
+      )}
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="block">
           <span className="label">{t('buy.name')}</span>

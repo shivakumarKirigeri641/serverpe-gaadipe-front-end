@@ -245,6 +245,7 @@ export const api = {
   chatHistory: (before) => call(`/chat/history${before ? `?before=${encodeURIComponent(before)}` : ''}`),
   // The language travels with the purchase, so the declaration on file is the
   // one the customer actually read.
+  // buyer.one_time: true buys the ₹11 one-time report, no monitoring (2026-10-25).
   buy: (regNo, declared, language = 'en', buyer = {}) =>
     call('/buy', { method: 'POST', body: { reg_no: regNo, declared: declared === true, language, ...buyer } }),
   declaration: (lang = 'en') => call(`/declaration?lang=${lang}`, { auth: false }),
