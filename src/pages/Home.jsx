@@ -89,20 +89,64 @@ export default function Home() {
             style={{ animationDelay: '-7s' }} />
         </div>
 
-        <div className="wrap relative grid items-center gap-10 py-12 lg:grid-cols-[1.05fr_1fr] lg:py-20">
+        <div className="wrap relative grid items-start gap-10 py-8 lg:grid-cols-[1.05fr_1fr] lg:py-16">
           <div>
-            <span className="chip anim-up border-brand/20 bg-white text-brand-deep">{t(wa ? 'home.chip.wa' : 'home.chip')}</span>
+            {/* The "All India · No app" chip was here; the badges under the box say it now (2026-10-25). */}
+            {wa && <span className="chip anim-up border-brand/20 bg-white text-brand-deep">{t('home.chip.wa')}</span>}
 
-            <h1 className="anim-up mt-4 text-3xl font-bold leading-[1.2] text-ink sm:text-[2.6rem]"
+            {/* ACTION FIRST (user, 2026-10-25: "the hero content is not attractive" — 25 of 31 ad visitors left
+                from the first screen, with the number box below a long headline, a paragraph and the offer card).
+                Now: a short promise, one line of what and how much, the number box with both buttons, and three
+                badges — all on a phone's first screen. The tagline, the story and the offer follow for readers. */}
+            <h1 className="anim-up mt-4 text-[2rem] font-extrabold leading-[1.1] tracking-tight text-ink sm:text-5xl"
               style={{ animationDelay: '.06s' }}>
-              {t('home.h1a')}<br className="hidden sm:block" /> {t('home.h1b')}
+              {t('home.quick.h')}
             </h1>
-            {/* The same line in plain English, small (2026-10-10) — for Kerala, Tamil Nadu and beyond. */}
-            <p className="anim-up mt-2 text-base font-semibold text-brand-deep sm:text-lg" style={{ animationDelay: '.1s' }} lang="en">
-              {t('home.h1en')}
+            <p className="anim-up mt-3 text-base font-semibold leading-snug text-body sm:text-lg" style={{ animationDelay: '.1s' }}>
+              {t('home.quick.sub', { price: oncePrice || price })}
             </p>
 
-            <p className="anim-up mt-4 text-lg leading-relaxed text-body" style={{ animationDelay: '.14s' }}>
+            {wa ? (
+              /* WhatsApp-first (user, 2026-09-25): the chat is the product now.
+                 One button, "Hi" already typed; the number underneath for
+                 anyone who would rather save it. */
+              <div className="anim-up mt-5" style={{ animationDelay: '.14s' }}>
+                <WhatsAppCta className="w-full sm:w-auto" showNumber />
+              </div>
+            ) : (
+              <form onSubmit={go} className="anim-up mt-5 grid gap-3 sm:max-w-xl"
+                style={{ animationDelay: '.14s' }}>
+                <input className="input !py-3.5 text-lg font-semibold tracking-wide" placeholder="KA01AB1234" value={reg}
+                  onChange={(e) => setReg(e.target.value)} aria-label={t('home.sticky.placeholder')} />
+                {/* The two ways in, side by side (user, 2026-10-25: "let the user choose"). */}
+                <CheckPair tryWa={tryWa} test="home-try-wa"
+                  check={<button className={CHECK_BTN}>{t('common.checkVehicle')} <span className="arrow">→</span></button>} />
+              </form>
+            )}
+            {/* Typing and sending a number is agreeing (user, 2026-10-14). */}
+            {!wa && (
+              <p className="mt-2 text-2xs text-muted" data-test="home-send-terms">
+                {String(t('home.sendAgree')).split(/(\[[^\]]+\]\([^)]+\))/).map((part, i) => {
+                  const m = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(part);
+                  return m ? <a key={i} href={m[2]} target="_blank" rel="noopener noreferrer" className="underline hover:text-ink">{m[1]}</a> : part;
+                })}
+              </p>
+            )}
+            <div className="anim-up mt-3 flex flex-wrap gap-2" style={{ animationDelay: '.18s' }} data-test="home-badges">
+              {['b1', 'b2', 'b3'].map((k) => (
+                <span key={k} className="chip border-brand/20 bg-white text-[12.5px] font-semibold text-brand-deep">✓ {t(`home.quick.${k}`)}</span>
+              ))}
+            </div>
+
+            {/* The tagline and the story, for those who read on. */}
+            <p className="anim-up mt-7 text-xl font-bold leading-snug text-ink sm:text-2xl" style={{ animationDelay: '.22s' }}>
+              {t('home.h1a')} {t('home.h1b')}
+            </p>
+            {/* The same line in plain English, small (2026-10-10) — for Kerala, Tamil Nadu and beyond. */}
+            <p className="mt-1 text-sm font-semibold text-brand-deep" lang="en">
+              {t('home.h1en')}
+            </p>
+            <p className="mt-3 text-base leading-relaxed text-body">
               <Rich text={t('home.lead')} />
             </p>
 
@@ -133,33 +177,6 @@ export default function Home() {
                 <span aria-hidden="true">🔒</span>{t('home.offer.law')}
               </p>
             </div>
-
-            {wa ? (
-              /* WhatsApp-first (user, 2026-09-25): the chat is the product now.
-                 One button, "Hi" already typed; the number underneath for
-                 anyone who would rather save it. */
-              <div className="anim-up mt-6" style={{ animationDelay: '.22s' }}>
-                <WhatsAppCta className="w-full sm:w-auto" showNumber />
-              </div>
-            ) : (
-              <form onSubmit={go} className="anim-up mt-6 grid gap-3 sm:max-w-xl"
-                style={{ animationDelay: '.22s' }}>
-                <input className="input" placeholder="KA01AB1234" value={reg}
-                  onChange={(e) => setReg(e.target.value)} aria-label={t('home.sticky.placeholder')} />
-                {/* The two ways in, side by side (user, 2026-10-25: "let the user choose"). */}
-                <CheckPair tryWa={tryWa} test="home-try-wa"
-                  check={<button className={CHECK_BTN}>{t('common.checkVehicle')} <span className="arrow">→</span></button>} />
-              </form>
-            )}
-            {/* Typing and sending a number is agreeing (user, 2026-10-14). */}
-            {!wa && (
-              <p className="mt-2 text-2xs text-muted" data-test="home-send-terms">
-                {String(t('home.sendAgree')).split(/(\[[^\]]+\]\([^)]+\))/).map((part, i) => {
-                  const m = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(part);
-                  return m ? <a key={i} href={m[2]} target="_blank" rel="noopener noreferrer" className="underline hover:text-ink">{m[1]}</a> : part;
-                })}
-              </p>
-            )}
 
             <p className="anim-up mt-3 text-sm text-muted" style={{ animationDelay: '.3s' }}>
               <Rich text={t(wa ? 'home.freeLine.wa' : 'home.freeLine', { price, renew, perDay: pricing?.free_checks_per_day ?? 6 })} />
@@ -197,7 +214,8 @@ export default function Home() {
 
             <div className="sweep mt-3 rounded-lg border border-brand/25 bg-brand/5 p-3">
               <div className="text-2xs font-semibold uppercase tracking-wider text-brand-deep">
-                {t('home.inReport', { price })}
+                {/* "from ₹11" while the one-time report is sold (2026-10-25), so the page tells one story. */}
+                {t('home.inReport', { price: oncePrice ? `${lang === 'hi' ? '' : 'from '}${oncePrice}${lang === 'hi' ? ' से' : ''}` : price })}
               </div>
               <div className="mt-2 space-y-1.5">
                 <Locked label={t('home.lock.loan')} />
@@ -206,7 +224,7 @@ export default function Home() {
                 <Locked label={t('home.lock.dates')} />
               </div>
               <a className="btn-primary btn-arrow mt-3 w-full text-center" href={wa ? waLink('Hi') : '/chat'}>
-                {t('home.lock.cta', { price })} <span className="arrow">→</span>
+                {oncePrice ? (lang === 'hi' ? `पूरी रिपोर्ट सिर्फ़ ${oncePrice} से` : `Get the full report from ${oncePrice}`) : t('home.lock.cta', { price })} <span className="arrow">→</span>
               </a>
             </div>
             <p className="mt-3 text-2xs text-muted">{t('common.example')}</p>
