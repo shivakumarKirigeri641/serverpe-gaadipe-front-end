@@ -179,7 +179,10 @@ export default function Home() {
             </div>
 
             <p className="anim-up mt-3 text-sm text-muted" style={{ animationDelay: '.3s' }}>
-              <Rich text={t(wa ? 'home.freeLine.wa' : 'home.freeLine', { price, renew, perDay: pricing?.free_checks_per_day ?? 6 })} />
+              <Rich text={t(wa ? 'home.freeLine.wa' : 'home.freeLine', { price, renew, perDay: pricing?.free_checks_per_day ?? 6,
+                // The check pack as set in admin (2026-10-26, /pricing check_pack).
+                packChecks: pricing?.check_pack?.checks ?? 5, packDays: pricing?.check_pack?.days ?? 30,
+                packPrice: `₹${Math.round((pricing?.check_pack?.price_paise ?? 2500) / 100)}` })} />
             </p>
 
             {/* Why pay at all (user, 2026-09-30): what the other way costs — up

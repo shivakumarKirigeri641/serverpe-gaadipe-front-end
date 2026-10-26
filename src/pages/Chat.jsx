@@ -143,7 +143,7 @@ const T = {
     profile: 'Profile',
     howWorks: 'What do I get?',
     // As the site is now (2026-10-10): the three levels, in plain words.
-    // Check packs (2026-10-26): one free check, then 5 for ₹20.
+    // Check packs (2026-10-26): one free check, then 5 for ₹25.
     get howAnswer() { return `*Your first check is free* — make, model and variant, fuel and the RTO; signed in, also the owner’s name (masked) and how many of its documents (insurance, PUC, road tax, fitness, permit) and challans need attention.\n\n*Full report ${PRICES.full}* (${PRICES.renew} to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears.\n\n🔢 *More vehicle checks*\n• *${PRICES.pack.checks} checks for ${PRICES.pack.price}* (GST included), valid ${PRICES.pack.days} days\n• *Every report you buy adds ${PRICES.pack.checks} more checks*\n• The same vehicle again within an hour does not count\n• Removing a vehicle from My vehicles does *not* give a check back\nTap *Checks left* any time to see yours.\n\nℹ️ *Please note:* GaadiPe gives *reports, alerts and reminders* only — it does *not* issue an RC card, PUC, insurance or any certificate. For the documents themselves, contact your RTO, insurer or PUC centre.`; },
     // My subscriptions (user, 2026-10-10).
     subs: {
@@ -727,8 +727,8 @@ const markFreeUsed = () => { try { localStorage.setItem('gp.free.day', istDay())
 const rupee = (p) => (p == null ? '₹19' : `₹${Math.round(p / 100)}`);
 /* The prices as set in admin (2026-10-14: "is the renewal linked to the site?"), filled from
    /pricing when the chat opens; the texts that name them read these. */
-// perDay: checks a day signed in (2026-10-15); pack: the ₹20 check pack (2026-10-26, /pricing check_pack).
-const PRICES = { full: '₹19', renew: '₹15', perDay: 6, pack: { checks: 5, price: '₹20', days: 30 } };
+// perDay: checks a day signed in (2026-10-15); pack: the ₹25 check pack (2026-10-26, /pricing check_pack).
+const PRICES = { full: '₹19', renew: '₹15', perDay: 6, pack: { checks: 5, price: '₹25', days: 30 } };
 const cleanPlate = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 const looksLikePlate = (s) => /^[A-Z]{2}\d{1,2}[A-Z]{0,3}\d{3,4}$/.test(cleanPlate(s)) || /^\d{2}BH\d{4}[A-Z]{1,2}$/.test(cleanPlate(s));
 const prettyMobile = (m) => { const d = String(m || '').replace(/\D/g, '').slice(-10); return d.length === 10 ? `${d.slice(0, 5)} ${d.slice(5)}` : d; };
@@ -1673,7 +1673,7 @@ export default function Chat() {
 
   /* ────────────────────────────── chips and buttons ── */
 
-  /* A ₹20 pack of 5 checks (2026-10-26): straight to the checkout, which asks for the invoice's name and state;
+  /* A ₹25 pack of 5 checks (2026-10-26): straight to the checkout, which asks for the invoice's name and state;
      paying returns here with ?checks=5. */
   async function buyChecks() {
     push({ from: 'me', kind: 'text', text: L.left.buy(PRICES.pack.checks, PRICES.pack.price) });
