@@ -144,7 +144,7 @@ const T = {
     howWorks: 'What do I get?',
     // As the site is now (2026-10-10): the three levels, in plain words.
     // Check packs (2026-10-26): one free check, then 5 for ₹25.
-    get howAnswer() { return `*Your first check is free* — make, model and variant, fuel and the RTO; signed in, also the owner’s name (masked) and how many of its documents (insurance, PUC, road tax, fitness, permit) and challans need attention.\n\n*Full report ${PRICES.full}* (${PRICES.renew} to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears.\n\n🔢 *More vehicle checks*\n• *${PRICES.pack.checks} checks for ${PRICES.pack.price}* (GST included), valid ${PRICES.pack.days} days\n• *Every report you buy adds ${PRICES.pack.checks} more checks*\n• The same vehicle again within an hour does not count\n• Removing a vehicle from My vehicles does *not* give a check back\nTap *Checks left* any time to see yours.\n\nℹ️ *Please note:* GaadiPe gives *reports, alerts and reminders* only — it does *not* issue an RC card, PUC, insurance or any certificate. For the documents themselves, contact your RTO, insurer or PUC centre.`; },
+    get howAnswer() { return `*Your first check is free* — make, model and variant, fuel and the RTO; signed in, also the owner’s name (masked) and how many of its documents (insurance, PUC, road tax, fitness, permit) and challans need attention.\n\n*Full report ${PRICES.full}* (${PRICES.renew} to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears.\n\n🔢 *More vehicle checks*\n• *${PRICES.pack.checks} checks for ${PRICES.pack.price}* (GST included), valid ${PRICES.pack.days} days\n• *Every report you buy adds ${PRICES.pack.checks} more checks*\n• *Vehicles you already checked are free to check again, any time* — only a new vehicle uses a check\n• Removing a vehicle from My vehicles does *not* give a check back\nTap *Checks left* any time to see yours.\n\nℹ️ *Please note:* GaadiPe gives *reports, alerts and reminders* only — it does *not* issue an RC card, PUC, insurance or any certificate. For the documents themselves, contact your RTO, insurer or PUC centre.`; },
     // My subscriptions (user, 2026-10-10).
     subs: {
       menu: 'My subscriptions', title: '📋 My subscriptions',
@@ -306,7 +306,7 @@ const T = {
         ...(q.credits?.left && q.credits.last_expiry ? [`• Valid till *${new Date(q.credits.last_expiry).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}*`] : []),
         '',
         `💡 *${PRICES.pack.checks} checks for ${PRICES.pack.price}* (GST included), valid ${PRICES.pack.days} days — and every report you buy adds ${PRICES.pack.checks} more.`,
-        'The same vehicle again within an hour does not count.',
+        'Vehicles you already checked are free to check again, any time — only a new vehicle uses a check.',
       ].join('\n'),
       buy: (c, p) => `${c} checks · ${p}`,
       added: (n) => `✅ *${n} vehicle checks added.* Send any vehicle number to use one.`,
@@ -471,7 +471,7 @@ const T = {
     myReports: 'मेरी रिपोर्ट',
     profile: 'प्रोफ़ाइल',
     howWorks: 'मुझे क्या मिलेगा?',
-    get howAnswer() { return `*आपकी पहली जाँच मुफ़्त* — कंपनी, मॉडल और वेरिएंट, ईंधन और RTO; साइन इन करके मालिक का नाम (छिपा हुआ) और कितने दस्तावेज़ों (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट) और चालानों पर ध्यान चाहिए।\n\n*पूरी रिपोर्ट ${PRICES.full}* (ख़रीदी हुई गाड़ी का रिन्यू ${PRICES.renew}) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे।\n\n🔢 *और गाड़ी जाँच*\n• *${PRICES.pack.checks} जाँच ${PRICES.pack.price} में* (GST सहित), ${PRICES.pack.days} दिन तक\n• *हर रिपोर्ट ख़रीदने पर ${PRICES.pack.checks} जाँच और*\n• एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता\n• मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती\nअपनी बाकी जाँच देखने के लिए कभी भी *बाकी जाँच* दबाएँ।\n\nℹ️ *ध्यान दें:* GaadiPe सिर्फ़ *रिपोर्ट, अलर्ट और रिमाइंडर* देता है — यह RC कार्ड, PUC, बीमा या कोई प्रमाणपत्र *जारी नहीं* करता। दस्तावेज़ों के लिए अपने RTO, बीमा कंपनी या PUC सेंटर से संपर्क करें।`; },
+    get howAnswer() { return `*आपकी पहली जाँच मुफ़्त* — कंपनी, मॉडल और वेरिएंट, ईंधन और RTO; साइन इन करके मालिक का नाम (छिपा हुआ) और कितने दस्तावेज़ों (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट) और चालानों पर ध्यान चाहिए।\n\n*पूरी रिपोर्ट ${PRICES.full}* (ख़रीदी हुई गाड़ी का रिन्यू ${PRICES.renew}) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे।\n\n🔢 *और गाड़ी जाँच*\n• *${PRICES.pack.checks} जाँच ${PRICES.pack.price} में* (GST सहित), ${PRICES.pack.days} दिन तक\n• *हर रिपोर्ट ख़रीदने पर ${PRICES.pack.checks} जाँच और*\n• *पहले जाँची हुई गाड़ी दोबारा कभी भी मुफ़्त* — सिर्फ़ नई गाड़ी पर जाँच लगती है\n• मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती\nअपनी बाकी जाँच देखने के लिए कभी भी *बाकी जाँच* दबाएँ।\n\nℹ️ *ध्यान दें:* GaadiPe सिर्फ़ *रिपोर्ट, अलर्ट और रिमाइंडर* देता है — यह RC कार्ड, PUC, बीमा या कोई प्रमाणपत्र *जारी नहीं* करता। दस्तावेज़ों के लिए अपने RTO, बीमा कंपनी या PUC सेंटर से संपर्क करें।`; },
     subs: {
       menu: 'मेरी सदस्यता', title: '📋 मेरी सदस्यता',
       mRenew: 'निगरानी रिन्यू करें', mReplace: 'गाड़ी बदलें',
@@ -612,7 +612,7 @@ const T = {
         ...(q.credits?.left && q.credits.last_expiry ? [`• *${new Date(q.credits.last_expiry).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}* तक मान्य`] : []),
         '',
         `💡 *${PRICES.pack.checks} जाँच ${PRICES.pack.price} में* (GST सहित), ${PRICES.pack.days} दिन तक — और हर रिपोर्ट के साथ ${PRICES.pack.checks} जाँच और।`,
-        'एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता।',
+        'पहले जाँची हुई गाड़ी दोबारा कभी भी मुफ़्त जाँचें — सिर्फ़ नई गाड़ी पर जाँच लगती है।',
       ].join('\n'),
       buy: (c, p) => `${c} जाँच · ${p}`,
       added: (n) => `✅ *${n} गाड़ी जाँच जुड़ गईं।* कोई भी गाड़ी नंबर भेजें।`,
