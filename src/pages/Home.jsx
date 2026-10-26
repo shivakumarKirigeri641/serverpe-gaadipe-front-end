@@ -623,8 +623,8 @@ function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, repla
      table, and the report's "extra checks" row names how long they last. */
   const packRupees = pack ? `₹${Math.round(pack.price_paise / 100)}` : null;
   const packLine = !pack ? null : hi
-    ? `🔢 आपकी पहली जाँच मुफ़्त है। और गाड़ियाँ जाँचनी हैं? ${pack.checks} जाँच ${packRupees} में (GST सहित), ${pack.days} दिन तक — और हर रिपोर्ट के साथ ${pack.per_report} जाँच मुफ़्त।`
-    : `🔢 Your first check is free. Want to check more vehicles? ${pack.checks} checks for ${packRupees} (GST included), valid ${pack.days} days — and every report adds ${pack.per_report} more.`;
+    ? `🔢 आपकी पहली जाँच मुफ़्त है। और गाड़ियाँ जाँचनी हैं? ${pack.checks} जाँच ${packRupees} में (GST सहित), ${pack.days} दिन तक — और हर रिपोर्ट के साथ ${pack.per_report} जाँच मुफ़्त। पहले जाँची हुई गाड़ी दोबारा कभी भी मुफ़्त — सिर्फ़ नई गाड़ी पर जाँच लगती है।`
+    : `🔢 Your first check is free. Want to check more vehicles? ${pack.checks} checks for ${packRupees} (GST included), valid ${pack.days} days — and every report adds ${pack.per_report} more. Vehicles you already checked are free to check again, any time — only a new vehicle uses a check.`;
   const W = hi ? {
     h: 'दो आसान दाम, कोई भी गाड़ी', sub: 'कार, बाइक, स्कूटर, ऑटो, ट्रक या बस — दाम वही। पहले मुफ़्त बेसिक जाँच, फिर चुनें। कोई सब्सक्रिप्शन नहीं, कुछ भी अपने आप चार्ज नहीं।',
     what: 'आपको क्या मिलता है', once: 'पूरी रिपोर्ट', onceSub: 'एक बार', full: 'रिपोर्ट + अलर्ट', fullSub: `${days} दिन`, best: 'सबसे फ़ायदेमंद',
