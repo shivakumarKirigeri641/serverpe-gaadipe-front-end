@@ -106,7 +106,11 @@ export default function Home() {
                 badges — all on a phone's first screen. The tagline, the story and the offer follow for readers. */}
             <h1 className="anim-up mt-4 text-[2rem] font-extrabold leading-[1.1] tracking-tight text-ink sm:text-5xl"
               style={{ animationDelay: '.06s' }}>
-              {t('home.quick.h')}
+              {/* Two tones (2026-10-26): the promise in ink, where in brand green; "…in seconds" while WhatsApp is off. */}
+              {(() => {
+                const [a, b] = t(waNow ? 'home.quick.h' : 'home.quick.hWeb').split('|');
+                return b ? <>{a} <span className="text-brand">{b}</span></> : a;
+              })()}
             </h1>
             <p className="anim-up mt-3 text-base font-semibold leading-snug text-body sm:text-lg" style={{ animationDelay: '.1s' }}>
               {t('home.quick.sub', { price: oncePrice || price })}
