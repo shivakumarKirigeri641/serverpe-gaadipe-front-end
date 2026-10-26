@@ -733,7 +733,7 @@ const rupee = (p) => (p == null ? '₹19' : `₹${Math.round(p / 100)}`);
 // pack = the cheapest, for one-line mentions.
 const PRICES = { full: '₹19', renew: '₹15', perDay: 6, pack: { checks: 5, price: '₹25', days: 30 },
   packs: [{ code: 'CHECKS5', checks: 5, price: '₹25', days: 30 }, { code: 'CHECKS12', checks: 12, price: '₹49', days: 60 },
-    { code: 'CHECKS25', checks: 25, price: '₹99', days: 90, best: true }] };
+    { code: 'CHECKS25', checks: 25, price: '₹99', days: 30, best: true }] };
 const packsText = (sep = ' · ', hi = false) => PRICES.packs.map((p) => (hi ? `${p.checks} जाँच ${p.price}` : `${p.checks} for ${p.price}`)).join(sep);
 const cleanPlate = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 const looksLikePlate = (s) => /^[A-Z]{2}\d{1,2}[A-Z]{0,3}\d{3,4}$/.test(cleanPlate(s)) || /^\d{2}BH\d{4}[A-Z]{1,2}$/.test(cleanPlate(s));
