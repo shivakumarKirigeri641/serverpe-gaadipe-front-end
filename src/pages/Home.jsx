@@ -180,9 +180,9 @@ export default function Home() {
 
             <p className="anim-up mt-3 text-sm text-muted" style={{ animationDelay: '.3s' }}>
               <Rich text={t(wa ? 'home.freeLine.wa' : 'home.freeLine', { price, renew, perDay: pricing?.free_checks_per_day ?? 6,
-                // The check pack as set in admin (2026-10-26, /pricing check_pack).
-                packChecks: pricing?.check_pack?.checks ?? 5, packDays: pricing?.check_pack?.days ?? 30,
-                packPrice: `₹${Math.round((pricing?.check_pack?.price_paise ?? 2500) / 100)}` })} />
+                // The check packs as set in admin (2026-10-26, /pricing check_packs): "5 for ₹25 · 12 for ₹49 · 25 for ₹99".
+                packs: (pricing?.check_packs?.length ? pricing.check_packs : [{ checks: 5, price_paise: 2500 }, { checks: 12, price_paise: 4900 }, { checks: 25, price_paise: 9900 }])
+                  .map((p) => (lang === 'hi' ? `${p.checks} जाँच ₹${Math.round(p.price_paise / 100)}` : `${p.checks} for ₹${Math.round(p.price_paise / 100)}`)).join(' · ') })} />
             </p>
 
             {/* Why pay at all (user, 2026-09-30): what the other way costs — up
@@ -296,7 +296,8 @@ export default function Home() {
           buys, row by row. Shown while the server sells the one-time report; the single-price card otherwise. */}
       {oncePrice ? (
         <PriceTable lang={lang} once={oncePrice} full={price} renew={renew} days={days} validDays={validDays}
-          wa={wa} tryWa={tryWa} replacePrice={replacePrice} replaceDays={replaceDays} t={t} pack={pricing?.check_pack || null} />
+          wa={wa} tryWa={tryWa} replacePrice={replacePrice} replaceDays={replaceDays} t={t} pack={pricing?.check_pack || null}
+          packs={pricing?.check_packs || []} />
       ) : (
       <section id="price" className="wrap py-14">
         <div className="grid gap-8 lg:grid-cols-2">
@@ -617,14 +618,13 @@ function CheckPair({ check, tryWa, test, className = '' }) {
  * One row per thing bought, a tick or a cross under each price — readable on a phone (two narrow price
  * columns, the feature text wraps). The prices come from /pricing like every price on this page.
  */
-function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, replacePrice, replaceDays, t, pack = null }) {
+function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, replacePrice, replaceDays, t, pack = null, packs = [] }) {
   const hi = lang === 'hi';
-  /* CHECK PACKS (user, 2026-10-26; /pricing check_pack): the first check free, then a pack - said under the
-     table, and the report's "extra checks" row names how long they last. */
-  const packRupees = pack ? `₹${Math.round(pack.price_paise / 100)}` : null;
+  /* CHECK PACKS (user, 2026-10-26; /pricing check_packs): the first check free, then three packs - as cards
+     under the table, the best value marked; the report's "extra checks" row names how long they last. */
   const packLine = !pack ? null : hi
-    ? `🔢 आपकी पहली जाँच मुफ़्त है। और गाड़ियाँ जाँचनी हैं? ${pack.checks} जाँच ${packRupees} में (GST सहित), ${pack.days} दिन तक — और हर रिपोर्ट के साथ ${pack.per_report} जाँच मुफ़्त। पहले जाँची हुई गाड़ी दोबारा कभी भी मुफ़्त — सिर्फ़ नई गाड़ी पर जाँच लगती है।`
-    : `🔢 Your first check is free. Want to check more vehicles? ${pack.checks} checks for ${packRupees} (GST included), valid ${pack.days} days — and every report adds ${pack.per_report} more. Vehicles you already checked are free to check again, any time — only a new vehicle uses a check.`;
+    ? `🔢 आपकी पहली जाँच मुफ़्त है। और गाड़ियाँ जाँचनी हैं? नीचे से एक पैक चुनें (GST सहित) — और हर रिपोर्ट के साथ ${pack.per_report} जाँच मुफ़्त। पहले जाँची हुई गाड़ी दोबारा कभी भी मुफ़्त — सिर्फ़ नई गाड़ी पर जाँच लगती है।`
+    : `🔢 Your first check is free. Want to check more vehicles? Pick a pack below (GST included) — and every report adds ${pack.per_report} more. Vehicles you already checked are free to check again, any time — only a new vehicle uses a check.`;
   const W = hi ? {
     h: 'दो आसान दाम, कोई भी गाड़ी', sub: 'कार, बाइक, स्कूटर, ऑटो, ट्रक या बस — दाम वही। पहले मुफ़्त बेसिक जाँच, फिर चुनें। कोई सब्सक्रिप्शन नहीं, कुछ भी अपने आप चार्ज नहीं।',
     what: 'आपको क्या मिलता है', once: 'पूरी रिपोर्ट', onceSub: 'एक बार', full: 'रिपोर्ट + अलर्ट', fullSub: `${days} दिन`, best: 'सबसे फ़ायदेमंद',
@@ -705,6 +705,26 @@ function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, repla
       </Reveal>
       <p className="mt-3 text-2xs text-muted">{W.incl}</p>
       {packLine ? <p className="mt-2 max-w-2xl rounded-xl bg-brand/5 px-3 py-2 text-sm text-ink" data-test="price-pack">{packLine}</p> : null}
+      {packs.length > 0 && (
+        <div className="mt-3 grid max-w-2xl grid-cols-3 gap-2" data-test="price-packs">
+          {packs.map((p) => (
+            <div key={p.code} className={`relative rounded-2xl border p-3 text-center ${p.best ? 'border-brand bg-brand/5 shadow-sm' : 'border-black/10 bg-white'}`}>
+              {p.best && (
+                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-brand px-2 py-0.5 text-[10px] font-bold text-white">
+                  {hi ? 'सबसे फ़ायदेमंद' : 'Best value'}
+                </span>
+              )}
+              <div className="text-2xl font-black text-ink sm:text-3xl">{p.checks}</div>
+              <div className="text-2xs font-semibold text-muted">{hi ? 'गाड़ी जाँच' : 'vehicle checks'}</div>
+              <div className="mt-1.5 text-lg font-bold text-brand-deep">₹{p.rupees}</div>
+              <div className="text-[11px] text-muted">
+                {hi ? `₹${(p.price_paise / p.checks / 100).toFixed(2).replace(/\.00$/, '')}/जाँच` : `₹${(p.price_paise / p.checks / 100).toFixed(2).replace(/\.00$/, '')} a check`}
+              </div>
+              <div className="text-[11px] text-muted">{hi ? `${p.days} दिन तक` : `valid ${p.days} days`}</div>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="mt-5 grid gap-2 sm:max-w-xl">
         {wa ? <WhatsAppCta className="w-full sm:w-auto" /> : (
           <CheckPair tryWa={tryWa} test="price-try-wa"

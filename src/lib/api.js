@@ -228,7 +228,8 @@ export const api = {
   vehicleCard: (regNo) => call(`/vehicles/${encodeURIComponent(regNo)}/card`),
   // The bin in My vehicles: hidden from the customer, never deleted.
   removeVehicle: (regNo) => call(`/vehicles/${encodeURIComponent(regNo)}`, { method: 'DELETE' }),
-  check: (regNo) => call('/check', { method: 'POST', body: { reg_no: regNo } })
+  // language: the "free check used" offer comes back in Hindi too (2026-10-26).
+  check: (regNo, language = null) => call('/check', { method: 'POST', body: { reg_no: regNo, ...(language ? { language } : {}) } })
     .catch((e) => { if (e.body && (e.status === 404 || e.status === 429 || e.status === 403)) return e.body; throw e; }),
   /* The chat (2026-10-07): a free check without signing in, and — signed in —
      the "welcome back" summary and the WhatsApp conversation. */
@@ -262,7 +263,8 @@ export const api = {
   replaceQuote: (from, to) => call('/replace/quote', { method: 'POST', body: { from, to } }),
   replaceBuy: (from, to) => call('/replace/buy', { method: 'POST', body: { from, to, terms_accepted: true } }),
   // A ₹25 pack of 5 vehicle checks (2026-10-26, check packs): returns pay_path for the checkout.
-  buyChecks: () => call('/checks/buy', { method: 'POST', body: {} }),
+  // code: CHECKS5 / CHECKS12 / CHECKS25 (2026-10-26, three packs); the cheapest when none.
+  buyChecks: (code = null) => call('/checks/buy', { method: 'POST', body: code ? { code } : {} }),
   invoices: () => call('/invoices'),
   reportPdf: (id, download) => pdf(`/reports/${id}/file`, download),
   invoicePdf: (id, download) => pdf(`/invoices/${id}/file`, download),
