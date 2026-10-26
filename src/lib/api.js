@@ -261,6 +261,8 @@ export const api = {
   // Replace vehicle (2026-10-13): look the new one up, then open the ₹11 (GST included) checkout.
   replaceQuote: (from, to) => call('/replace/quote', { method: 'POST', body: { from, to } }),
   replaceBuy: (from, to) => call('/replace/buy', { method: 'POST', body: { from, to, terms_accepted: true } }),
+  // A ₹20 pack of 5 vehicle checks (2026-10-26, check packs): returns pay_path for the checkout.
+  buyChecks: () => call('/checks/buy', { method: 'POST', body: {} }),
   invoices: () => call('/invoices'),
   reportPdf: (id, download) => pdf(`/reports/${id}/file`, download),
   invoicePdf: (id, download) => pdf(`/invoices/${id}/file`, download),

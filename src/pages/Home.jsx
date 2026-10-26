@@ -293,7 +293,7 @@ export default function Home() {
           buys, row by row. Shown while the server sells the one-time report; the single-price card otherwise. */}
       {oncePrice ? (
         <PriceTable lang={lang} once={oncePrice} full={price} renew={renew} days={days} validDays={validDays}
-          wa={wa} tryWa={tryWa} replacePrice={replacePrice} replaceDays={replaceDays} t={t} />
+          wa={wa} tryWa={tryWa} replacePrice={replacePrice} replaceDays={replaceDays} t={t} pack={pricing?.check_pack || null} />
       ) : (
       <section id="price" className="wrap py-14">
         <div className="grid gap-8 lg:grid-cols-2">
@@ -614,8 +614,14 @@ function CheckPair({ check, tryWa, test, className = '' }) {
  * One row per thing bought, a tick or a cross under each price — readable on a phone (two narrow price
  * columns, the feature text wraps). The prices come from /pricing like every price on this page.
  */
-function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, replacePrice, replaceDays, t }) {
+function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, replacePrice, replaceDays, t, pack = null }) {
   const hi = lang === 'hi';
+  /* CHECK PACKS (user, 2026-10-26; /pricing check_pack): the first check free, then a pack - said under the
+     table, and the report's "extra checks" row names how long they last. */
+  const packRupees = pack ? `₹${Math.round(pack.price_paise / 100)}` : null;
+  const packLine = !pack ? null : hi
+    ? `🔢 आपकी पहली जाँच मुफ़्त है। और गाड़ियाँ जाँचनी हैं? ${pack.checks} जाँच ${packRupees} में (GST सहित), ${pack.days} दिन तक — और हर रिपोर्ट के साथ ${pack.per_report} जाँच मुफ़्त।`
+    : `🔢 Your first check is free. Want to check more vehicles? ${pack.checks} checks for ${packRupees} (GST included), valid ${pack.days} days — and every report adds ${pack.per_report} more.`;
   const W = hi ? {
     h: 'दो आसान दाम, कोई भी गाड़ी', sub: 'कार, बाइक, स्कूटर, ऑटो, ट्रक या बस — दाम वही। पहले मुफ़्त बेसिक जाँच, फिर चुनें। कोई सब्सक्रिप्शन नहीं, कुछ भी अपने आप चार्ज नहीं।',
     what: 'आपको क्या मिलता है', once: 'पूरी रिपोर्ट', onceSub: 'एक बार', full: 'रिपोर्ट + अलर्ट', fullSub: `${days} दिन`, best: 'सबसे फ़ायदेमंद',
@@ -625,7 +631,7 @@ function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, repla
       'हर चालान — अपराध, जगह और रकम',
       'मालिकों की संख्या, बीमा कंपनी और पॉलिसी, FASTag',
       `PDF रिपोर्ट + GST इनवॉइस (${validDays} दिन तक दोबारा डाउनलोड)`,
-      'उस महीने 5 और मुफ़्त जाँच',
+      pack ? `${pack.per_report} और गाड़ी जाँच (${pack.days} दिन तक)` : 'उस महीने 5 और मुफ़्त जाँच',
       `${days} दिन तक नए चालान का अलर्ट`,
       'इंश्योरेंस, PUC, टैक्स, फिटनेस, परमिट खत्म होने से पहले चेतावनी',
       `बाद में ${renew} में अलर्ट रिन्यू करें`,
@@ -641,7 +647,7 @@ function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, repla
       'Every challan — offence, place and amount',
       'Number of owners, insurer and policy, FASTag',
       `PDF report + GST invoice (download again for ${validDays} days)`,
-      '5 extra free checks that month',
+      pack ? `${pack.per_report} extra vehicle checks (valid ${pack.days} days)` : '5 extra free checks that month',
       `New-challan alerts for ${days} days`,
       'Warning before insurance, PUC, road tax, fitness or permit expires',
       `Renew the alerts later for ${renew}`,
@@ -695,6 +701,7 @@ function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, repla
         </table>
       </Reveal>
       <p className="mt-3 text-2xs text-muted">{W.incl}</p>
+      {packLine ? <p className="mt-2 max-w-2xl rounded-xl bg-brand/5 px-3 py-2 text-sm text-ink" data-test="price-pack">{packLine}</p> : null}
       <div className="mt-5 grid gap-2 sm:max-w-xl">
         {wa ? <WhatsAppCta className="w-full sm:w-auto" /> : (
           <CheckPair tryWa={tryWa} test="price-try-wa"

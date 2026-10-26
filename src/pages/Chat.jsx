@@ -143,7 +143,8 @@ const T = {
     profile: 'Profile',
     howWorks: 'What do I get?',
     // As the site is now (2026-10-10): the three levels, in plain words.
-    get howAnswer() { return `*Free, no sign-in* — make, model and variant, fuel and the RTO. Up to 2 vehicles a day.\n\n*Free, signed in* — the owner’s name (masked), and how many of its documents (insurance, PUC, road tax, fitness, permit) and challans need attention, and *14 days of free monitoring* for one vehicle.\n\n*Full report ${PRICES.full}* (${PRICES.renew} to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears. *Every purchase also adds 5 more vehicle checks* that month.\n\n🔢 *Vehicle checks — the more you buy, the more you can check*\n• Signed in: *${PRICES.perDay} a day* and *30 a month*\n• *Every report you buy — ${PRICES.full}, or ${PRICES.renew} to renew — adds 5 more checks* that month\n• The same vehicle again within an hour does not count\n• Removing a vehicle from My vehicles does *not* give a check back\nTap *Checks left* any time to see yours.\n\nℹ️ *Please note:* GaadiPe gives *reports, alerts and reminders* only — it does *not* issue an RC card, PUC, insurance or any certificate. For the documents themselves, contact your RTO, insurer or PUC centre.`; },
+    // Check packs (2026-10-26): one free check, then 5 for ₹20.
+    get howAnswer() { return `*Your first check is free* — make, model and variant, fuel and the RTO; signed in, also the owner’s name (masked) and how many of its documents (insurance, PUC, road tax, fitness, permit) and challans need attention.\n\n*Full report ${PRICES.full}* (${PRICES.renew} to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears.\n\n🔢 *More vehicle checks*\n• *${PRICES.pack.checks} checks for ${PRICES.pack.price}* (GST included), valid ${PRICES.pack.days} days\n• *Every report you buy adds ${PRICES.pack.checks} more checks*\n• The same vehicle again within an hour does not count\n• Removing a vehicle from My vehicles does *not* give a check back\nTap *Checks left* any time to see yours.\n\nℹ️ *Please note:* GaadiPe gives *reports, alerts and reminders* only — it does *not* issue an RC card, PUC, insurance or any certificate. For the documents themselves, contact your RTO, insurer or PUC centre.`; },
     // My subscriptions (user, 2026-10-10).
     subs: {
       menu: 'My subscriptions', title: '📋 My subscriptions',
@@ -296,6 +297,19 @@ const T = {
     next: 'What next? Type a vehicle number, or tap below.', langNow: 'Okay — English from now on. 👍',
     // Checks left (user, 2026-10-10: "show the vehicle check count, updated when they buy").
     left: {
+      // Check packs (2026-10-26): what is left, and the pack when none.
+      packLine: (n) => (n ? `🔢 Checks left: *${n}*` : `🔢 Your free check is used — *${PRICES.pack.checks} checks for ${PRICES.pack.price}*, valid ${PRICES.pack.days} days.`),
+      packHint: (n) => `${n} check${n === 1 ? '' : 's'} left`,
+      packDetail: (q) => [
+        '🔢 *Your vehicle checks*', '',
+        `• Left: *${q.today.left}*${q.free_left ? ' (your free check)' : ''}`,
+        ...(q.credits?.left && q.credits.last_expiry ? [`• Valid till *${new Date(q.credits.last_expiry).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}*`] : []),
+        '',
+        `💡 *${PRICES.pack.checks} checks for ${PRICES.pack.price}* (GST included), valid ${PRICES.pack.days} days — and every report you buy adds ${PRICES.pack.checks} more.`,
+        'The same vehicle again within an hour does not count.',
+      ].join('\n'),
+      buy: (c, p) => `${c} checks · ${p}`,
+      added: (n) => `✅ *${n} vehicle checks added.* Send any vehicle number to use one.`,
       line: (d, m) => `🔢 Checks left: *${d}* today${m != null ? ` · *${m}* this month` : ''}`,
       bonus: (n) => `Every report you buy (${PRICES.full}, or ${PRICES.renew} to renew) adds *${n} more* this month.`,
       hint: (d, m) => `${d} checks left today${m != null ? ` · ${m} this month` : ''}`,
@@ -457,7 +471,7 @@ const T = {
     myReports: 'मेरी रिपोर्ट',
     profile: 'प्रोफ़ाइल',
     howWorks: 'मुझे क्या मिलेगा?',
-    get howAnswer() { return `*मुफ़्त, बिना साइन इन* — कंपनी, मॉडल और वेरिएंट, ईंधन और RTO। दिन में 2 गाड़ियाँ।\n\n*मुफ़्त, साइन इन करके* — मालिक का नाम (छिपा हुआ), और इसके कितने दस्तावेज़ों (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट) और चालानों पर ध्यान चाहिए, और एक गाड़ी की *14 दिन मुफ़्त निगरानी*।\n\n*पूरी रिपोर्ट ${PRICES.full}* (ख़रीदी हुई गाड़ी का रिन्यू ${PRICES.renew}) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे। *हर ख़रीद पर उस महीने 5 गाड़ी जाँच और* मिलती हैं।\n\n🔢 *गाड़ी जाँच — जितना ख़रीदेंगे, उतना ज़्यादा जाँच सकेंगे*\n• साइन इन करके: *दिन में ${PRICES.perDay}* और *महीने में 30*\n• *हर रिपोर्ट ख़रीदने पर — ${PRICES.full}, या रिन्यू के लिए ${PRICES.renew} — उस महीने 5 जाँच और*\n• एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता\n• मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती\nअपनी बाकी जाँच देखने के लिए कभी भी *बाकी जाँच* दबाएँ।\n\nℹ️ *ध्यान दें:* GaadiPe सिर्फ़ *रिपोर्ट, अलर्ट और रिमाइंडर* देता है — यह RC कार्ड, PUC, बीमा या कोई प्रमाणपत्र *जारी नहीं* करता। दस्तावेज़ों के लिए अपने RTO, बीमा कंपनी या PUC सेंटर से संपर्क करें।`; },
+    get howAnswer() { return `*आपकी पहली जाँच मुफ़्त* — कंपनी, मॉडल और वेरिएंट, ईंधन और RTO; साइन इन करके मालिक का नाम (छिपा हुआ) और कितने दस्तावेज़ों (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट) और चालानों पर ध्यान चाहिए।\n\n*पूरी रिपोर्ट ${PRICES.full}* (ख़रीदी हुई गाड़ी का रिन्यू ${PRICES.renew}) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे।\n\n🔢 *और गाड़ी जाँच*\n• *${PRICES.pack.checks} जाँच ${PRICES.pack.price} में* (GST सहित), ${PRICES.pack.days} दिन तक\n• *हर रिपोर्ट ख़रीदने पर ${PRICES.pack.checks} जाँच और*\n• एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता\n• मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती\nअपनी बाकी जाँच देखने के लिए कभी भी *बाकी जाँच* दबाएँ।\n\nℹ️ *ध्यान दें:* GaadiPe सिर्फ़ *रिपोर्ट, अलर्ट और रिमाइंडर* देता है — यह RC कार्ड, PUC, बीमा या कोई प्रमाणपत्र *जारी नहीं* करता। दस्तावेज़ों के लिए अपने RTO, बीमा कंपनी या PUC सेंटर से संपर्क करें।`; },
     subs: {
       menu: 'मेरी सदस्यता', title: '📋 मेरी सदस्यता',
       mRenew: 'निगरानी रिन्यू करें', mReplace: 'गाड़ी बदलें',
@@ -590,6 +604,18 @@ const T = {
     emailH: '✉️ आपकी रिपोर्ट, बिल और गाड़ियों के अलर्ट के लिए ईमेल', emailPh: 'you@example.com', save: 'सहेजें',
     next: 'आगे क्या? गाड़ी नंबर लिखें, या नीचे कोई बटन दबाएँ।', langNow: 'ठीक है — अब से हिंदी में। 👍',
     left: {
+      packLine: (n) => (n ? `🔢 बाकी जाँच: *${n}*` : `🔢 आपकी मुफ़्त जाँच हो चुकी है — *${PRICES.pack.checks} जाँच ${PRICES.pack.price} में*, ${PRICES.pack.days} दिन तक।`),
+      packHint: (n) => `${n} जाँच बाकी`,
+      packDetail: (q) => [
+        '🔢 *आपकी गाड़ी जाँच*', '',
+        `• बाकी: *${q.today.left}*${q.free_left ? ' (आपकी मुफ़्त जाँच)' : ''}`,
+        ...(q.credits?.left && q.credits.last_expiry ? [`• *${new Date(q.credits.last_expiry).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}* तक मान्य`] : []),
+        '',
+        `💡 *${PRICES.pack.checks} जाँच ${PRICES.pack.price} में* (GST सहित), ${PRICES.pack.days} दिन तक — और हर रिपोर्ट के साथ ${PRICES.pack.checks} जाँच और।`,
+        'एक घंटे के अंदर उसी गाड़ी को दोबारा जाँचना नहीं गिना जाता।',
+      ].join('\n'),
+      buy: (c, p) => `${c} जाँच · ${p}`,
+      added: (n) => `✅ *${n} गाड़ी जाँच जुड़ गईं।* कोई भी गाड़ी नंबर भेजें।`,
       line: (d, m) => `🔢 बाकी जाँच: आज *${d}*${m != null ? ` · इस महीने *${m}*` : ''}`,
       bonus: (n) => `हर रिपोर्ट ख़रीदने पर (${PRICES.full}, या रिन्यू के लिए ${PRICES.renew}) इस महीने *${n} जाँच और* मिलती हैं।`,
       hint: (d, m) => `आज ${d} जाँच बाकी${m != null ? ` · इस महीने ${m}` : ''}`,
@@ -701,7 +727,8 @@ const markFreeUsed = () => { try { localStorage.setItem('gp.free.day', istDay())
 const rupee = (p) => (p == null ? '₹19' : `₹${Math.round(p / 100)}`);
 /* The prices as set in admin (2026-10-14: "is the renewal linked to the site?"), filled from
    /pricing when the chat opens; the texts that name them read these. */
-const PRICES = { full: '₹19', renew: '₹15', perDay: 6 };   // perDay: checks a day signed in (2026-10-15)
+// perDay: checks a day signed in (2026-10-15); pack: the ₹20 check pack (2026-10-26, /pricing check_pack).
+const PRICES = { full: '₹19', renew: '₹15', perDay: 6, pack: { checks: 5, price: '₹20', days: 30 } };
 const cleanPlate = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 const looksLikePlate = (s) => /^[A-Z]{2}\d{1,2}[A-Z]{0,3}\d{3,4}$/.test(cleanPlate(s)) || /^\d{2}BH\d{4}[A-Z]{1,2}$/.test(cleanPlate(s));
 const prettyMobile = (m) => { const d = String(m || '').replace(/\D/g, '').slice(-10); return d.length === 10 ? `${d.slice(0, 5)} ${d.slice(5)}` : d; };
@@ -742,6 +769,7 @@ export default function Chat() {
       if (p?.price_paise) PRICES.full = rupee(p.price_paise);
       if (p?.renewal_paise) PRICES.renew = rupee(p.renewal_paise);
       if (p?.free_checks_per_day) PRICES.perDay = p.free_checks_per_day;
+      if (p?.check_pack) PRICES.pack = { checks: p.check_pack.checks, price: rupee(p.check_pack.price_paise), days: p.check_pack.days };
     }).catch(() => {});
   }, []);
 
@@ -1054,7 +1082,16 @@ export default function Chat() {
     const paid = cleanPlate(params.get('paid'));
     // The amount paid (?amt=, rupees, from the checkout's return link) for the Meta Pixel's Purchase.
     const amt = Number(params.get('amt')) || 0;
-    if (amt > 0) pixelPaid(amt, `${paid || params.get('open') || 'pay'}.${amt}`);
+    if (amt > 0) pixelPaid(amt, `${paid || params.get('open') || (params.get('checks') ? 'checks' : 'pay')}.${amt}`);
+    // Back from buying a check pack (?checks=5, 2026-10-26): say so, and show the new count.
+    const packBack = Number(params.get('checks')) || 0;
+    if (packBack > 0) {
+      const rest = new URLSearchParams(params); rest.delete('checks'); rest.delete('amt'); setParams(rest, { replace: true });
+      if (me) {
+        setTimeout(() => { journey({ step: 'paid', section: 'check pack' }); bot(L.left.added(packBack), { chips: ['another', 'checksLeft'] }); }, 600);
+        api.checksLeft?.().then((q) => q && setQuota(q)).catch(() => {});
+      }
+    }
     // From the "free monitoring ends" reminder (?from=free_end): one tap on why, if they do not continue.
     const fromFreeEnd = params.get('from') === 'free_end';
     if ((reg && looksLikePlate(reg)) || paid) {
@@ -1084,7 +1121,8 @@ export default function Chat() {
       const found = s.vehicles || s.reports;
       // How many checks are left, on signing in (user, 2026-10-10).
       const leftLines = q && !q.unlimited
-        ? ['', L.left.line(q.today.left, q.month ? q.month.left : null), ...(q.month?.per_report ? [L.left.bonus(q.month.per_report)] : [])]
+        ? ['', ...(q.packs ? [L.left.packLine(q.today.left)]
+          : [L.left.line(q.today.left, q.month ? q.month.left : null), ...(q.month?.per_report ? [L.left.bonus(q.month.per_report)] : [])])]
         : [];
       const lines = found || s.whatsapp
         ? [L.welcomeBack(s.name ? String(s.name).split(/\s+/)[0] : ''),
@@ -1210,6 +1248,12 @@ export default function Chat() {
     } catch (e) {
       interaction('error', `Check of ${reg} failed: ${String(e.message).slice(0, 60)}`, { reg_no: reg });
       if (e.body?.quota) setQuota(e.body.quota);
+      // The free check is used (check packs, 2026-10-26): the pack, one tap away.
+      if (e.body?.error === 'checks_needed') {
+        interaction('error', `Check of ${reg} needs a pack`, { reg_no: reg });
+        bot(`🔢 ${e.message}`, { chips: ['buyChecks', 'myVehicles'] });
+        return;
+      }
       // Out of checks for the month: buying a report unlocks more — so My vehicles is one tap away.
       bot(`⚠️ ${e.message}${e.body?.reason ? '' : again}`, { chips: e.body?.reason === 'monthly' ? ['myVehicles', 'howWorks'] : ['another'] });
     } finally { setBusy(false); }
@@ -1614,7 +1658,8 @@ export default function Chat() {
     try {
       const q = await api.checksLeft();
       setQuota(q);
-      bot(q.unlimited ? L.left.unlimited : L.left.detail(q), { pace: 400, chips: ['another', 'myVehicles'] });
+      bot(q.unlimited ? L.left.unlimited : q.packs ? L.left.packDetail(q) : L.left.detail(q),
+        { pace: 400, chips: q.packs ? ['buyChecks', 'another'] : ['another', 'myVehicles'] });
     } catch (e) { bot(`⚠️ ${e.message}`, { chips: ['another'] }); }
   }
 
@@ -1628,7 +1673,25 @@ export default function Chat() {
 
   /* ────────────────────────────── chips and buttons ── */
 
+  /* A ₹20 pack of 5 checks (2026-10-26): straight to the checkout, which asks for the invoice's name and state;
+     paying returns here with ?checks=5. */
+  async function buyChecks() {
+    push({ from: 'me', kind: 'text', text: L.left.buy(PRICES.pack.checks, PRICES.pack.price) });
+    if (!me) { startSignIn(null); return; }
+    interaction('view', 'Tapped Buy checks');
+    setBusy(true);
+    try {
+      const out = await api.buyChecks();
+      const target = out.pay_path ? gatewayUrl(out.pay_path) : out.pay_url;
+      window.location.href = `${target}${target.includes('?') ? '&' : '?'}go=1`;
+    } catch (e) {
+      bot(`⚠️ ${e.message}`, { chips: ['another'] });
+      setBusy(false);
+    }
+  }
+
   function chip(key) {
+    if (key === 'buyChecks') { buyChecks(); return; }
     // A language button left in an older saved chat (the question is gone, 2026-10-22): switch, as 🌐 does.
     if (key.startsWith('lang:')) {
       if ((key.slice(5) === 'hi' ? 'hi' : 'en') !== lang) switchLang();
@@ -1686,6 +1749,7 @@ export default function Chat() {
   }
   const chipLabel = (key) => (key.startsWith('open:') ? `🔓 ${prettyPlate(key.slice(5))}` : {
     'lang:en': 'English', 'lang:hi': 'हिंदी', checksLeft: `🔢 ${L.left.menu}`, mySubs: `📋 ${L.subs.menu}`,
+    buyChecks: `🛒 ${L.left.buy(PRICES.pack.checks, PRICES.pack.price)}`,
     howWorks: `❓ ${L.howWorks}`, another: `🔍 ${L.another}`, signIn: `🔐 ${L.signIn}`,
     myVehicles: `🚗 ${L.myVehicles}`, myReports: `📄 ${L.myReports}`, profile: `👤 ${L.profile}`, invoices: `🧾 ${L.invoices}`,
     sample: L.sample.chip, fullInfo: L.sample.more,
@@ -1894,7 +1958,7 @@ export default function Chat() {
               // Tap it for the full answer (2026-10-10).
               <button type="button" data-test="checks-left" onClick={() => showChecksLeft()} disabled={busy}
                 className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold active:scale-95 ${quota.today.left ? 'bg-[#e7f6ec] text-[#12813f]' : 'bg-[#fdecea] text-[#c62828]'}`}>
-                🔢 {quota.today.left ? L.left.hint(quota.today.left, quota.month ? quota.month.left : null) : L.left.none} ›
+                🔢 {quota.today.left ? (quota.packs ? L.left.packHint(quota.today.left) : L.left.hint(quota.today.left, quota.month ? quota.month.left : null)) : L.left.none} ›
               </button>
             ) : null}
           </div>
