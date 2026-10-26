@@ -186,8 +186,9 @@ export const STRINGS = {
     'home.offer.l2': 'Stay informed for the next {days} days.',
     // Action first at the top (2026-10-25): what you find out, then the box. Not "Check any vehicle" — it says nothing.
     // The hero (user, 2026-10-26: "confusing — make it attractive"): the ad's promise, two tones split at "|".
-    'home.quick.h': 'Vehicle RC details,|right on your WhatsApp.',
-    'home.quick.hWeb': 'Vehicle RC details,|in seconds.',
+    // "Report", so nobody takes GaadiPe for an RTO agent (user, 2026-10-26).
+    'home.quick.h': 'Vehicle RC report,|right on your WhatsApp.',
+    'home.quick.hWeb': 'Vehicle RC report,|in seconds.',
     'home.quick.sub': 'Insurance, PUC, tax and challans of any vehicle. 1st check free · full report from {price}.',
     'home.quick.b1': 'No app needed',
     'home.quick.b2': 'Owner details masked',
@@ -741,8 +742,8 @@ export const STRINGS = {
     'home.offer.only': 'सिर्फ़',
     'home.offer.l1': 'आज ही जानें अपने वाहन की स्थिति।',
     'home.offer.l2': 'अगले {days} दिन तक हर बदलाव की जानकारी पाएँ।',
-    'home.quick.h': 'गाड़ी की RC जानकारी,|सीधे आपके WhatsApp पर।',
-    'home.quick.hWeb': 'गाड़ी की RC जानकारी,|सेकंडों में।',
+    'home.quick.h': 'गाड़ी की RC रिपोर्ट,|सीधे आपके WhatsApp पर।',
+    'home.quick.hWeb': 'गाड़ी की RC रिपोर्ट,|सेकंडों में।',
     'home.quick.sub': 'किसी भी गाड़ी का इंश्योरेंस, PUC, टैक्स और चालान। पहली जाँच मुफ़्त · पूरी रिपोर्ट सिर्फ़ {price} से।',
     'home.quick.b1': 'कोई ऐप नहीं',
     'home.quick.b2': 'मालिक की जानकारी छिपी रहती है',
