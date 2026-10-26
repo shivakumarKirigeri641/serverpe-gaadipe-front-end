@@ -68,9 +68,15 @@ export default function Home() {
   const validDays = pricing?.report_valid_days ?? 7;
   // WhatsApp on: every check door on this page opens the WhatsApp chat with "Hi" (2026-10-12).
   const wa = CHECK_ON_WHATSAPP;
+  /* "CHECK A VEHICLE" OPENS WHATSAPP (user, 2026-10-26: "that button 'Check a vehicle' — tapping it should navigate
+     to WhatsApp"). While the server says WhatsApp is live (/notice whatsapp_try, scripts/wa-button.js), every check
+     button opens the WhatsApp chat with "Hi"; switched off, they go back to the web chat - no rebuild either way. */
+  const waNow = wa || (tryWa && Boolean(WHATSAPP_TRY));
+  const waHref = waLink('Hi', WHATSAPP_TRY || undefined);
 
   const go = (e) => {
     e.preventDefault();
+    if (waNow) { window.location.href = waHref; return; }
     const plate = reg.toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (plate.length < 5) return;
     // WhatsApp on: straight into the WhatsApp chat with "Hi" (2026-10-12).
@@ -119,7 +125,7 @@ export default function Home() {
                 <input className="input !py-3.5 text-lg font-semibold tracking-wide" placeholder="KA01AB1234" value={reg}
                   onChange={(e) => setReg(e.target.value)} aria-label={t('home.sticky.placeholder')} />
                 {/* The two ways in, side by side (user, 2026-10-25: "let the user choose"). */}
-                <CheckPair tryWa={tryWa} test="home-try-wa"
+                <CheckPair tryWa={tryWa} test="home-try-wa" waHref={waNow ? waHref : null}
                   check={<button className={CHECK_BTN}>{t('common.checkVehicle')} <span className="arrow">→</span></button>} />
               </form>
             )}
@@ -226,7 +232,7 @@ export default function Home() {
                 <Locked label={t('home.lock.challans')} />
                 <Locked label={t('home.lock.dates')} />
               </div>
-              <a className="btn-primary btn-arrow mt-3 w-full text-center" href={wa ? waLink('Hi') : '/chat'}>
+              <a className="btn-primary btn-arrow mt-3 w-full text-center" href={waNow ? waHref : '/chat'}>
                 {oncePrice ? (lang === 'hi' ? `पूरी रिपोर्ट सिर्फ़ ${oncePrice} से` : `Get the full report from ${oncePrice}`) : t('home.lock.cta', { price })} <span className="arrow">→</span>
               </a>
             </div>
@@ -297,7 +303,7 @@ export default function Home() {
       {oncePrice ? (
         <PriceTable lang={lang} once={oncePrice} full={price} renew={renew} days={days} validDays={validDays}
           wa={wa} tryWa={tryWa} replacePrice={replacePrice} replaceDays={replaceDays} t={t} pack={pricing?.check_pack || null}
-          packs={pricing?.check_packs || []} />
+          packs={pricing?.check_packs || []} checkWa={waNow ? waHref : null} />
       ) : (
       <section id="price" className="wrap py-14">
         <div className="grid gap-8 lg:grid-cols-2">
@@ -392,7 +398,7 @@ export default function Home() {
               onChange={(e) => setReg(e.target.value)} aria-label={t('home.sticky.placeholder')} />
             <button className="btn-primary !px-5">{t('home.sticky.cta')}</button>
             {/* WhatsApp beside it, icon only on the phone's bottom bar (2026-10-25); hidden with the switch. */}
-            {tryWa && <TryWa iconOnly test="sticky-try-wa" />}
+            {tryWa && !waNow && <TryWa iconOnly test="sticky-try-wa" />}
           </form>
         )}
       </div>
@@ -417,7 +423,7 @@ export default function Home() {
             {wa ? (
               <WhatsAppCta className="mt-4" />
             ) : (
-              <CheckPair tryWa={tryWa} test="final-try-wa" className="mx-auto mt-4 sm:max-w-xl"
+              <CheckPair tryWa={tryWa} test="final-try-wa" className="mx-auto mt-4 sm:max-w-xl" waHref={waNow ? waHref : null}
                 check={<a className={CHECK_BTN} href="/chat">{t('common.checkVehicle')} <span className="arrow">→</span></a>} />
             )}
           </Reveal>
@@ -603,7 +609,17 @@ function TryWa({ className = '', style, iconOnly = false, test }) {
 /* "Check a vehicle" and "Check in WhatsApp" as two equal buttons, side by side even on a phone (user, 2026-10-25:
    "let the user choose whatever they want"). Without WhatsApp (the switch off), the check button takes the row. */
 const CHECK_BTN = 'btn-primary btn-arrow w-full justify-center whitespace-nowrap !px-2 !py-3 text-[12.5px] min-[380px]:text-[13.5px] sm:text-base';
-function CheckPair({ check, tryWa, test, className = '' }) {
+function CheckPair({ check, tryWa, test, className = '', waHref = null }) {
+  // WhatsApp live (2026-10-26): one button, "Check a vehicle", straight into the WhatsApp chat - no second button.
+  if (waHref) {
+    return (
+      <div className={`grid gap-2 grid-cols-1 ${className}`}>
+        <a className={CHECK_BTN} href={waHref} data-test={test ? `${test}-check` : undefined}>
+          {check?.props?.children || 'Check a vehicle'}
+        </a>
+      </div>
+    );
+  }
   const both = tryWa && WHATSAPP_TRY;
   return (
     <div className={`grid gap-2 ${both ? 'grid-cols-2' : 'grid-cols-1'} ${className}`}>
@@ -618,7 +634,7 @@ function CheckPair({ check, tryWa, test, className = '' }) {
  * One row per thing bought, a tick or a cross under each price — readable on a phone (two narrow price
  * columns, the feature text wraps). The prices come from /pricing like every price on this page.
  */
-function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, replacePrice, replaceDays, t, pack = null, packs = [] }) {
+function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, replacePrice, replaceDays, t, pack = null, packs = [], checkWa = null }) {
   const hi = lang === 'hi';
   /* CHECK PACKS (user, 2026-10-26; /pricing check_packs): the first check free, then three packs - as cards
      under the table, the best value marked; the report's "extra checks" row names how long they last. */
@@ -727,7 +743,7 @@ function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, repla
       )}
       <div className="mt-5 grid gap-2 sm:max-w-xl">
         {wa ? <WhatsAppCta className="w-full sm:w-auto" /> : (
-          <CheckPair tryWa={tryWa} test="price-try-wa"
+          <CheckPair tryWa={tryWa} test="price-try-wa" waHref={checkWa}
             check={<a className={CHECK_BTN} href="/chat">{t('common.checkVehicle')} <span className="arrow">→</span></a>} />
         )}
         <a className="btn-quiet w-full" href={hi ? '/sample-report-hi.pdf' : '/sample-report.pdf'} target="_blank" rel="noopener">

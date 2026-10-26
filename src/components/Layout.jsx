@@ -32,8 +32,12 @@ export default function Layout({ children, wide = false }) {
     api.notice().then((n) => { setNotice(n?.on ? n : null); setTryWa(n?.whatsapp_try === true); }).catch(() => {});
   }, []);
   const noticeText = notice && ((lang === 'hi' && notice.hi) || notice.en);
-  const waTry = tryWa && WHATSAPP_TRY && !CHECK_ON_WHATSAPP && !inApp
-    ? `https://wa.me/${WHATSAPP_TRY}?text=${encodeURIComponent('Hi')}` : null;
+  /* "CHECK A VEHICLE" OPENS WHATSAPP (user, 2026-10-26): while the server says WhatsApp is live (site_whatsapp_try,
+     scripts/wa-button.js), the header, menu and footer "Check a vehicle" open the WhatsApp chat with "Hi" - one
+     button, so the separate "Check in WhatsApp" goes. Switched off, everything leads to the web chat again. */
+  const waNow = CHECK_ON_WHATSAPP || (tryWa && Boolean(WHATSAPP_TRY) && !inApp);
+  const waCheck = waLink('Hi', WHATSAPP_TRY || undefined);
+  const waTry = null;
   const waTryLabel = lang === 'hi' ? 'WhatsApp पर जाँचें' : 'Check in WhatsApp';
 
   useEffect(() => {
@@ -104,8 +108,8 @@ export default function Layout({ children, wide = false }) {
               /* "Check vehicle", not "Sign in" (user, 2026-10-08): the free check
                  needs no sign-in, and it is what a visitor came for — on WhatsApp
                  while it is on (2026-10-12). */
-              CHECK_ON_WHATSAPP
-                ? <a className="btn-primary !py-2" href={waLink('Hi')} rel="noopener">{t('common.checkVehicle')}</a>
+              waNow
+                ? <a className="btn-primary whitespace-nowrap !py-2" href={waCheck} rel="noopener" data-test="header-check-wa">{t('common.checkVehicle')}</a>
                 : <Link className="btn-primary whitespace-nowrap !py-2" to="/chat">
                     {/* On a phone beside the WhatsApp icon, one word (2026-10-25); the full label from sm up. */}
                     {waTry ? <><span className="sm:hidden">{lang === 'hi' ? 'चेक करें' : 'Check'}</span><span className="hidden sm:inline">{t('common.checkVehicle')}</span></> : t('common.checkVehicle')}
@@ -131,7 +135,7 @@ export default function Layout({ children, wide = false }) {
             {(inApp ? appLinks
               : [['/#price', t('nav.price')],
                  WEB_LOGIN && me ? ['/chat', t('common.myVehicles')]
-                   : CHECK_ON_WHATSAPP ? [waLink('Hi'), t('common.checkVehicle')]
+                   : waNow ? [waCheck, t('common.checkVehicle')]
                    : WEB_LOGIN ? ['/chat', t('common.checkVehicle')] : [waLink('Hi'), t('wa.short')],
                  ...(waTry ? [[waTry, `🟢 ${waTryLabel}`]] : []),
                  ['/help', t('footer.help')], ['/feedback?src=menu', lang === 'hi' ? '⭐ फ़ीडबैक' : '⭐ Feedback'],
@@ -159,9 +163,9 @@ export default function Layout({ children, wide = false }) {
           <div>
             <div className="text-2xs font-semibold uppercase tracking-wider text-muted">{t('footer.product')}</div>
             <ul className="mt-2 space-y-1.5 text-sm">
-              {WEB_LOGIN && !CHECK_ON_WHATSAPP
+              {WEB_LOGIN && !waNow
                 ? <li><Link className="text-body hover:text-ink" to="/chat">{t('common.checkVehicle')}</Link></li>
-                : <li><a className="text-body hover:text-ink" href={waLink('Hi')}>{t('common.checkVehicle')}</a></li>}
+                : <li><a className="text-body hover:text-ink" href={waCheck}>{t('common.checkVehicle')}</a></li>}
               {WHATSAPP_ENABLED && <li><a className="text-body hover:text-ink" href={waLink('Hi')}>GaadiPe on WhatsApp</a></li>}
               {WEB_LOGIN && !me && <li><Link className="text-body hover:text-ink" to="/chat?signin=1">{t('common.signIn')}</Link></li>}
               {QUIZPE_ENABLED && <li><a className="text-body hover:text-ink" href="https://quizpe.in/?utm_source=gaadipe&utm_medium=footer" target="_blank" rel="noopener noreferrer">{t('footer.quizpe')}</a></li>}

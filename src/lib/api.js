@@ -17,7 +17,7 @@ const SITE = `${BASE}/site/api`;
 const PUBLIC = `${BASE}/serverpe/platform/gaadipe/v1/public/users`;
 const KEY = 'gaadipe.site.token';
 
-export const WHATSAPP = import.meta.env.VITE_WHATSAPP || '917353122415';   // new number, 2026-10-20
+export const WHATSAPP = import.meta.env.VITE_WHATSAPP || '917996083415';   // the live number since 2026-10-23 (7353… disabled 21 Oct)
 
 /**
  * Is WhatsApp offered as a way in?
