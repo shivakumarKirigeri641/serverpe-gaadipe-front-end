@@ -17,11 +17,11 @@ import Layout from '../components/Layout.jsx';
 const PAGE = {
   en: {
     h: 'Help',
-    sub: 'Most questions are answered here. If yours is not, we usually reply the same day.',
+    sub: 'Most questions are answered here. If yours is not, write to us — we reply Monday to Friday, 10am to 6pm IST.',
     stuckH: 'Still stuck?',
     stuckB: 'Tell us the vehicle number and what happened. If it is about a payment, the invoice or report number helps us find it in seconds.',
     email: 'Email support@gaadipe.in',
-    hours: 'We reply between 10am and 7pm IST, usually the same day.',
+    hours: 'We reply between 10am and 6pm IST, Monday to Friday — not on Saturdays, Sundays or public holidays.',
     grievH: 'Grievances',
     griev: 'If a complaint has not been resolved, write to the Grievance Officer at support@gaadipe.in with “Grievance” in the subject. We respond within the period set out in our',
     privacy: 'Privacy policy',
@@ -37,11 +37,11 @@ const PAGE = {
   },
   hi: {
     h: 'मदद',
-    sub: 'ज़्यादातर सवालों के जवाब यहीं हैं। अगर आपका नहीं है, तो हम आमतौर पर उसी दिन जवाब देते हैं।',
+    sub: 'ज़्यादातर सवालों के जवाब यहीं हैं। अगर आपका नहीं है, तो हमें लिखें — हम सोमवार से शुक्रवार, सुबह 10 से शाम 6 बजे (IST) के बीच जवाब देते हैं।',
     stuckH: 'अब भी दिक्कत है?',
     stuckB: 'हमें वाहन नंबर बताइए और क्या हुआ। अगर बात भुगतान की है, तो इनवॉइस या रिपोर्ट नंबर से हम उसे कुछ ही सेकंड में ढूँढ लेते हैं।',
     email: 'support@gaadipe.in पर ईमेल करें',
-    hours: 'हम सुबह 10 से शाम 7 बजे (IST) के बीच जवाब देते हैं, आमतौर पर उसी दिन।',
+    hours: 'हम सोमवार से शुक्रवार, सुबह 10 से शाम 6 बजे (IST) के बीच जवाब देते हैं — शनिवार, रविवार और सार्वजनिक छुट्टियों पर नहीं।',
     grievH: 'शिकायत',
     griev: 'अगर किसी शिकायत का समाधान नहीं हुआ है, तो विषय में “Grievance” लिखकर support@gaadipe.in पर शिकायत अधिकारी को लिखें। हम उस समय-सीमा में जवाब देते हैं जो हमारी',
     privacy: 'गोपनीयता नीति',
@@ -64,13 +64,13 @@ const PAGE = {
  */
 const FORM = {
   en: {
-    h: 'Write to us', sub: 'We usually reply the same day. Give an email or a mobile number so we can answer you.',
+    h: 'Write to us', sub: 'We reply between 10am and 6pm IST, Monday to Friday (not on Saturdays, Sundays or public holidays). Give an email or a mobile number so we can answer you.',
     name: 'Your name', mobile: 'Mobile number', email: 'Email', reg: 'Vehicle number (if it is about one)',
     subject: 'Subject', message: 'Your message', send: 'Send message', sending: 'Sending…',
     subjects: ['A payment or refund', 'My report or invoice', 'The details look wrong', 'Remove my vehicle', 'Something else'],
   },
   hi: {
-    h: 'हमें लिखें', sub: 'हम आमतौर पर उसी दिन जवाब देते हैं। जवाब के लिए ईमेल या मोबाइल नंबर दें।',
+    h: 'हमें लिखें', sub: 'हम सोमवार से शुक्रवार, सुबह 10 से शाम 6 बजे (IST) के बीच जवाब देते हैं (शनिवार, रविवार और छुट्टियों पर नहीं)। जवाब के लिए ईमेल या मोबाइल नंबर दें।',
     name: 'आपका नाम', mobile: 'मोबाइल नंबर', email: 'ईमेल', reg: 'वाहन नंबर (अगर किसी वाहन के बारे में है)',
     subject: 'विषय', message: 'आपका संदेश', send: 'संदेश भेजें', sending: 'भेजा जा रहा है…',
     subjects: ['भुगतान या रिफ़ंड', 'मेरी रिपोर्ट या इनवॉइस', 'जानकारी ग़लत लगती है', 'मेरा वाहन हटाएँ', 'कुछ और'],

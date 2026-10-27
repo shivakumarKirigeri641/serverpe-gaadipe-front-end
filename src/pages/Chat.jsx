@@ -341,7 +341,7 @@ const T = {
     notifyUnsupported: 'This browser cannot show notifications here. On iPhone, add GaadiPe to your Home Screen (Share → Add to Home Screen) and open it from there.',
     notifyOffNow: 'Notifications are off for this phone.', turnOff: 'Turn off', notifyIsOn: '🔔 Notifications are *already on* for this phone — we’ll tell you here about your vehicles.',
     helpH: '❓ Help & support',
-    helpBody: 'Write to *support@gaadipe.in* — we reply within a day. Tell us your mobile number and the vehicle number, if it is about one.',
+    helpBody: 'Write to *support@gaadipe.in* — we reply 10am to 6pm IST, Monday to Friday (not on Saturdays, Sundays or holidays). Tell us your mobile number and the vehicle number, if it is about one.',
     // Name and email (2026-10-07): highly recommended while WhatsApp is disabled.
     // After sign-in, while the email is not confirmed — with the reason (user, 2026-10-10).
     emailNudge: '📧 *Please add and confirm your email.*\n\nThat is where we send:\n🚦 the *full challan details* — offence, place and amount\n🔔 *alerts* about your vehicles — a new challan, insurance or PUC about to expire\n📄 your *full reports*\n🧾 your *GST invoices*\n\nIt takes a minute: a *4-digit code* by email.',
@@ -647,7 +647,7 @@ const T = {
     notifyUnsupported: 'यह ब्राउज़र यहाँ नोटिफ़िकेशन नहीं दिखा सकता। iPhone पर GaadiPe को होम स्क्रीन पर जोड़ें (Share → Add to Home Screen) और वहीं से खोलें।',
     notifyOffNow: 'इस फ़ोन पर नोटिफ़िकेशन बंद हैं।', turnOff: 'बंद करें', notifyIsOn: '🔔 इस फ़ोन पर नोटिफ़िकेशन *पहले से चालू हैं* — आपकी गाड़ियों की जानकारी हम यहीं देंगे।',
     helpH: '❓ मदद और सहायता',
-    helpBody: '*support@gaadipe.in* पर लिखें — हम एक दिन में जवाब देते हैं। अपना मोबाइल नंबर और (अगर हो) गाड़ी नंबर ज़रूर लिखें।',
+    helpBody: '*support@gaadipe.in* पर लिखें — हम सोमवार से शुक्रवार, सुबह 10 से शाम 6 बजे (IST) के बीच जवाब देते हैं (शनिवार, रविवार और छुट्टियों पर नहीं)। अपना मोबाइल नंबर और (अगर हो) गाड़ी नंबर ज़रूर लिखें।',
     emailNudge: '📧 *कृपया अपना ईमेल जोड़ें और कन्फ़र्म करें।*\n\nवहीं हम भेजते हैं:\n🚦 *चालान की पूरी जानकारी* — अपराध, जगह और राशि\n🔔 आपकी गाड़ियों के *अलर्ट* — नया चालान, बीमा या PUC खत्म होने वाला हो\n📄 आपकी *पूरी रिपोर्ट*\n🧾 आपके *GST बिल*\n\nबस एक मिनट: ईमेल पर *4 अंकों का कोड*।',
     emailPaid: (r, e) => `📧 *${r} के चालान की पूरी जानकारी पाने के लिए अपना ईमेल कन्फ़र्म करें।*\n\nईमेल पर हर बाकी चालान *पूरा* आता है — अपराध, जगह और राशि — साथ में बीमा या PUC खत्म होने से पहले अलर्ट, और आपका GST बिल।\n\n${e ? `नीचे दबाएँ और *${e}* पर आया *4 अंकों का कोड* लिखें।` : 'नीचे दबाएँ, अपना ईमेल लिखें, फिर हमारा भेजा *4 अंकों का कोड*।'}`,
     emailNudgeHave: (e) => `📧 *कृपया अपना ईमेल कन्फ़र्म करें* — *${e}*।\n\nवहीं हम भेजते हैं:\n🚦 *चालान की पूरी जानकारी* — अपराध, जगह और राशि\n🔔 आपकी गाड़ियों के *अलर्ट* — नया चालान, बीमा या PUC खत्म होने वाला हो\n📄 आपकी *पूरी रिपोर्ट*\n🧾 आपके *GST बिल*\n\nनीचे दबाएँ और ईमेल पर आया *4 अंकों का कोड* लिखें।`,
