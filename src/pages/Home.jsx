@@ -643,8 +643,8 @@ function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, repla
   /* CHECK PACKS (user, 2026-10-26; /pricing check_packs): the first check free, then three packs - as cards
      under the table, the best value marked; the report's "extra checks" row names how long they last. */
   const packLine = !pack ? null : hi
-    ? `🔢 आपकी पहली जाँच मुफ़्त है। और गाड़ियाँ जाँचनी हैं? नीचे से एक पैक चुनें (GST सहित) — और हर रिपोर्ट के साथ ${pack.per_report} जाँच मुफ़्त। पहले जाँची हुई गाड़ी दोबारा कभी भी मुफ़्त — सिर्फ़ नई गाड़ी पर जाँच लगती है।`
-    : `🔢 Your first check is free. Want to check more vehicles? Pick a pack below (GST included) — and every report adds ${pack.per_report} more. Vehicles you already checked are free to check again, any time — only a new vehicle uses a check.`;
+    ? `🔢 आपकी पहली जाँच मुफ़्त है। और गाड़ियाँ जाँचनी हैं? नीचे से एक पैक चुनें (GST सहित)${pack.per_report ? ` — और ${full} वाली रिपोर्ट के साथ ${pack.per_report} जाँच मुफ़्त` : ''}। पहले जाँची हुई गाड़ी दोबारा कभी भी मुफ़्त — सिर्फ़ नई गाड़ी पर जाँच लगती है।`
+    : `🔢 Your first check is free. Want to check more vehicles? Pick a pack below (GST included)${pack.per_report ? ` — and the ${full} report with alerts adds ${pack.per_report} more` : ''}. Vehicles you already checked are free to check again, any time — only a new vehicle uses a check.`;
   const W = hi ? {
     h: 'दो आसान दाम, कोई भी गाड़ी', sub: 'कार, बाइक, स्कूटर, ऑटो, ट्रक या बस — दाम वही। पहले मुफ़्त बेसिक जाँच, फिर चुनें। कोई सब्सक्रिप्शन नहीं, कुछ भी अपने आप चार्ज नहीं।',
     what: 'आपको क्या मिलता है', once: 'पूरी रिपोर्ट', onceSub: 'एक बार', full: 'रिपोर्ट + अलर्ट', fullSub: `${days} दिन`, best: 'सबसे फ़ायदेमंद',
@@ -678,7 +678,8 @@ function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, repla
     forOnce: 'Buying a used vehicle — check it once', forFull: 'Your own vehicle — stay on top of it', bestFor: 'Best for',
     incl: 'Both prices include GST — the amount shown is the amount you pay.',
   };
-  const both = 6;                     // the first six rows come with both
+  // The first six rows come with both - five when the one-time report adds no checks (2026-10-29, migration 222).
+  const both = !pack || pack.per_report_once == null || pack.per_report_once > 0 ? 6 : 5;
   const mark = (yes) => (yes
     ? <span className="text-lg font-bold text-good-700" aria-label="yes">✓</span>
     : <span className="text-lg font-bold text-black/25" aria-label="no">✕</span>);
