@@ -191,7 +191,7 @@ export default function Home() {
             <p className="anim-up mt-3 text-sm text-muted" style={{ animationDelay: '.3s' }}>
               <Rich text={t(wa ? 'home.freeLine.wa' : 'home.freeLine', { price, renew, perDay: pricing?.free_checks_per_day ?? 6,
                 // The check packs as set in admin (2026-10-26, /pricing check_packs): "5 for ₹25 · 12 for ₹49 · 25 for ₹99".
-                packs: (pricing?.check_packs || [])
+                packs: (pricing?.check_packs?.length ? pricing.check_packs : [{ checks: 5, price_paise: 2500 }, { checks: 12, price_paise: 4900 }, { checks: 25, price_paise: 9900 }])
                   .map((p) => (lang === 'hi' ? `${p.checks} जाँच ₹${Math.round(p.price_paise / 100)}` : `${p.checks} for ₹${Math.round(p.price_paise / 100)}`)).join(' · ') })} />
             </p>
 
@@ -642,11 +642,7 @@ function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, repla
   const hi = lang === 'hi';
   /* CHECK PACKS (user, 2026-10-26; /pricing check_packs): the first check free, then three packs - as cards
      under the table, the best value marked; the report's "extra checks" row names how long they last. */
-  // No pack on sale (user, 2026-10-29, migration 223): the first check free, then a vehicle's full report.
-  const packLine = !pack ? (hi
-    ? `🔢 आपकी पहली गाड़ी जाँच मुफ़्त है। दूसरी गाड़ी? उसकी पूरी रिपोर्ट — ${once} एक बार या ${full} अलर्ट के साथ। पहले जाँची हुई गाड़ी दोबारा कभी भी मुफ़्त।`
-    : `🔢 Your first vehicle check is free. Another vehicle? Its full report — ${once} one time or ${full} with alerts. Vehicles you already checked are free to check again, any time.`)
-    : hi
+  const packLine = !pack ? null : hi
     ? `🔢 आपकी पहली जाँच मुफ़्त है। और गाड़ियाँ जाँचनी हैं? नीचे से एक पैक चुनें (GST सहित)${pack.per_report ? ` — और ${full} वाली रिपोर्ट के साथ ${pack.per_report} जाँच मुफ़्त` : ''}। पहले जाँची हुई गाड़ी दोबारा कभी भी मुफ़्त — सिर्फ़ नई गाड़ी पर जाँच लगती है।`
     : `🔢 Your first check is free. Want to check more vehicles? Pick a pack below (GST included)${pack.per_report ? ` — and the ${full} report with alerts adds ${pack.per_report} more` : ''}. Vehicles you already checked are free to check again, any time — only a new vehicle uses a check.`;
   const W = hi ? {
@@ -682,11 +678,8 @@ function PriceTable({ lang, once, full, renew, days, validDays, wa, tryWa, repla
     forOnce: 'Buying a used vehicle — check it once', forFull: 'Your own vehicle — stay on top of it', bestFor: 'Best for',
     incl: 'Both prices include GST — the amount shown is the amount you pay.',
   };
-  /* The "extra vehicle checks" row (index 5) only while a report adds checks (none since migration 223); the rows
-     before it come with both, and it too when the one-time report adds checks (migration 222). */
-  const checksRow = Boolean(pack?.per_report);
-  if (!checksRow) W.rows.splice(5, 1);
-  const both = checksRow && (pack.per_report_once == null || pack.per_report_once > 0) ? 6 : 5;
+  // The first six rows come with both - five when the one-time report adds no checks (2026-10-29, migration 222).
+  const both = !pack || pack.per_report_once == null || pack.per_report_once > 0 ? 6 : 5;
   const mark = (yes) => (yes
     ? <span className="text-lg font-bold text-good-700" aria-label="yes">✓</span>
     : <span className="text-lg font-bold text-black/25" aria-label="no">✕</span>);

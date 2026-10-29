@@ -144,7 +144,7 @@ const T = {
     howWorks: 'What do I get?',
     // As the site is now (2026-10-10): the three levels, in plain words.
     // Check packs (2026-10-26): one free check, then 5 for ₹25.
-    get howAnswer() { return `*Your first check is free* — make, model and variant, fuel and the RTO; signed in, also the owner’s name (masked) and how many of its documents (insurance, PUC, road tax, fitness, permit) and challans need attention.\n\n*Full report ${PRICES.full}* (${PRICES.renew} to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears.\n\n🔢 *More vehicle checks*\n${PRICES.packs.length ? `• Packs, GST included: *${packsText()}* — valid ${PRICES.packs.map((p) => p.days).join(' / ')} days` : `• Only the *first vehicle check is free* — another vehicle is its full report, *${PRICES.once}* one time or *${PRICES.full}* with alerts`}\n• *Vehicles you already checked are free to check again, any time* — only a new vehicle uses a check\n• Removing a vehicle from My vehicles does *not* give a check back\nTap *Checks left* any time to see yours.\n\nℹ️ *Please note:* GaadiPe gives *reports, alerts and reminders* only — it does *not* issue an RC card, PUC, insurance or any certificate. For the documents themselves, contact your RTO, insurer or PUC centre.`; },
+    get howAnswer() { return `*Your first check is free* — make, model and variant, fuel and the RTO; signed in, also the owner’s name (masked) and how many of its documents (insurance, PUC, road tax, fitness, permit) and challans need attention.\n\n*Full report ${PRICES.full}* (${PRICES.renew} to renew a vehicle you bought) — loan, blacklist and NOC status, every challan with place and amount, and a verdict before you pay — as a PDF with a GST invoice. *Plus 28 days of automatic monitoring*: we tell you before any document expires and when a new challan appears.\n\n🔢 *More vehicle checks*\n• Packs, GST included: *${packsText()}* — valid ${PRICES.packs.map((p) => p.days).join(' / ')} days\n• *Every report you buy adds 5 more checks*\n• *Vehicles you already checked are free to check again, any time* — only a new vehicle uses a check\n• Removing a vehicle from My vehicles does *not* give a check back\nTap *Checks left* any time to see yours.\n\nℹ️ *Please note:* GaadiPe gives *reports, alerts and reminders* only — it does *not* issue an RC card, PUC, insurance or any certificate. For the documents themselves, contact your RTO, insurer or PUC centre.`; },
     // My subscriptions (user, 2026-10-10).
     subs: {
       menu: 'My subscriptions', title: '📋 My subscriptions',
@@ -298,19 +298,14 @@ const T = {
     // Checks left (user, 2026-10-10: "show the vehicle check count, updated when they buy").
     left: {
       // Check packs (2026-10-26): what is left, and the pack when none.
-      // No pack on sale (2026-10-29, migration 223): another vehicle is its full report.
-      packLine: (n) => (n ? `🔢 Checks left: *${n}*` : PRICES.packs.length
-        ? `🔢 Your free check has been used — only the first vehicle check is free. To check more vehicles, please choose a pack: *${packsText()}* (GST included).`
-        : `🔢 Your free check has been used — only the first vehicle check is free. For another vehicle, get its full report — *${PRICES.once} one time* or *${PRICES.full} with alerts* (GST included).`),
+      packLine: (n) => (n ? `🔢 Checks left: *${n}*` : `🔢 Your free check has been used — only the first vehicle check is free. To check more vehicles, please choose a pack: *${packsText()}* (GST included).`),
       packHint: (n) => `${n} check${n === 1 ? '' : 's'} left`,
       packDetail: (q) => [
         '🔢 *Your vehicle checks*', '',
         `• Left: *${q.today.left}*${q.free_left ? ' (your free check)' : ''}`,
         ...(q.credits?.left && q.credits.last_expiry ? [`• Valid till *${new Date(q.credits.last_expiry).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}*`] : []),
         '',
-        PRICES.packs.length
-          ? `💡 Packs, GST included: *${packsText()}* (valid ${PRICES.packs.map((p) => p.days).join(' / ')} days).`
-          : `💡 Only the first vehicle check is free. Another vehicle: its full report — *${PRICES.once}* one time or *${PRICES.full}* with alerts (GST included).`,
+        `💡 Packs, GST included: *${packsText()}* (valid ${PRICES.packs.map((p) => p.days).join(' / ')} days) — and every report you buy adds 5 more.`,
         'Vehicles you already checked are free to check again, any time — only a new vehicle uses a check.',
       ].join('\n'),
       buy: (c, p) => `${c} checks · ${p}`,
@@ -477,7 +472,7 @@ const T = {
     myReports: 'मेरी रिपोर्ट',
     profile: 'प्रोफ़ाइल',
     howWorks: 'मुझे क्या मिलेगा?',
-    get howAnswer() { return `*आपकी पहली जाँच मुफ़्त* — कंपनी, मॉडल और वेरिएंट, ईंधन और RTO; साइन इन करके मालिक का नाम (छिपा हुआ) और कितने दस्तावेज़ों (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट) और चालानों पर ध्यान चाहिए।\n\n*पूरी रिपोर्ट ${PRICES.full}* (ख़रीदी हुई गाड़ी का रिन्यू ${PRICES.renew}) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे।\n\n🔢 *और गाड़ी जाँच*\n${PRICES.packs.length ? `• पैक, GST सहित: *${packsText(' · ', true)}* — ${PRICES.packs.map((p) => p.days).join(' / ')} दिन तक` : `• सिर्फ़ *पहली गाड़ी जाँच मुफ़्त* — दूसरी गाड़ी की पूरी रिपोर्ट, *${PRICES.once}* एक बार या *${PRICES.full}* अलर्ट के साथ`}\n• *पहले जाँची हुई गाड़ी दोबारा कभी भी मुफ़्त* — सिर्फ़ नई गाड़ी पर जाँच लगती है\n• मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती\nअपनी बाकी जाँच देखने के लिए कभी भी *बाकी जाँच* दबाएँ।\n\nℹ️ *ध्यान दें:* GaadiPe सिर्फ़ *रिपोर्ट, अलर्ट और रिमाइंडर* देता है — यह RC कार्ड, PUC, बीमा या कोई प्रमाणपत्र *जारी नहीं* करता। दस्तावेज़ों के लिए अपने RTO, बीमा कंपनी या PUC सेंटर से संपर्क करें।`; },
+    get howAnswer() { return `*आपकी पहली जाँच मुफ़्त* — कंपनी, मॉडल और वेरिएंट, ईंधन और RTO; साइन इन करके मालिक का नाम (छिपा हुआ) और कितने दस्तावेज़ों (बीमा, PUC, रोड टैक्स, फ़िटनेस, परमिट) और चालानों पर ध्यान चाहिए।\n\n*पूरी रिपोर्ट ${PRICES.full}* (ख़रीदी हुई गाड़ी का रिन्यू ${PRICES.renew}) — लोन, ब्लैकलिस्ट और NOC की स्थिति, हर चालान (जगह और राशि), और पैसे देने से पहले हमारी राय — GST बिल के साथ PDF में। *साथ में 28 दिन की अपने-आप निगरानी*: कोई दस्तावेज़ समाप्त होने से पहले और नया चालान आने पर हम आपको बताएँगे।\n\n🔢 *और गाड़ी जाँच*\n• पैक, GST सहित: *${packsText(' · ', true)}* — ${PRICES.packs.map((p) => p.days).join(' / ')} दिन तक\n• *हर रिपोर्ट ख़रीदने पर 5 जाँच और*\n• *पहले जाँची हुई गाड़ी दोबारा कभी भी मुफ़्त* — सिर्फ़ नई गाड़ी पर जाँच लगती है\n• मेरी गाड़ियों से कोई गाड़ी हटाने पर जाँच *वापस नहीं* मिलती\nअपनी बाकी जाँच देखने के लिए कभी भी *बाकी जाँच* दबाएँ।\n\nℹ️ *ध्यान दें:* GaadiPe सिर्फ़ *रिपोर्ट, अलर्ट और रिमाइंडर* देता है — यह RC कार्ड, PUC, बीमा या कोई प्रमाणपत्र *जारी नहीं* करता। दस्तावेज़ों के लिए अपने RTO, बीमा कंपनी या PUC सेंटर से संपर्क करें।`; },
     subs: {
       menu: 'मेरी सदस्यता', title: '📋 मेरी सदस्यता',
       mRenew: 'निगरानी रिन्यू करें', mReplace: 'गाड़ी बदलें',
@@ -610,18 +605,14 @@ const T = {
     emailH: '✉️ आपकी रिपोर्ट, बिल और गाड़ियों के अलर्ट के लिए ईमेल', emailPh: 'you@example.com', save: 'सहेजें',
     next: 'आगे क्या? गाड़ी नंबर लिखें, या नीचे कोई बटन दबाएँ।', langNow: 'ठीक है — अब से हिंदी में। 👍',
     left: {
-      packLine: (n) => (n ? `🔢 बाकी जाँच: *${n}*` : PRICES.packs.length
-        ? `🔢 आपकी मुफ़्त जाँच हो चुकी है — सिर्फ़ पहली गाड़ी जाँच मुफ़्त है। और गाड़ियाँ जाँचने के लिए एक पैक चुनें: *${packsText(' · ', true)}* (GST सहित)।`
-        : `🔢 आपकी मुफ़्त जाँच हो चुकी है — सिर्फ़ पहली गाड़ी जाँच मुफ़्त है। दूसरी गाड़ी के लिए उसकी पूरी रिपोर्ट लें — *${PRICES.once} एक बार* या *${PRICES.full} अलर्ट के साथ* (GST सहित)।`),
+      packLine: (n) => (n ? `🔢 बाकी जाँच: *${n}*` : `🔢 आपकी मुफ़्त जाँच हो चुकी है — सिर्फ़ पहली गाड़ी जाँच मुफ़्त है। और गाड़ियाँ जाँचने के लिए एक पैक चुनें: *${packsText(' · ', true)}* (GST सहित)।`),
       packHint: (n) => `${n} जाँच बाकी`,
       packDetail: (q) => [
         '🔢 *आपकी गाड़ी जाँच*', '',
         `• बाकी: *${q.today.left}*${q.free_left ? ' (आपकी मुफ़्त जाँच)' : ''}`,
         ...(q.credits?.left && q.credits.last_expiry ? [`• *${new Date(q.credits.last_expiry).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}* तक मान्य`] : []),
         '',
-        PRICES.packs.length
-          ? `💡 पैक, GST सहित: *${packsText(' · ', true)}* (${PRICES.packs.map((p) => p.days).join(' / ')} दिन तक)।`
-          : `💡 सिर्फ़ पहली गाड़ी जाँच मुफ़्त है। दूसरी गाड़ी: उसकी पूरी रिपोर्ट — *${PRICES.once}* एक बार या *${PRICES.full}* अलर्ट के साथ (GST सहित)।`,
+        `💡 पैक, GST सहित: *${packsText(' · ', true)}* (${PRICES.packs.map((p) => p.days).join(' / ')} दिन तक) — और हर रिपोर्ट के साथ 5 जाँच और।`,
         'पहले जाँची हुई गाड़ी दोबारा कभी भी मुफ़्त जाँचें — सिर्फ़ नई गाड़ी पर जाँच लगती है।',
       ].join('\n'),
       buy: (c, p) => `${c} जाँच · ${p}`,
@@ -739,9 +730,10 @@ const rupee = (p) => (p == null ? '₹19' : `₹${Math.round(p / 100)}`);
 /* The prices as set in admin (2026-10-14: "is the renewal linked to the site?"), filled from
    /pricing when the chat opens; the texts that name them read these. */
 // perDay: checks a day signed in (2026-10-15); packs: the check packs, cheapest first (2026-10-26, /pricing check_packs);
-// pack = the cheapest, for one-line mentions. No pack on sale since 29 Oct (migration 223): packs [] unless /pricing
-// lists some; once = the ₹11 one-time report.
-const PRICES = { full: '₹19', once: '₹11', renew: '₹15', perDay: 6, pack: null, packs: [] };
+// pack = the cheapest, for one-line mentions.
+const PRICES = { full: '₹19', renew: '₹15', perDay: 6, pack: { checks: 5, price: '₹25', days: 30 },
+  packs: [{ code: 'CHECKS5', checks: 5, price: '₹25', days: 30 }, { code: 'CHECKS12', checks: 12, price: '₹49', days: 60 },
+    { code: 'CHECKS25', checks: 25, price: '₹99', days: 30, best: true }] };
 const packsText = (sep = ' · ', hi = false) => PRICES.packs.map((p) => (hi ? `${p.checks} जाँच ${p.price}` : `${p.checks} for ${p.price}`)).join(sep);
 const cleanPlate = (s) => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 const looksLikePlate = (s) => /^[A-Z]{2}\d{1,2}[A-Z]{0,3}\d{3,4}$/.test(cleanPlate(s)) || /^\d{2}BH\d{4}[A-Z]{1,2}$/.test(cleanPlate(s));
@@ -781,7 +773,6 @@ export default function Chat() {
   useEffect(() => {
     api.pricing().then((p) => {
       if (p?.price_paise) PRICES.full = rupee(p.price_paise);
-      if (p?.one_time_paise) PRICES.once = rupee(p.one_time_paise);
       if (p?.renewal_paise) PRICES.renew = rupee(p.renewal_paise);
       if (p?.free_checks_per_day) PRICES.perDay = p.free_checks_per_day;
       if (p?.check_pack) PRICES.pack = { checks: p.check_pack.checks, price: rupee(p.check_pack.price_paise), days: p.check_pack.days };
@@ -1268,12 +1259,6 @@ export default function Chat() {
       if (e.body?.quota) setQuota(e.body.quota);
       // The free check is used (check packs, 2026-10-26): the pack, one tap away.
       if (e.body?.error === 'checks_needed') {
-        // No pack on sale (2026-10-29, migration 223): this vehicle's full report, ₹11 or ₹19, in the Buy window.
-        if (e.body.report_only) {
-          interaction('error', `Check of ${reg} needs a report`, { reg_no: reg });
-          bot(`🔢 ${e.message}`, { chips: [`buy:${e.body.reg_no || reg}:${e.body.price_paise || ''}`, 'another'] });
-          return;
-        }
         interaction('error', `Check of ${reg} needs a pack`, { reg_no: reg });
         bot(`🔢 ${e.message}`, { chips: packChips() });
         return;
@@ -1701,7 +1686,6 @@ export default function Chat() {
      paying returns here with ?checks=5. */
   async function buyChecks(code = null) {
     const p = PRICES.packs.find((x) => x.code === code) || PRICES.pack;
-    if (!p) { bot(L.left.packLine(0), { chips: ['another'] }); return; }   // no pack on sale (migration 223)
     push({ from: 'me', kind: 'text', text: L.left.buy(p.checks, p.price) });
     if (!me) { startSignIn(null); return; }
     interaction('view', `Tapped Buy checks ${code || ''}`.trim());
@@ -1720,9 +1704,7 @@ export default function Chat() {
   const packChips = () => PRICES.packs.map((p) => `pack:${p.code}`);
   function chip(key) {
     if (key.startsWith('pack:')) { buyChecks(key.slice(5)); return; }
-    // buy:REG:PRICE - the full report of a vehicle not checked (no pack on sale, migration 223).
-    if (key.startsWith('buy:')) { const [, reg, price] = key.split(':'); fullReport(reg, Number(price) || null); return; }
-    if (key === 'buyChecks') { bot(L.left.packLine(0), { chips: PRICES.packs.length ? packChips() : ['another'] }); return; }
+    if (key === 'buyChecks') { bot(L.left.packLine(0), { chips: packChips() }); return; }
     // A language button left in an older saved chat (the question is gone, 2026-10-22): switch, as 🌐 does.
     if (key.startsWith('lang:')) {
       if ((key.slice(5) === 'hi' ? 'hi' : 'en') !== lang) switchLang();
@@ -1782,9 +1764,7 @@ export default function Chat() {
     const p = PRICES.packs.find((x) => x.code === code);
     return p ? `🛒 ${L.left.buy(p.checks, p.price)}${p.best ? ' ⭐' : ''}` : code;
   };
-  const chipLabel = (key) => (key.startsWith('pack:') ? packLabel(key.slice(5))
-    : key.startsWith('buy:') ? `🔒 ${L.fullReport(prettyPlate(key.split(':')[1])).trim()}`
-    : key.startsWith('open:') ? `🔓 ${prettyPlate(key.slice(5))}` : {
+  const chipLabel = (key) => (key.startsWith('pack:') ? packLabel(key.slice(5)) : key.startsWith('open:') ? `🔓 ${prettyPlate(key.slice(5))}` : {
     'lang:en': 'English', 'lang:hi': 'हिंदी', checksLeft: `🔢 ${L.left.menu}`, mySubs: `📋 ${L.subs.menu}`,
     buyChecks: `🛒 ${L.left.buyAll}`,
     howWorks: `❓ ${L.howWorks}`, another: `🔍 ${L.another}`, signIn: `🔐 ${L.signIn}`,
