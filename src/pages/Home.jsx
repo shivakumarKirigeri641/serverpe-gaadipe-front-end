@@ -191,7 +191,7 @@ export default function Home() {
             <p className="anim-up mt-3 text-sm text-muted" style={{ animationDelay: '.3s' }}>
               <Rich text={t(wa ? 'home.freeLine.wa' : 'home.freeLine', { price, renew, perDay: pricing?.free_checks_per_day ?? 5,
                 // Free checks + one plan (2026-10-31): every checked vehicle watched free, and the plan's days.
-                freeDays: pricing?.free_monitor_days || 14, days,
+                freeDays: pricing?.free_monitor_days || 7, days,
                 // The check packs as set in admin (2026-10-26, /pricing check_packs): "5 for ₹25 · 12 for ₹49 · 25 for ₹99".
                 packs: (pricing?.check_packs?.length ? pricing.check_packs : [{ checks: 5, price_paise: 2500 }, { checks: 12, price_paise: 4900 }, { checks: 25, price_paise: 9900 }])
                   .map((p) => (lang === 'hi' ? `${p.checks} जाँच ₹${Math.round(p.price_paise / 100)}` : `${p.checks} for ₹${Math.round(p.price_paise / 100)}`)).join(' · ') })} />
@@ -315,7 +315,7 @@ export default function Home() {
         <div className="grid gap-8 lg:grid-cols-2">
           <Reveal>
             <h2 className="text-2xl font-bold text-ink">{t('home.price.h')}</h2>
-            <p className="mt-3 text-body">{t('home.price.sub', { renew, days, perDay: pricing?.free_checks_per_day ?? 5, freeDays: pricing?.free_monitor_days || 14 })}</p>
+            <p className="mt-3 text-body">{t('home.price.sub', { renew, days, perDay: pricing?.free_checks_per_day ?? 5, freeDays: pricing?.free_monitor_days || 7 })}</p>
             <ul className="mt-5 space-y-2.5">
               {['t1', 't2', 't3', 't4', 't5'].map((k) => (
                 <Tick key={k}>{t(`home.price.${k}${wa && (k === 't2' || k === 't4') ? '.wa' : ''}`, { days, validDays })}</Tick>
