@@ -50,7 +50,7 @@ export default function Refer() {
     return <Layout><Banner tone="info">{t('ref.off')}</Banner></Layout>;
   }
 
-  const price = data.price_paise ? rupees(data.price_paise) : '₹19';
+  const price = data.price_paise ? rupees(data.price_paise) : '₹29';
 
   return (
     <Layout>

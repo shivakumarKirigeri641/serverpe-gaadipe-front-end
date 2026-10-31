@@ -16,13 +16,13 @@ import './go.css';
  *
  *   /go            Check   — the number plate is the input; four warning lights show what is read
  *   /go/v/:reg     the dashboard for one vehicle — the health score on a speedometer, a warning light
- *                  for each document and the challans, then Full report ₹19 or Watch free
+ *                  for each document and the challans, then Full report ₹29 or Watch free
  *   /go/garage     Garage  — your vehicles, each with its score (signed in)
- *   /go/reports    Reports — the ₹19 reports bought, as PDFs (signed in)
+ *   /go/reports    Reports — the ₹29 reports bought, as PDFs (signed in)
  *   /go/me         Me      — account, notifications, language, help, sign out
  *
  * The same back end as the chat: the free check (chatCheck), the signed-in check, sign-in by SMS code,
- * the ₹19 checkout (BuyDialog), free monitoring, the reports. The full report itself still opens in
+ * the ₹29 checkout (BuyDialog), free monitoring, the reports. The full report itself still opens in
  * the chat (/chat?reg=…), which already shows every detail and the PDF. No dates before the report:
  * the free view says each document's state and the health score only (back end, vehicleView.statusOf).
  */
@@ -54,7 +54,7 @@ const T = {
     tabs: ['Check', 'Garage', 'Reports', 'Me'],
     garage: 'My garage', garageSub: (n) => `${n} vehicle${n === 1 ? '' : 's'}`, garageEmpty: ['No vehicles yet', 'Check a vehicle and it appears here, with its score.'],
     watched: 'WATCHED', reportOk: 'REPORT', scoreLbl: 'score', addOne: '＋ Check a vehicle',
-    reports: 'Reports', reportsEmpty: ['No reports yet', 'A ₹19 full report shows the loan, blacklist, every challan and comes as a PDF.'],
+    reports: 'Reports', reportsEmpty: ['No reports yet', 'A ₹29 full report shows the loan, blacklist, every challan and comes as a PDF.'],
     validTill: 'valid till', download: 'Download',
     me: 'Me', notif: 'Notifications', notifOn: 'On', notifOff: 'Turn on', lang: 'Language', langNow: 'English → हिंदी',
     more: 'More settings (email, monitoring, invoices)', help: 'Help & support', policies: 'Terms & policies', signOut: 'Sign out',
@@ -88,7 +88,7 @@ const T = {
     tabs: ['जाँच', 'गैराज', 'रिपोर्ट', 'मैं'],
     garage: 'मेरा गैराज', garageSub: (n) => `${n} गाड़ियाँ`, garageEmpty: ['अभी कोई गाड़ी नहीं', 'कोई गाड़ी जाँचें — वह यहाँ अपने स्कोर के साथ दिखेगी।'],
     watched: 'निगरानी में', reportOk: 'रिपोर्ट', scoreLbl: 'स्कोर', addOne: '＋ गाड़ी जाँचें',
-    reports: 'रिपोर्ट', reportsEmpty: ['अभी कोई रिपोर्ट नहीं', '₹19 की पूरी रिपोर्ट में लोन, ब्लैकलिस्ट, हर चालान और PDF मिलता है।'],
+    reports: 'रिपोर्ट', reportsEmpty: ['अभी कोई रिपोर्ट नहीं', '₹29 की पूरी रिपोर्ट में लोन, ब्लैकलिस्ट, हर चालान और PDF मिलता है।'],
     validTill: 'वैध', download: 'डाउनलोड',
     me: 'मैं', notif: 'नोटिफ़िकेशन', notifOn: 'चालू', notifOff: 'चालू करें', lang: 'भाषा', langNow: 'हिंदी → English',
     more: 'और सेटिंग (ईमेल, निगरानी, इनवॉइस)', help: 'मदद', policies: 'शर्तें और नीतियाँ', signOut: 'साइन आउट',
@@ -524,7 +524,7 @@ export default function GoApp() {
     meta?.setAttribute('content', '#0b1116');
     const prevBg = document.body.style.background;
     document.body.style.background = '#05080b';
-    // The ₹19 checkout dialog is drawn at the page's top level: dark while the app is open (go.css).
+    // The ₹29 checkout dialog is drawn at the page's top level: dark while the app is open (go.css).
     document.body.classList.add('go-dark');
     return () => { if (meta && before) meta.setAttribute('content', before); document.body.style.background = prevBg; document.body.classList.remove('go-dark'); };
   }, []);
