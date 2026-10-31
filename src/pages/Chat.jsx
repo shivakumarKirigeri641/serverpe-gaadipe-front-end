@@ -1018,7 +1018,9 @@ export default function Chat() {
   const typing = useCallback(() => {
     queue.current = queue.current.then(() => { typingSince.current = Date.now(); showDots(); });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  const bot = useCallback((text, extra = {}) => push({ from: 'bot', kind: 'text', text, ...extra }), [push]);
+  // No "Checks left" button while no check pack is sold (2026-10-31): free checks have no count to show.
+  const bot = useCallback((text, extra = {}) => push({ from: 'bot', kind: 'text', text, ...extra,
+    ...(extra.chips && !PRICES.packs.length ? { chips: extra.chips.filter((c) => c !== 'checksLeft') } : {}) }), [push]);
 
   /* STRAIGHT TO THE OPENING (user, 2026-10-22: visitors left on "Tap a language above"). The language
      is no longer asked: the phone's language is used (lib/i18n.jsx), and 🌐 at the top switches it. */
@@ -1141,10 +1143,9 @@ export default function Chat() {
       // vehicles (and their reports) are gone for the customer (user, 2026-10-10).
       const found = s.vehicles || s.reports;
       // How many checks are left, on signing in (user, 2026-10-10).
-      const leftLines = q && !q.unlimited
-        ? ['', ...(q.packs ? [L.left.packLine(q.today.left)]
-          : [L.left.line(q.today.left, q.month ? q.month.left : null), ...(q.month?.per_report ? [L.left.bonus(q.month.per_report)] : [])])]
-        : [];
+      // Only while check packs are sold: free checks have no count to show (user, 2026-10-31: "do not put 5 vehicles
+      // check free daily" - the daily cap is a silent guard, said only when it is reached).
+      const leftLines = q && !q.unlimited && q.packs ? ['', L.left.packLine(q.today.left)] : [];
       const lines = found || s.whatsapp
         ? [L.welcomeBack(s.name ? String(s.name).split(/\s+/)[0] : ''),
           ...(found ? ['', L.found,
@@ -1994,7 +1995,7 @@ export default function Chat() {
           <div className="flex items-center justify-between gap-2 px-4 pt-2 text-[12px] font-medium text-[#0a4f49]/70">
             <span data-test="compose-hint" className="flex min-w-0 items-center gap-1.5"><span aria-hidden="true">⌨️</span><span className="truncate">{hintText}</span></span>
             {/* Checks left, always in sight while signed in (2026-10-10). */}
-            {me && quota && !quota.unlimited && mode === 'plate' ? (
+            {me && quota && !quota.unlimited && quota.packs && mode === 'plate' ? (
               // Tap it for the full answer (2026-10-10).
               <button type="button" data-test="checks-left" onClick={() => showChecksLeft()} disabled={busy}
                 className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold active:scale-95 ${quota.today.left ? 'bg-[#e7f6ec] text-[#12813f]' : 'bg-[#fdecea] text-[#c62828]'}`}>
@@ -2035,7 +2036,7 @@ export default function Chat() {
           ['📋', L.subs.menu, () => showSubscriptions({ fromMenu: true }), 'subs'],
           ['🔄', L.subs.mRenew, () => showRenewOrReplace('renew'), 'renew'],
           ['🔁', L.subs.mReplace, () => showRenewOrReplace('replace'), 'replace'],
-          ['🔢', L.left.menu, () => showChecksLeft({ fromMenu: true }), 'checks'],
+          ...(quota?.packs ? [['🔢', L.left.menu, () => showChecksLeft({ fromMenu: true }), 'checks']] : []),
           ['📄', L.myReports, () => { setMenuOpen(false); showList('reports'); }, 'reports'],
           ['🧾', L.invoices, () => { setMenuOpen(false); showList('invoices'); }, 'invoices'],
           ['🔔', `${L.mNotify}${notifyState === 'on' ? ' ✓' : ''}`, notificationsMenu, 'notify'],
